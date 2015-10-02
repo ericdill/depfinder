@@ -22,7 +22,8 @@ def test_determine_imported_library():
     for test_string, target_string in test_cases:
         yield _test_helper, test_string, target_string
 
-
+# these are lines that definder.regexer should **not** think are import lines
 lines_that_should_not_pass = [
-    'some random list of characters'
+    'some random list of characters',
+    '"""\n',
 ]
