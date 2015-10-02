@@ -1,0 +1,8 @@
+depfinder
+---------
+Find all the unique imports in your library, automatically, because who likes
+hiring an undergraduate to do it by hand?
+
+regex
+-----
+reg = re.compile(r'(from?)(.*)(import?)')
