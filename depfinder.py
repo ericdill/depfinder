@@ -1,13 +1,13 @@
 import re
 import os
 
-regexer = re.compile(r'(from?)?([a-zA-Z0-9\.])?(import?)(.*)')
+regexer = re.compile(r'(from)?(.*)?(import)(.*)')
 
 
 def determine_imported_library(line):
     res = regexer.findall(line)
     print(res)
-    res = [r for tup in res for r in tup if r]
+    res = [r.strip() for tup in res for r in tup if r]
     print(res)
     return res
 
