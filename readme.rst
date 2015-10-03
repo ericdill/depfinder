@@ -1,3 +1,9 @@
+.. image:: https://travis-ci.org/ericdill/depfinder.svg?branch=master
+    :target: https://travis-ci.org/ericdill/depfinder
+.. image:: http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=master
+    :target: http://codecov.io/github/ericdill/depfinder?branch=master
+
+
 depfinder
 ---------
 Find all the unique imports in your library, automatically, because who likes
