@@ -2,20 +2,20 @@ import depfinder
 
 easy_imports = [
     # easy_imports
-    ('import foo, bar', ['foo', 'bar']),
-    ('import depfinder', ['depfinder']),
+    ('import foo, bar', set(['foo', 'bar'])),
+    ('import depfinder', set(['depfinder'])),
     # from imports
-    ('from matplotlib import pyplot', ['matplotlib']),
-    ('from numpy import warnings as npwarn', ['numpy']),
+    ('from matplotlib import pyplot', set(['matplotlib'])),
+    ('from numpy import warnings as npwarn', set(['numpy'])),
     # relative imports
-    ('from . import bar', []),
-    ('from . import bar as baz', []),
-    ('from . import bar, baz, eggs as green', []),
+    ('from . import bar', set()),
+    ('from . import bar as baz', set()),
+    ('from . import bar, baz, eggs as green', set()),
 ]
 
 
 def _test_yielder(test_list, target_list):
-    depfinder.get_imported_libs(test_list) == target_list
+    assert depfinder.get_imported_libs(test_list)['probably_fine'] == target_list
 
 
 def test_imports():

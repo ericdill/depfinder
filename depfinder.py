@@ -101,9 +101,3 @@ def iterate_over_library(path_to_source_code):
         libs['probably_fine'] = [lib for lib in libs['probably_fine'] if lib not in std_libs]
     libs = {k: sorted(v) for k, v in libs.items()}
     return libs
-
-
-parser_handlers = {
-    ast.Import: _parse_import,
-    ast.ImportFrom: _parse_import_from,
-}
