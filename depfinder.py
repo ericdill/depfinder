@@ -5,86 +5,40 @@ import sys
 from stdlib_list import stdlib_list
 
 conf = {
-    'ignore_relative_imports': True,
+    'include_relative_imports': False,
     'ignore_builtin_modules': True,
     'pyver': None,
 }
 
 
-def _recurse_for_imports(tree, imports=None):
-    if not tree:
-        return imports
-    if not imports:
-        imports = deque()
-    if isinstance(tree, (ast.Import, ast.ImportFrom)):
-        print(tree)
-    try:
-        iterable = tree.body
-        for i in iterable:
-            return _recurse_for_imports(i, imports)
-    except AttributeError:
-        if type(tree) in [ast.Str, ast.Call, ast.arguments]:
-            return imports
-        if type(tree) in [ast.List]:
-            iterable = tree.elts
-        if type(tree) == ast.Dict:
-            imports = _recurse_for_imports(list(tree.keys), imports)
-            return _recurse_for_imports(list(tree.values), imports)
-        iterable = []
-    if isinstance(tree, tuple(list(parser_handlers.keys()))):
-        imports.extend(parser_handlers[type(tree)](tree))
-        return imports
-    print(tree)
-        # for k, v in vars(t).items():
-        #     if isinstance(v, list):
-        #         for elem in v:
-        #             elif isinstance(v, ast.AST):
-        #                 imports = _recurse_for_imports(v, imports)
-        #     if isinstance(v, tuple(list(parser_handlers.keys()))):
-        #         imports.extend(parser_handlers[type(t)](t))
-        #     elif isinstance(v, ast.AST):
-        #         imports = _recurse_for_imports(v, imports)
-    return imports
+class ImportCatcher(ast.NodeVisitor):
 
+    def __init__(self, include_relative_imports=False):
+        self.include_relative_imports = include_relative_imports
+        self.modules = deque()
 
-def _parse_import(t):
-    # ast.Import represents lines like 'import foo' and 'import foo, bar'
-    # the extra for name in t.names is needed, because names is a list that
-    # would be ['foo'] for the first and ['foo', 'bar'] for the second
-    print('parsing import')
-    return [name.name.split('.')[0] for name in t.names]
+    def visit_Import(self, node):
+        mods = [name.name.split('.')[0] for name in node.names]
+        self.modules.extend(mods)
 
+    def visit_ImportFrom(self, node):
+        if node.module is None:
+            # this is a relative import like 'from . import bar'
+            # so do nothing
+            return
+        elif not self.include_relative_imports and node.level == 0:
+            # this is a non-relative import like 'from foo import bar'
+            self.modules.append(node.module.split('.')[0])
+        elif self.include_relative_imports and node.level > 0:
+            # this is a relative import like 'from .foo import bar'
+            self.modules.append(node.module.split('.')[0])
 
-def _parse_import_from(t):
-    # ast.ImportFrom represents lines like 'from foo import bar'
-    # t.level == 0 is to get rid of 'from .foo import bar' and higher levels
-    # of relative importing
-    print('parsing import from')
-    if t.level > 0:
-        if conf['ignore_relative_imports'] or not t.module:
-            return []
-    return [t.module.split('.')[0]]
 
 def get_imported_libs(code):
     tree = ast.parse(code)
-    return _recurse_for_imports(tree)
-    # for t in tree.body:
-    #     # ast.Import represents lines like 'import foo' and 'import foo, bar'
-    #     # the extra for name in t.names is needed, because names is a list that
-    #     # would be ['foo'] for the first and ['foo', 'bar'] for the second
-    #     if type(t) == ast.Import:
-    #         imports.extend([name.name.split('.')[0] for name in t.names])
-    #     # ast.ImportFrom represents lines like 'from foo import bar'
-    #     # t.level == 0 is to get rid of 'from .foo import bar' and higher levels
-    #     # of relative importing
-    #     if type(t) == ast.ImportFrom:
-    #         if t.level > 0:
-    #             if conf['ignore_relative_imports'] or not t.module:
-    #                 continue
-    #             else:
-    #                 imports.append(t.module.split('.')[0])
-    #
-    # return list(imports)
+    catcher = ImportCatcher(include_relative_imports=conf['include_relative_imports'])
+    catcher.visit(tree)
+    return set(catcher.modules)
 
 
 def iterate_over_library(path_to_source_code):
@@ -105,7 +59,7 @@ def iterate_over_library(path_to_source_code):
         # print(std_libs)
         libs = [lib for lib in libs if lib not in std_libs]
 
-    return libs
+    return sorted(libs)
 
 
 parser_handlers = {
