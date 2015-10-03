@@ -1,5 +1,6 @@
 """
-depfinder Copyright (C) 2015 Eric Dill
+depfinder
+Copyright (C) 2015 Eric Dill
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,17 +34,15 @@ conf = {
 
 
 class ImportCatcher(ast.NodeVisitor):
-
     def __init__(self, include_relative_imports=False):
         self.include_relative_imports = include_relative_imports
-        self.modules = deque()
+        self.required_modules = deque()
         self.sketchy_modules = deque()
         self.imports = deque()
         self.import_froms = deque()
         self.trys = {}
 
     def generic_visit(self, node):
-        """Called if no explicit visitor function exists for a node."""
         for field, value in ast.iter_fields(node):
             if isinstance(value, list):
                 for item in value:
@@ -59,14 +58,13 @@ class ImportCatcher(ast.NodeVisitor):
             elif isinstance(value, ast.AST):
                 self.visit(value)
 
-
     def visit_Import(self, node):
         self.imports.append(node)
         mods = [name.name.split('.')[0] for name in node.names]
         if self.trys:
             self.sketchy_modules.extend(mods)
         else:
-            self.modules.extend(mods)
+            self.required_modules.extend(mods)
 
     def visit_ImportFrom(self, node):
         self.import_froms.append(node)
@@ -86,7 +84,7 @@ class ImportCatcher(ast.NodeVisitor):
         if self.trys:
             self.sketchy_modules.append(mod)
         else:
-            self.modules.append(mod)
+            self.required_modules.append(mod)
 
 
 
@@ -94,14 +92,14 @@ def get_imported_libs(code):
     tree = ast.parse(code)
     catcher = ImportCatcher(include_relative_imports=conf['include_relative_imports'])
     catcher.visit(tree)
-    return {'probably_fine': set(catcher.modules),
-            'definitely_questionable': set(catcher.sketchy_modules)}
+    return {'required': set(catcher.required_modules),
+            'questionable': set(catcher.sketchy_modules)}
 
 
 def iterate_over_library(path_to_source_code):
     libs = defaultdict(set)
-    probably_fine = set()
-    definitely_questionable = set()
+    required = set()
+    questionable = set()
     for parent, folders, files in os.walk(path_to_source_code):
         for file in files:
             if file.endswith('.py'):
@@ -112,13 +110,11 @@ def iterate_over_library(path_to_source_code):
                 for k, v in get_imported_libs(code).items():
                     libs[k].update(v)
 
-    print(libs)
-
     if conf['ignore_builtin_modules']:
         if not conf['pyver']:
             pyver = '%s.%s' % (sys.version_info.major, sys.version_info.minor)
         std_libs = stdlib_list("3.4")
         # print(std_libs)
-        libs['probably_fine'] = [lib for lib in libs['probably_fine'] if lib not in std_libs]
-    libs = {k: sorted(v) for k, v in libs.items()}
+        libs['required'] = [lib for lib in libs['required'] if lib not in std_libs]
+    libs = {k: sorted(list(v)) for k, v in libs.items()}
     return libs
