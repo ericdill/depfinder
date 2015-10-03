@@ -178,9 +178,21 @@ def get_imported_libs(code):
 
 
 def iterate_over_library(path_to_source_code):
+    """Helper function to recurse into a library and find imports in .py files
+
+    Parameters
+    ----------
+    path_to_source_code : str
+
+    Returns
+    -------
+    catchers : gen
+        Generator of tuples of (module_name, full_path, ImportCatcher)
+    """
     libs = defaultdict(set)
     required = set()
     questionable = set()
+
     for parent, folders, files in os.walk(path_to_source_code):
         for file in files:
             if file.endswith('.py'):
@@ -188,7 +200,5 @@ def iterate_over_library(path_to_source_code):
                 full_file_path = os.path.join(parent, file)
                 with open(full_file_path, 'r') as f:
                     code = f.read()
-                for k, v in get_imported_libs(code).describe().items():
-                    libs[k].update(v)
-    libs = {k: sorted(list(v)) for k, v in libs.items()}
-    return libs
+                catcher = get_imported_libs(code)
+                yield (file[:-3], full_file_path, catcher)

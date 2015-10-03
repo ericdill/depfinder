@@ -59,10 +59,6 @@ def test_imports():
         test_object = Initter(simple_import)
         imports = depfinder.get_imported_libs(test_object.code)
         assert imports.describe() == test_object.targets
-            # print('targets = %s' % targets)
-            # print('code = %s\n\n' % code)
-    # for targetse, target_list in simple_imports.items():
-    #     yield _test_yielder, test_list, target_list
 
 
 def test_relative_imports():
@@ -73,4 +69,4 @@ def test_relative_imports():
 
 
 def test_for_smoke():
-    depfinder.iterate_over_library('.')
+    list(depfinder.iterate_over_library('.'))
