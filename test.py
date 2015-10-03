@@ -70,3 +70,7 @@ def test_relative_imports():
         test_object = Initter(rel)
         imports = depfinder.get_imported_libs(test_object.code)
         assert imports.describe() == test_object.targets
+
+
+def test_for_smoke():
+    depfinder.iterate_over_library('.')

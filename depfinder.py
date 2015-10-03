@@ -188,7 +188,7 @@ def iterate_over_library(path_to_source_code):
                 full_file_path = os.path.join(parent, file)
                 with open(full_file_path, 'r') as f:
                     code = f.read()
-                for k, v in get_imported_libs(code).items():
+                for k, v in get_imported_libs(code).describe().items():
                     libs[k].update(v)
     libs = {k: sorted(list(v)) for k, v in libs.items()}
     return libs
