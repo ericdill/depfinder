@@ -1,5 +1,4 @@
 import depfinder
-import yaml
 import copy
 
 complex_imports = [
