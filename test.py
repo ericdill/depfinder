@@ -67,3 +67,4 @@ def test_for_smoke():
     deps = list(depfinder.iterate_over_library('.'))
     str(deps)
     repr(deps)
+    deps = depfinder.simple_import_search('.')

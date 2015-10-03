@@ -19,7 +19,7 @@ from __future__ import print_function, division, absolute_import
 
 import ast
 import os
-from collections import deque, defaultdict
+from collections import defaultdict
 from stdlib_list import stdlib_list
 
 import sys
@@ -33,20 +33,23 @@ class ImportCatcher(ast.NodeVisitor):
 
     Attributes
     ----------
-    required_modules : deque
+    required_modules : list
         The list of imports that were found outside of try/except blocks
-    sketchy_modules : deque
+    sketchy_modules : list
         The list of imports that were found inside of try/except blocks
-    self.imports : deque
-    include_relative_imports : bool
+    imports : list
+        The list of all ast.Import nodes in the AST
+    import_froms : list
+        The list of all ast.ImportFrom nodes in the AST
+
     """
     def __init__(self):
         self.required_modules = set()
         self.sketchy_modules = set()
         self.builtin_modules = set()
         self.relative_modules = set()
-        self.imports = deque()
-        self.import_froms = deque()
+        self.imports = []
+        self.import_froms = []
         self.trys = {}
 
     def generic_visit(self, node):
@@ -195,10 +198,6 @@ def iterate_over_library(path_to_source_code):
     catchers : tuple
         Yields tuples of (module_name, full_path_to_module, ImportCatcher)
     """
-    libs = defaultdict(set)
-    required = set()
-    questionable = set()
-
     for parent, folders, files in os.walk(path_to_source_code):
         for file in files:
             if file.endswith('.py'):
@@ -208,3 +207,19 @@ def iterate_over_library(path_to_source_code):
                     code = f.read()
                 catcher = get_imported_libs(code)
                 yield (file[:-3], full_file_path, catcher)
+
+
+def merge_module_imports(iterable_of_catchers):
+    for catcher in catchers:
+        for k, v in catcher.describe().items():
+            mods[k].update(v)
+
+    return mods
+
+
+def simple_import_search(path_to_source_code):
+    mods = defaultdict(set)
+    catchers = iterate_over_library(path_to_source_code)
+    for mod, path, catcher in catchers:
+        for k, v in catcher.describe().items():
+            mods[k].update(v)
