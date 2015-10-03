@@ -141,12 +141,18 @@ class ImportCatcher(ast.NodeVisitor):
                         syntax
             'builtin' : The modules that are part of the standard library
         """
-        return {
+        desc =  {
             'required': self.required_modules,
             'relative': self.relative_modules,
             'questionable': self.sketchy_modules,
             'builtin': self.builtin_modules
         }
+        desc = {k: v for k, v in desc.items() if v}
+        return desc
+
+
+    def __repr__(self):
+        return 'ImportCatcher: %s' % repr(self.describe())
 
 
 def get_imported_libs(code):
@@ -184,10 +190,10 @@ def iterate_over_library(path_to_source_code):
     ----------
     path_to_source_code : str
 
-    Returns
+    Yields
     -------
-    catchers : gen
-        Generator of tuples of (module_name, full_path, ImportCatcher)
+    catchers : tuple
+        Yields tuples of (module_name, full_path_to_module, ImportCatcher)
     """
     libs = defaultdict(set)
     required = set()
