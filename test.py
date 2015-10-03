@@ -45,12 +45,7 @@ relative_imports = [
 class Initter:
     def __init__(self, artifact):
         targets = artifact.get('targets', {})
-        self.targets = {
-            'required': set(targets.get('required', [])),
-            'questionable': set(targets.get('questionable', [])),
-            'builtin': set(targets.get('builtin', [])),
-            'relative': set(targets.get('relative', []))
-        }
+        self.targets = {k: set(v) for k, v in targets.items()}
         self.code = artifact['code']
 
 
