@@ -35,11 +35,11 @@ simple_imports = [
 ]
 
 relative_imports = [
-    {'targets': {'required': []},
+    {'targets': {},
      'code': 'from . import bar'},
-    {'targets': {'required': ['bar']},
+    {'targets': {'relative': ['bar']},
      'code': 'from .bar import baz'},
-    {'targets': {'required': ['bar']},
+    {'targets': {'relative': ['bar']},
      'code': 'from ..bar import baz'},
 ]
 
@@ -48,7 +48,9 @@ class Initter:
         targets = artifact.get('targets', {})
         self.targets = {
             'required': set(targets.get('required', [])),
-            'questionable': set(targets.get('questionable', []))
+            'questionable': set(targets.get('questionable', [])),
+            'builtin': set(targets.get('builtin', [])),
+            'relative': set(targets.get('relative', []))
         }
         self.code = artifact['code']
 
@@ -57,7 +59,7 @@ def test_imports():
     for simple_import in complex_imports + simple_imports:
         test_object = Initter(simple_import)
         imports = depfinder.get_imported_libs(test_object.code)
-        assert imports == test_object.targets
+        assert imports.describe() == test_object.targets
             # print('targets = %s' % targets)
             # print('code = %s\n\n' % code)
     # for targetse, target_list in simple_imports.items():
@@ -65,25 +67,7 @@ def test_imports():
 
 
 def test_relative_imports():
-    # Ensure that relative imports are found when 'include_relative_imports'
-    # is toggled on
-    original_config = copy.copy(depfinder.conf)
-    depfinder.conf['ignore_builtin_modules'] = True
-    depfinder.conf['include_relative_imports'] = True
-
     for rel in relative_imports:
         test_object = Initter(rel)
         imports = depfinder.get_imported_libs(test_object.code)
-        assert imports == test_object.targets
-
-    # now we make sure that relative imports are being ignored when we turn
-    # off that flag
-    depfinder.conf['include_relative_imports'] = False
-
-    for rel in relative_imports:
-        test_object = Initter(rel)
-        imports = depfinder.get_imported_libs(test_object.code)
-        assert imports == {k: set() for k, v in test_object.targets.items()}
-
-    # and now we reset the config back to its original state
-    depfinder.conf = original_config
+        assert imports.describe() == test_object.targets
