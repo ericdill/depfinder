@@ -209,17 +209,24 @@ def iterate_over_library(path_to_source_code):
                 yield (file[:-3], full_file_path, catcher)
 
 
-def merge_module_imports(iterable_of_catchers):
-    for catcher in catchers:
-        for k, v in catcher.describe().items():
-            mods[k].update(v)
-
-    return mods
-
-
 def simple_import_search(path_to_source_code):
+    """Return all imported modules in all .py files in `path_to_source_code`
+
+    Parameters
+    ----------
+    path_to_source_code : str
+
+    Returns
+    -------
+    dict
+        The list of all imported modules, sorted according to the keys listed
+        in the docstring of depfinder.ImportCatcher.describe()
+    """
     mods = defaultdict(set)
     catchers = iterate_over_library(path_to_source_code)
     for mod, path, catcher in catchers:
         for k, v in catcher.describe().items():
             mods[k].update(v)
+
+    mods = {k: sorted(list(v)) for k, v in mods.items() if v}
+    return mods

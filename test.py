@@ -64,7 +64,12 @@ def test_relative_imports():
 
 
 def test_for_smoke():
+    """Do not validate the output of the functions, just make sure that calling
+    them does not make depfinder blow up
+    """
     deps = list(depfinder.iterate_over_library('.'))
-    str(deps)
-    repr(deps)
-    deps = depfinder.simple_import_search('.')
+    assert deps is not None
+    assert str(deps) is not None
+    assert repr(deps) is not None
+    # hit the simple api
+    assert depfinder.simple_import_search('.') is not None
