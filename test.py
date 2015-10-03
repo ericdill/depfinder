@@ -64,4 +64,6 @@ def test_relative_imports():
 
 
 def test_for_smoke():
-    list(depfinder.iterate_over_library('.'))
+    deps = list(depfinder.iterate_over_library('.'))
+    str(deps)
+    repr(deps)
