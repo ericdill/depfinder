@@ -1,29 +1,23 @@
 import depfinder
 
-test_cases = [
-    ('import depfinder', 'depfinder'),
-    ('from matplotlib import pyplot', 'matplotlib'),
-    ('from numpy import warnings as npwarn', 'numpy'),
-    ("""from long_library_name import (long_module_name as lmn,
-                                   an_even_longer_module_name as elmn)""",
-                                   'long_library_name'),
-    ("""from long_library_name import long_module_name as lmn, \
-                                  an_even_longer_module_name as elmn""",
-                                  'long_library_name'),
-    ('from . import bar', '.'),
-    ('from . import bar as baz', '.'),
+easy_imports = [
+    # easy_imports
+    ('import foo, bar', ['foo', 'bar']),
+    ('import depfinder', ['depfinder']),
+    # from imports
+    ('from matplotlib import pyplot', ['matplotlib']),
+    ('from numpy import warnings as npwarn', ['numpy']),
+    # relative imports
+    ('from . import bar', []),
+    ('from . import bar as baz', []),
+    ('from . import bar, baz, eggs as green', []),
 ]
 
 
-def _test_helper(test_string, target_string):
-    assert depfinder.determine_imported_library(test_string)[1] == target_string
+def _test_yielder(test_list, target_list):
+    depfinder.get_imported_libs(test_list) == target_list
 
-def test_determine_imported_library():
-    for test_string, target_string in test_cases:
-        yield _test_helper, test_string, target_string
 
-# these are lines that definder.regexer should **not** think are import lines
-lines_that_should_not_pass = [
-    'some random list of characters',
-    '"""\n',
-]
+def test_imports():
+    for test_list, target_list in easy_imports:
+        yield _test_yielder, test_list, target_list
