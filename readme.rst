@@ -19,13 +19,16 @@ Usage
     git clone git@github.com:ericdill/depfinder
     cd depfinder
     python setup.py install
+
+Then use it! ::
+
     python -c "
     import depfinder;
     tups = list(depfinder.iterate_over_library('.'));
     for tup in tups:
         print(tup)"
 
-will output ::
+You should see ::
 
   ('setup', './setup.py', ImportCatcher: {'required': {'setuptools'}})
   ('test', './test.py', ImportCatcher: {'required': {'depfinder'}})
