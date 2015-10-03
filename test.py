@@ -1,6 +1,13 @@
 import depfinder
 import copy
 
+# Testing spec:
+# - targets: dict
+#   - required: Iterable of library imports that should be found
+#   - questionable: Iterable of library imports that should be found
+# - code: String. Code that will be parsed to look for imports
+
+
 complex_imports = [
     {'targets':
      {'questionable': ['molecule', 'atom', 'physicist']},
