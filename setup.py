@@ -1,8 +1,7 @@
 from setuptools import setup
-import depfinder
-
+VERSION = 'v0.0.1'
 setup(name='depfinder',
-      version=depfinder.__version__,
+      version=VERSION,
       author='Eric Dill',
       author_email='thedizzle@gmail.com',
       py_modules=['depfinder'],

@@ -1,5 +1,4 @@
 import depfinder
-import copy
 
 # Testing spec:
 # - targets: dict

@@ -15,14 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 from __future__ import print_function, division, absolute_import
+
 import ast
 import os
 from collections import deque, defaultdict
 from stdlib_list import stdlib_list
-
-__version__ = 'v0.0.0'
 
 import sys
 pyver = '%s.%s' % (sys.version_info.major, sys.version_info.minor)
