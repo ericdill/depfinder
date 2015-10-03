@@ -4,6 +4,9 @@ from collections import deque, defaultdict
 import sys
 from stdlib_list import stdlib_list
 
+__version__ = 'v0.0.0'
+
+
 conf = {
     'include_relative_imports': False,
     'ignore_builtin_modules': True,
