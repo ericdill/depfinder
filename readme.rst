@@ -14,7 +14,7 @@ terrible chore for which I have great distaste.
 Usage
 -----
 
-`depfinder` is not yet on pypi. For now, clone it from github and install it: ::
+``depfinder`` is not yet on pypi. For now, clone it from github and install it: ::
 
     git clone git@github.com:ericdill/depfinder
     cd depfinder
@@ -35,12 +35,12 @@ You should see ::
   ('depfinder', './depfinder.py', ImportCatcher: {'required': {'stdlib_list'}, 'builtin': {'__future__', 'ast', 'sys', 'os'}})
 
 
-`iterate_over_library` is a function that yields tuples of `module_name`,
-`full_path_to_module` and `ImportCatcher` objects.
+``iterate_over_library`` is a function that yields tuples of ``module_name``,
+``full_path_to_module`` and ``ImportCatcher`` objects.
 
-- `module_name` is the name of the module (i.e., the file name without the
-  `.py` suffix)
-- `full_path_to_module` is the full path to the file
-- `ImportCatcher` is a data bucket for information that was obtained by
-  rendering the `module_name` as an Abstract Syntax Tree (AST) and searching the
+- ``module_name`` is the name of the module (i.e., the file name without the
+  ``.py`` suffix)
+- ``full_path_to_module`` is the full path to the file
+- ``ImportCatcher`` is a data bucket for information that was obtained by
+  rendering the ``module_name`` as an Abstract Syntax Tree (AST) and searching the
   tree for import nodes.
