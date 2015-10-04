@@ -74,7 +74,14 @@ class ImportCatcher(ast.NodeVisitor):
                     if isinstance(item, ast.Try):
                         del self.trys[item]
             elif isinstance(value, ast.AST):
+                # add the node to the try/except block to signify that
+                # something potentially odd is going on in this import
+                if isinstance(value, ast.Try):
+                    self.trys[value] = item
                 self.visit(value)
+                # after the node has been recursed in to, remove the try node
+                if isinstance(value, ast.Try):
+                    del self.trys[value]
 
     def visit_Import(self, node):
         """Executes when an ast.Import node is encountered
