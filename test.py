@@ -18,6 +18,14 @@ except ImportError:
 finally:
     import physicist"""
     },
+    {'targets': {'required': ['foo'], 'builtin': ['os']},
+     'code': """
+import foo
+try:
+    import os
+except ImportError:
+    # why would you put this in a try block??
+    pass"""}
 ]
 
 simple_imports = [
