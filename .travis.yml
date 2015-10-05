@@ -20,7 +20,7 @@ install:
   - python setup.py install
 
 script:
-  - test
+  - ./test
 
 after_success:
   - codecov
