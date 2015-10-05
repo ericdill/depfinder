@@ -123,15 +123,16 @@ class ImportCatcher(ast.NodeVisitor):
         self._add_import_node(node_name)
 
     def _add_import_node(self, node_name):
+        # see if the module is a builtin
+        if node_name in builtin_modules:
+            self.builtin_modules.add(node_name)
+            return
+
         # see if we are in a try block
         if self.trys:
             self.sketchy_modules.add(node_name)
             return
 
-        # see if the module is a builtin
-        if node_name in builtin_modules:
-            self.builtin_modules.add(node_name)
-            return
         # if none of the above cases are true, it is likely that this
         # ImportFrom node occurs at the top level of the module
         self.required_modules.add(node_name)
