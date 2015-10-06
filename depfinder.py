@@ -51,37 +51,15 @@ class ImportCatcher(ast.NodeVisitor):
         self.import_froms = []
         self.trys = {}
 
-    def generic_visit(self, node):
-        """Called if no explicit visitor function exists for a node.
-
-        Overridden from the ast.NodeVisitor base class so that I can add some
-        local state to keep track of whether or not my node visitor is inside
-        a try/except block.  When a try block is encountered, the node is added
-        to the `trys` instance attribute and then the try block is recursed in
-        to.  Once the recursion has exited, the node is removed from the `trys`
-        instance attribute
-        """
-        for field, value in ast.iter_fields(node):
-            if isinstance(value, list):
-                for item in value:
-                    # add the node to the try/except block to signify that
-                    # something potentially odd is going on in this import
-                    if isinstance(item, ast.Try):
-                        self.trys[item] = item
-                    if isinstance(item, ast.AST):
-                        self.visit(item)
-                    # after the node has been recursed in to, remove the try node
-                    if isinstance(item, ast.Try):
-                        del self.trys[item]
-            elif isinstance(value, ast.AST):
-                # add the node to the try/except block to signify that
-                # something potentially odd is going on in this import
-                if isinstance(value, ast.Try):
-                    self.trys[value] = item
-                self.visit(value)
-                # after the node has been recursed in to, remove the try node
-                if isinstance(value, ast.Try):
-                    del self.trys[value]
+    def visit(self, node):
+        # add the node to the try/except block to signify that
+        # something potentially odd is going on in this import
+        if isinstance(node, ast.Try):
+            self.trys[node] = node
+        super().visit(node)
+        # after the node has been recursed in to, remove the try node
+        if isinstance(node, ast.Try):
+            del self.trys[node]
 
     def visit_Import(self, node):
         """Executes when an ast.Import node is encountered
