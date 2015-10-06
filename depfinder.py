@@ -241,7 +241,7 @@ def notebook_path_to_dependencies(path_to_notebook):
         'questionable' - libraries that are found inside try/except blocks
         'relative' - libraries that are relative imports
     """
-    nb = json.load(open('find_imports_to_test.ipynb'))
+    nb = json.load(open(path_to_notebook))
     codeblocks = [''.join(cell['source']) for cell in nb['cells']
                   if cell['cell_type'] == 'code']
     all_deps = defaultdict(set)
@@ -250,4 +250,5 @@ def notebook_path_to_dependencies(path_to_notebook):
         for k, v in deps_dict.items():
             all_deps[k].update(v)
 
+    all_deps = {k: sorted(list(v)) for k, v in all_deps.items()}
     return all_deps
