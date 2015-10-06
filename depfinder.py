@@ -27,6 +27,11 @@ builtin_modules = stdlib_list(pyver)
 del pyver
 del sys
 
+try:
+    AST_TRY = ast.Try
+except AttributeError:
+    AST_TRY = ast.TryExcept
+
 class ImportCatcher(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
 
