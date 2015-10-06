@@ -9,7 +9,7 @@ import depfinder
 
 complex_imports = [
     {'targets':
-     {'questionable': ['molecule', 'atom', 'physicist', 'chemist']},
+     {'questionable': ['atom', 'chemist', 'molecule', 'physicist']},
      'code': """
 try:
     import molecule
@@ -33,7 +33,7 @@ except ImportError:
 simple_imports = [
     {'targets': {'required': ['foo']},
      'code': 'import foo'},
-    {'targets': {'required': ['foo', 'bar']},
+    {'targets': {'required': ['bar', 'foo']},
      'code': 'import foo, bar'},
     {'targets': {'required': ['depfinder']},
      'code': 'import depfinder'},
