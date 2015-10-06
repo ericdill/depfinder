@@ -85,7 +85,7 @@ class ImportCatcher(ast.NodeVisitor):
                     self.trys[value] = item
                 self.visit(value)
                 # after the node has been recursed in to, remove the try node
-                if isinstance(value, ast.Try):
+                if isinstance(value, AST_TRY):
                     del self.trys[value]
 
     def visit_Import(self, node):
