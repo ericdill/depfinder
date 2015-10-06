@@ -28,8 +28,10 @@ del pyver
 del sys
 
 try:
+    # python 3
     AST_TRY = ast.Try
 except AttributeError:
+    # python 2.7
     AST_TRY = ast.TryExcept
 
 class ImportCatcher(ast.NodeVisitor):
@@ -59,11 +61,11 @@ class ImportCatcher(ast.NodeVisitor):
     def visit(self, node):
         # add the node to the try/except block to signify that
         # something potentially odd is going on in this import
-        if isinstance(node, ast.Try):
+        if isinstance(node, AST_TRY):
             self.trys[node] = node
         super().visit(node)
         # after the node has been recursed in to, remove the try node
-        if isinstance(node, ast.Try):
+        if isinstance(node, AST_TRY):
             del self.trys[node]
 
     def visit_Import(self, node):
