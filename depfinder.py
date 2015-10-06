@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function, division, absolute_import
-
+import json
 import ast
 import os
 from collections import defaultdict
@@ -237,3 +237,31 @@ def simple_import_search(path_to_source_code):
 
     mods = {k: sorted(list(v)) for k, v in mods.items() if v}
     return mods
+
+
+def notebook_path_to_dependencies(path_to_notebook):
+    """Helper function that turns a jupyter notebook into a list of dependencies
+
+    Parameters
+    ----------
+    path_to_notebook : str
+
+    Returns
+    -------
+    dict
+        Dict of dependencies keyed on
+        'builtin' - libraries built in to python
+        'required' - libraries that are found at the top level of your modules
+        'questionable' - libraries that are found inside try/except blocks
+        'relative' - libraries that are relative imports
+    """
+    nb = json.load(open('find_imports_to_test.ipynb'))
+    codeblocks = [''.join(cell['source']) for cell in nb['cells']
+                  if cell['cell_type'] == 'code']
+    all_deps = defaultdict(set)
+    for codeblock in codeblocks:
+        deps_dict = get_imported_libs(codeblock).describe()
+        for k, v in deps_dict.items():
+            all_deps[k].update(v)
+
+    return all_deps
