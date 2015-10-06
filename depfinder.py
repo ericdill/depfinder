@@ -32,7 +32,7 @@ try:
     AST_TRY = ast.Try
 except AttributeError:
     # python 2.7
-    AST_TRY = [ast.TryExcept, ast.TryFinally]
+    AST_TRY = tuple([ast.TryExcept, ast.TryFinally])
 
 class ImportCatcher(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
