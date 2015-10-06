@@ -9,12 +9,14 @@ import depfinder
 
 complex_imports = [
     {'targets':
-     {'questionable': ['molecule', 'atom', 'physicist']},
+     {'questionable': ['molecule', 'atom', 'physicist', 'chemist']},
      'code': """
 try:
     import molecule
 except ImportError:
     import atom
+else:
+    import chemist
 finally:
     import physicist"""
     },
