@@ -57,13 +57,14 @@ class ImportCatcher(ast.NodeVisitor):
         self.imports = []
         self.import_froms = []
         self.trys = {}
+        super(ImportCatcher, self).__init__()
 
     def visit(self, node):
         # add the node to the try/except block to signify that
         # something potentially odd is going on in this import
         if isinstance(node, AST_TRY):
             self.trys[node] = node
-        super().visit(node)
+        super(ImportCatcher, self).visit(node)
         # after the node has been recursed in to, remove the try node
         if isinstance(node, AST_TRY):
             del self.trys[node]
