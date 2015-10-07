@@ -8,5 +8,5 @@ setup(name='depfinder',
       description='Find all the imports in your library',
       url='http://github.com/ericdill/depfinder',
       platforms='Cross platform (Linux, Mac OSX, Windows)',
-      install_requires=['stdlib_list', 'setuptools', 'nbformat'],
+      install_requires=['stdlib_list', 'setuptools'],
 )
