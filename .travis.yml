@@ -23,7 +23,8 @@ before_install:
 install:
   - export GIT_FULL_HASH=`git rev-parse HEAD`
   - conda config --add channels ericdill
-  - conda create -n testenv --yes python=$TRAVIS_PYTHON_VERSION pytest stdlib-list
+  - conda config --set always_yes true
+  - conda create -n testenv python=$TRAVIS_PYTHON_VERSION pytest stdlib-list
   - echo $TRAVIS_PYTHON_VERSION
   - if [ $TRAVIS_PYTHON_VERSION == "33" ]; then
       pip install nbformat;
