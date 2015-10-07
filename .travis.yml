@@ -22,7 +22,7 @@ install:
   - conda create -n testenv python=$TRAVIS_PYTHON_VERSION pytest stdlib-list
   - source activate testenv
   - echo $TRAVIS_PYTHON_VERSION
-  - if [ $TRAVIS_PYTHON_VERSION == "33" ]; then
+  - if [ $TRAVIS_PYTHON_VERSION == "3.3" ]; then
       pip install nbformat;
     else
       conda install nbformat;
