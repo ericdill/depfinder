@@ -9,50 +9,56 @@
 depfinder
 ---------
 Find all the unique imports in your library, automatically, because who likes
-do it by hand?  ``depfinder`` uses the ` ast (Abstract Syntax Tree) module
+do it by hand?  ``depfinder`` uses the `ast (Abstract Syntax Tree) module
 <https://docs.python.org/2/library/ast.html>`_ `(and more docs)
 <https://greentreesnakes.readthedocs.org/en/latest/>`_ to find all ``ast.Import``
 and ``ast.ImportFrom`` nodes.  These ``ast.Import`` and ``ast.ImportFrom`` nodes
 are then grouped according to the following categories, in order of decreasing
 precedence:
 
-  - `relative`:
-    - the import is a relative import from within the same library
-  - `builtin`:
-    - the import is built into the standard library.
-  - `questionable`:
-    - the import occurs inside of an ``ast.Try`` (``ast.TryExcept`` on py27)
-      node.
-  - `required`:
-    - the import occurs at the top level of the module and will get executed
-      when the module is imported.
+- ``relative``. The import is a relative import from within the same library
+
+- ``builtin``. The import is built into the standard library.
+
+- ``questionable``.The import occurs inside of an ``ast.Try`` (``ast.TryExcept`` on py27) node.
+
+- ``required``. The import occurs at the top level of the module and will get executed when the
+module is imported.
+
 
 There are only a few functions in ``depfinder``.
 
-  - **get_imported_libs**
-    Accepts code (as a string) as input and returns all imported libraries in
-    that code snippet in a dictionary keyed on the categories listed above
-    (``relative``, ``builtin``, ``questionable``, ``required``)
-  - **iterate_over_library**
-    Accepts ``path_to_source_code`` as input and yields a tuple of
-    (module_name, full_path_to_module, depfinder.ImportCatcher object) for each
-    python file that was recursively found inside of `path_to_source_code`.
-  - **simple_import_search**
-    Accepts ``path_to_source_code`` as input and aggregates the output of
-    ``iterate_over_library`` into a dictionary keyed on the categories listed
-    above (``relative``, ``builtin``, ``questionable``, ``required``)
-  - **notebook_path_to_dependencies**
-    Accepts a path to a v4 IPython notebook, parses all code cells with
-    **get_imported_libs** and aggregates all found imports into a dictionary
-    keyed on the categories listed above (``relative``, ``builtin``,
-    ``questionable``, ``required``)
+- ``get_imported_libs``
+
+  Accepts code (as a string) as input and returns all imported libraries in
+  that code snippet in a dictionary keyed on the categories listed above
+  (relative, builtin, questionable, required)
+
+- ``iterate_over_library``
+
+  Accepts ``path_to_source_code`` as input and yields a tuple of
+  (module_name, full_path_to_module, depfinder.ImportCatcher object) for each
+  python file that was recursively found inside of ``path_to_source_code``.
+
+- ``simple_import_search``
+
+  Accepts ``path_to_source_code`` as input and aggregates the output of
+  ``iterate_over_library`` into a dictionary keyed on the categories listed
+  above (``relative``, ``builtin``, ``questionable``, ``required``)
+
+- ``notebook_path_to_dependencies``
+
+  Accepts a path to a v4 IPython notebook, parses all code cells with
+  **get_imported_libs** and aggregates all found imports into a dictionary
+  keyed on the categories listed above (``relative``, ``builtin``,
+  ``questionable``, ``required``)
 
 
 Installation
 ------------
 
 ``depfinder`` is not yet on pypi. It is tested against Python 2.7, 3.3, 3.4 and
-3.5. It is available via github. For now, clone it from https://github.com/ericdill/depfinder and install it.
+3.5. It is available via github. For now, clone it from https://github.com/ericdill/depfinder and install it. ::
 
     git clone git@github.com:ericdill/depfinder
     cd depfinder
@@ -78,15 +84,16 @@ Usage
 
     import depfinder
     code = """
-import numpy
-try:
-    import PyQt4
-except ImportError:
+    import numpy
+    try:
+        import PyQt4
+    except ImportError:
     import PyQt5"""
     deps = depfinder.get_imported_libs(code)
     print(deps.describe())
 
 **output** ::
+
     {'questionable': {'PyQt4', 'PyQt5'}, 'required': {'numpy'}}
 
 ``iterate_over_library``
@@ -105,7 +112,6 @@ except ImportError:
         print(catcher.describe())
 
 **output** ::
-
 
     ....
     module_name = setup
