@@ -2,6 +2,8 @@
     :target: https://travis-ci.org/ericdill/depfinder
 .. image:: http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=master
     :target: http://codecov.io/github/ericdill/depfinder?branch=master
+.. image:: https://coveralls.io/repos/ericdill/depfinder/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/ericdill/depfinder?branch=master
 
 
 depfinder
