@@ -20,13 +20,13 @@ install:
   - conda config --add channels ericdill
   - conda config --set always_yes true
   - conda create -n testenv python=$TRAVIS_PYTHON_VERSION pytest stdlib-list
+  - source activate testenv
   - echo $TRAVIS_PYTHON_VERSION
   - if [ $TRAVIS_PYTHON_VERSION == "33" ]; then
       pip install nbformat;
     else
       conda install nbformat;
     fi;
-  - source activate testenv
   - pip install codecov pytest-cov coveralls
   - python setup.py install
 
