@@ -7,9 +7,6 @@ matrix:
     - python: 3.3
     - python: 3.4
     - python: 3.5
-    - python: nightly
-  allow_failures:
-    - python: nightly
 
 before_install:
   # - wget http://repo.continuum.io/miniconda/Miniconda3-3.5.5-Linux-x86_64.sh -O miniconda.sh
