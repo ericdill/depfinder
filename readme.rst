@@ -16,30 +16,36 @@ and ``ast.ImportFrom`` nodes.  These ``ast.Import`` and ``ast.ImportFrom`` nodes
 are then grouped according to the following categories, in order of decreasing
 precedence:
 
-  - `relative`: the import is a relative import from within the same library
-  - `builtin`: the import is built into the standard library.
-  - `questionable`: the import occurs inside of an ``ast.Try`` (``ast.TryExcept`` on py27)
-    node.
-  - `required`: the import occurs at the top level of the module and will get
-    executed when the module is imported.
+  - `relative`:
+    - the import is a relative import from within the same library
+  - `builtin`:
+    - the import is built into the standard library.
+  - `questionable`:
+    - the import occurs inside of an ``ast.Try`` (``ast.TryExcept`` on py27)
+      node.
+  - `required`:
+    - the import occurs at the top level of the module and will get executed
+      when the module is imported.
 
 There are only a few functions in ``depfinder``.
 
-  - **get_imported_libs**: Accepts code (as a string) as input and returns all
-      imported libraries in that code snippet in a dictionary keyed on the
-      categories listed above (``relative``, ``builtin``, ``questionable``,
-      ``required``)
-  - **iterate_over_library**: Accepts ``path_to_source_code`` as input and yields a
-      tuple of (module_name, full_path_to_module, depfinder.ImportCatcher object)
-      for each python file that was recursively found inside of `path_to_source_code`.
-  - **simple_import_search**: Accepts ``path_to_source_code`` as input and
-      aggregates the output of ``iterate_over_library`` into a dictionary keyed
-      on the categories listed above (``relative``, ``builtin``, ``questionable``,
-      ``required``)
-  - **notebook_path_to_dependencies**: Accepts a path to a v4 IPython notebook,
-      parses all code cells with **get_imported_libs** and aggregates all found
-      imports into a dictionary keyed on the categories listed above
-      (``relative``, ``builtin``, ``questionable``, ``required``)
+  - **get_imported_libs**
+    Accepts code (as a string) as input and returns all imported libraries in
+    that code snippet in a dictionary keyed on the categories listed above
+    (``relative``, ``builtin``, ``questionable``, ``required``)
+  - **iterate_over_library**
+    Accepts ``path_to_source_code`` as input and yields a tuple of
+    (module_name, full_path_to_module, depfinder.ImportCatcher object) for each
+    python file that was recursively found inside of `path_to_source_code`.
+  - **simple_import_search**
+    Accepts ``path_to_source_code`` as input and aggregates the output of
+    ``iterate_over_library`` into a dictionary keyed on the categories listed
+    above (``relative``, ``builtin``, ``questionable``, ``required``)
+  - **notebook_path_to_dependencies**
+    Accepts a path to a v4 IPython notebook, parses all code cells with
+    **get_imported_libs** and aggregates all found imports into a dictionary
+    keyed on the categories listed above (``relative``, ``builtin``,
+    ``questionable``, ``required``)
 
 
 Installation
