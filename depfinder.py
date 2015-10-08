@@ -29,10 +29,17 @@ del sys
 
 try:
     # python 3
-    AST_TRY = ast.Try
+    AST_TRY = [ast.Try]
 except AttributeError:
     # python 2.7
-    AST_TRY = tuple([ast.TryExcept, ast.TryFinally])
+    AST_TRY = [ast.TryExcept, ast.TryFinally]
+
+# this AST_QUESTIONABLE list comprises the various ways an import can be weird
+# 1. inside a try/except block
+# 2. inside a function
+# 3. inside a class
+AST_QUESTIONABLE = tuple(list(AST_TRY) + [ast.FunctionDef, ast.ClassDef])
+del AST_TRY
 
 class ImportCatcher(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
@@ -56,18 +63,29 @@ class ImportCatcher(ast.NodeVisitor):
         self.relative_modules = set()
         self.imports = []
         self.import_froms = []
-        self.trys = {}
+        self.sketchy_nodes = {}
         super(ImportCatcher, self).__init__()
 
     def visit(self, node):
+        """Recursively visit all ast nodes.
+
+        Look for Import and ImportFrom nodes. Classify them as being imports
+        that are built in, relative, required or questionable. Qustionable
+        imports are those that occur within the context of a try/except block, a
+        function definition or a class definition.
+
+        Parameters
+        ----------
+        node : ast.AST
+            The node to start the recursion
+        """
         # add the node to the try/except block to signify that
         # something potentially odd is going on in this import
-        if isinstance(node, AST_TRY):
-            self.trys[node] = node
+        if isinstance(node, AST_QUESTIONABLE):
+            self.sketchy_nodes[node] = node
         super(ImportCatcher, self).visit(node)
         # after the node has been recursed in to, remove the try node
-        if isinstance(node, AST_TRY):
-            del self.trys[node]
+        self.sketchy_nodes.pop(node, None)
 
     def visit_Import(self, node):
         """Executes when an ast.Import node is encountered
@@ -115,7 +133,7 @@ class ImportCatcher(ast.NodeVisitor):
             return
 
         # see if we are in a try block
-        if self.trys:
+        if self.sketchy_nodes:
             self.sketchy_modules.add(node_name)
             return
 
