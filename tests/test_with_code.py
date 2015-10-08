@@ -10,8 +10,7 @@ import depfinder
 complex_imports = [
     {'targets':
      {'questionable': ['atom', 'chemist', 'molecule', 'physicist']},
-     'code': """
-try:
+     'code': """try:
     import molecule
 except ImportError:
     import atom
@@ -27,8 +26,38 @@ try:
     import os
 except ImportError:
     # why would you put this in a try block??
-    pass"""}
+    pass"""},
+    {'targets': {'required': ['toplevel', 'toplevelfrom'],
+                 'questionable': ['function_inside_class',
+                                  'function_inside_class_from',
+                                  'inside_class',
+                                  'inside_class_from',
+                                  'inside_function',
+                                  'inside_function_from'],
+                 'relative': ['relative_function',
+                              'relative_function_inside_class',
+                              'relative_inside_class'],
+                 'builtin': ['os', 'pprint']},
+     'code': """
+from toplevelfrom import some_function
+import toplevel
+def function():
+    import inside_function
+    from inside_function_from import another_function
+    from .relative_function import random_function
+class Class:
+    import inside_class
+    from inside_class_from import some_function
+    from .relative_inside_class import a_third_function
+    import os
+    def __init__(self):
+        import function_inside_class
+        from function_inside_class_from import some_function
+        from .relative_function_inside_class import a_third_function
+        import pprint
+"""},
 ]
+
 
 simple_imports = [
     {'targets': {'required': ['foo']},
