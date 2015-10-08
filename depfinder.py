@@ -284,10 +284,11 @@ def notebook_path_to_dependencies(path_to_notebook):
     -------
     dict
         Dict of dependencies keyed on
-        'builtin' - libraries built in to python
-        'required' - libraries that are found at the top level of your modules
-        'questionable' - libraries that are found inside try/except blocks
-        'relative' - libraries that are relative imports
+
+        - 'builtin' - libraries built in to python
+        - 'required' - libraries that are found at the top level of your modules
+        - 'questionable' - libraries that are found inside try/except blocks
+        - 'relative' - libraries that are relative imports
 
     Examples
     --------

@@ -36,8 +36,12 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
     'numpydoc',
-
+    'sphinx.ext.extlinks',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.napoleon',
 ]
+# map to the standard library
+intersphinx_mapping = {'python': ('https://docs.python.org/3.4', None)}
 numpydoc_show_class_members = False
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
