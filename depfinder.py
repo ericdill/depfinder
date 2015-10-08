@@ -47,9 +47,11 @@ class ImportCatcher(ast.NodeVisitor):
     Attributes
     ----------
     required_modules : list
-        The list of imports that were found outside of try/except blocks
+        The list of imports that were found outside of try/except blocks,
+        function definitions and class definitions
     sketchy_modules : list
-        The list of imports that were found inside of try/except blocks
+        The list of imports that were found inside of try/except blocks,
+        function definitions and class definitions
     imports : list
         The list of all ast.Import nodes in the AST
     import_froms : list
