@@ -1,4 +1,4 @@
-`docs <ericdill.github.io/depfinder>`_
+`docs <https://ericdill.github.io/depfinder>`_
 
 .. image:: https://travis-ci.org/ericdill/depfinder.svg?branch=master
     :target: https://travis-ci.org/ericdill/depfinder
