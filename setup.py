@@ -9,4 +9,5 @@ setup(name='depfinder',
       url='http://github.com/ericdill/depfinder',
       platforms='Cross platform (Linux, Mac OSX, Windows)',
       install_requires=['stdlib_list', 'setuptools'],
+      license='GPLv3',
 )
