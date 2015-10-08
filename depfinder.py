@@ -182,16 +182,21 @@ def get_imported_libs(code):
     Returns
     -------
     ImportCatcher
+        The ImportCatcher is the object in `depfinder` that contains all the
+        information regarding which imports were found where.  You will most
+        likely be interested in calling the describe() function on this return
+        value.
 
     Examples
     --------
-    >>> import depfinder
     >>> depfinder.get_imported_libs('from foo import bar')
     {'required': {'foo'}, 'questionable': set()}
     >>> with open('depfinder.py') as f:
             code = f.read()
             imports = depfinder.get_imported_libs(code)
             print(imports.describe())
+    {'builtin': {'__future__', 'json', 'ast', 'os', 'sys', 'collections'},
+     'required': {'stdlib_list'}}
     """
     tree = ast.parse(code)
     catcher = ImportCatcher()
@@ -200,7 +205,12 @@ def get_imported_libs(code):
 
 
 def iterate_over_library(path_to_source_code):
-    """Helper function to recurse into a library and find imports in .py files
+    """Helper function to recurse into a library and find imports in .py files.
+
+    This allows the user to apply filters on the user-side to exclude imports
+    based on their file names.
+    `conda-skeletor <https://github.com/ericdill/conda-skeletor>`_
+    makes heavy use of this function
 
     Parameters
     ----------
@@ -214,7 +224,6 @@ def iterate_over_library(path_to_source_code):
     for parent, folders, files in os.walk(path_to_source_code):
         for file in files:
             if file.endswith('.py'):
-                print('.', end='')
                 full_file_path = os.path.join(parent, file)
                 with open(full_file_path, 'r') as f:
                     code = f.read()
@@ -234,6 +243,25 @@ def simple_import_search(path_to_source_code):
     dict
         The list of all imported modules, sorted according to the keys listed
         in the docstring of depfinder.ImportCatcher.describe()
+
+    Examples
+    --------
+    >>> depfinder.simple_import_search('/path/to/depfinder/source')
+    {'builtin': ['__future__',
+                 'ast',
+                 'collections',
+                 'json',
+                 'os',
+                 'shlex',
+                 'sys',
+                 'tempfile'],
+     'required': ['depfinder',
+                  'nbformat',
+                  'pytest',
+                  'setuptools',
+                  'sphinx_rtd_theme',
+                  'stdlib_list',
+                  'test_with_code']}
     """
     mods = defaultdict(set)
     catchers = iterate_over_library(path_to_source_code)
@@ -260,6 +288,11 @@ def notebook_path_to_dependencies(path_to_notebook):
         'required' - libraries that are found at the top level of your modules
         'questionable' - libraries that are found inside try/except blocks
         'relative' - libraries that are relative imports
+
+    Examples
+    --------
+    >>> depfinder.notebook_path_to_dependencies('depfinder_usage.ipynb')
+    {'builtin': ['os', 'pprint'], 'required': ['depfinder']}
     """
     nb = json.load(open(path_to_notebook))
     codeblocks = [''.join(cell['source']) for cell in nb['cells']
