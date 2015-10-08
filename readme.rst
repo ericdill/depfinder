@@ -1,3 +1,7 @@
+`docs <ericdill.github.io/depfinder>`_
+
+`example notebook <https://github.com/ericdill/depfinder/blob/master/depfinder_usage.ipynb>`_
+
 .. image:: https://travis-ci.org/ericdill/depfinder.svg?branch=master
     :target: https://travis-ci.org/ericdill/depfinder
 .. image:: http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=master
@@ -10,7 +14,7 @@ depfinder
 ---------
 Find all the unique imports in your library, automatically, because who likes
 do it by hand?  ``depfinder`` uses the `ast (Abstract Syntax Tree) module
-<https://docs.python.org/2/library/ast.html>`_ `(and more docs)
+<https://docs.python.org/2/library/ast.html>`_ (and `more docs)
 <https://greentreesnakes.readthedocs.org/en/latest/>`_ to find all ``ast.Import``
 and ``ast.ImportFrom`` nodes.  These ``ast.Import`` and ``ast.ImportFrom`` nodes
 are then grouped according to the following categories, in order of decreasing
