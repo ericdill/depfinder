@@ -48,8 +48,15 @@ according to the following categories, in order of decreasing precedence:
 Installation
 ============
 
-``depfinder`` is not yet on pypi. It is tested against Python 2.7, 3.3, 3.4 and
-3.5. It is available via github. For now, clone it from https://github.com/ericdill/depfinder and install it. ::
+``depfinder`` is on pypi. It is tested against Python 2.7, 3.3, 3.4 and 3.5.  ::
+
+    pip install depfinder
+
+It is available via conda. ::
+
+    conda install -c ericdill depfinder
+
+It is also via github. ::
 
     git clone git@github.com:ericdill/depfinder
     cd depfinder
@@ -60,12 +67,16 @@ or ::
     pip install https://github.com/ericdill/depfinder/zipball/master#egg=depfinder
 
 
+It has one dependency, `stdlib_list
+<https://github.com/jackmaney/python-stdlib-list>`_, which is where I get the
+list of libraries built in to the standard library. ``stdlib-list`` can be
+installed via pip ::
 
-It has one dependency:
-`stdlib_list <https://github.com/jackmaney/python-stdlib-list>`_, which is where
-I get the list of libraries built in to the standard library. ``stdlib-list``
-can be installed via pip (``pip install stdlib-list``) or conda
-(``conda install -c ericdill stdlib-list``).
+    pip install stdlib-list
+
+or conda ::
+
+    conda install -c ericdill stdlib-list
 
 Using depfinder
 ===============
