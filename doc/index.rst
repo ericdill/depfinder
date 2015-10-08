@@ -11,25 +11,11 @@ Python source code.
 
 `usage examples <https://github.com/ericdill/depfinder/blob/master/depfinder_usage.ipynb>`_
 
-
-
-
-Contents:
-
-.. toctree::
-   :maxdepth: 2
-
 .. currentmodule:: depfinder
 .. autofunction:: get_imported_libs
-.. autofunction:: simple_import_search
-.. autofunction:: notebook_path_to_dependencies
 .. autofunction:: iterate_over_library
+.. autofunction:: simple_import_search
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+IPython/Jupyter Notebook support
+================================
+.. autofunction:: notebook_path_to_dependencies
