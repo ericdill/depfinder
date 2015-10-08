@@ -1,12 +1,19 @@
+`docs <ericdill.github.io/depfinder>`_
+
+.. image:: https://travis-ci.org/ericdill/depfinder.svg?branch=master
+    :target: https://travis-ci.org/ericdill/depfinder
+.. image:: http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=master
+    :target: http://codecov.io/github/ericdill/depfinder?branch=master
+.. image:: https://coveralls.io/repos/ericdill/depfinder/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/ericdill/depfinder?branch=master
+
 .. depfinder documentation master file, created by
    sphinx-quickstart on Wed Oct  7 22:23:01 2015.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. py:module:: ast
-
-Welcome to depfinder's documentation!
-=====================================
+depfinder
+=========
 Find all the unique imports in your library, automatically, because who likes
 do it by hand?  `depfinder <https://github.com/ericdill/depfinder>`_ uses the `ast
 <https://docs.python.org/2/library/ast.html>`_ (Abstract Syntax Tree) module
