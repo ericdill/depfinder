@@ -1,5 +1,7 @@
 `docs <https://ericdill.github.io/depfinder>`_
 
+`github <https://github.com/ericdill/depfinder>`_
+
 .. image:: http://mybinder.org/badge.svg :target: http://mybinder.org/repo/ericdill/depfinder
 
 .. image:: https://travis-ci.org/ericdill/depfinder.svg?branch=master
