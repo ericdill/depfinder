@@ -341,9 +341,18 @@ Tool for inspecting the dependencies of your python project.
     if os.path.isdir(file_or_dir):
         pprint(simple_import_search(file_or_dir))
     elif os.path.isfile(file_or_dir):
-        mod, path, catcher = parse_file(file_or_dir)
-        mods = defaultdict(set)
-        for k, v in catcher.describe().items():
-            mods[k].update(v)
+        if file_or_dir.endswith('ipynb'):
+            deps = notebook_path_to_dependencies(file_or_dir)
+            pprint(deps)
+        elif file_or_dir.endswith('.py'):
+            mod, path, catcher = parse_file(file_or_dir)
+            mods = defaultdict(set)
+            for k, v in catcher.describe().items():
+                mods[k].update(v)
 
-        pprint({k: sorted(list(v)) for k, v in mods.items() if v})
+            pprint({k: sorted(list(v)) for k, v in mods.items() if v})
+        else:
+            raise RuntimeError("I do not know what to do with the file %s" %
+                               file_or_dir)
+    else:
+        raise RuntimeError("I do not know what to do with %s" % file_or_dir)
