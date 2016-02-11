@@ -10,4 +10,5 @@ setup(name='depfinder',
       platforms='Cross platform (Linux, Mac OSX, Windows)',
       install_requires=['stdlib_list', 'setuptools'],
       license='GPLv3',
+      entry_points = {"console_scripts": ['depfinder = depfinder:cli']},
 )

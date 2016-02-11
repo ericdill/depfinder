@@ -20,6 +20,7 @@ import ast
 import os
 from collections import defaultdict
 from stdlib_list import stdlib_list
+from pprint import pprint
 
 import sys
 pyver = '%s.%s' % (sys.version_info.major, sys.version_info.minor)
@@ -204,6 +205,26 @@ def get_imported_libs(code):
     return catcher
 
 
+def parse_file(python_file):
+    """Parse a single python file
+
+    Parameters
+    ----------
+    python_file : str
+        Path to the python file to parse for imports
+
+    Returns
+    -------
+    catchers : tuple
+        Yields tuples of (module_name, full_path_to_module, ImportCatcher)
+    """
+    with open(python_file, 'r') as f:
+        code = f.read()
+    catcher = get_imported_libs(code)
+    mod_name = os.path.split(python_file)[:-3]
+    return mod_name, python_file, catcher
+
+
 def iterate_over_library(path_to_source_code):
     """Helper function to recurse into a library and find imports in .py files.
 
@@ -222,13 +243,10 @@ def iterate_over_library(path_to_source_code):
         Yields tuples of (module_name, full_path_to_module, ImportCatcher)
     """
     for parent, folders, files in os.walk(path_to_source_code):
-        for file in files:
-            if file.endswith('.py'):
-                full_file_path = os.path.join(parent, file)
-                with open(full_file_path, 'r') as f:
-                    code = f.read()
-                catcher = get_imported_libs(code)
-                yield (file[:-3], full_file_path, catcher)
+        for f in files:
+            if f.endswith('.py'):
+                full_file_path = os.path.join(parent, f)
+                yield parse_file(full_file_path)
 
 
 def simple_import_search(path_to_source_code):
@@ -306,3 +324,26 @@ def notebook_path_to_dependencies(path_to_notebook):
 
     all_deps = {k: sorted(list(v)) for k, v in all_deps.items()}
     return all_deps
+
+
+from argparse import ArgumentParser
+
+def cli():
+    p = ArgumentParser(
+        description="""
+Tool for inspecting the dependencies of your python project.
+""",
+    )
+    p.add_argument('file_or_directory')
+
+    args = p.parse_args()
+    file_or_dir = args.file_or_directory
+    if os.path.isdir(file_or_dir):
+        pprint(simple_import_search(file_or_dir))
+    elif os.path.isfile(file_or_dir):
+        mod, path, catcher = parse_file(file_or_dir)
+        mods = defaultdict(set)
+        for k, v in catcher.describe().items():
+            mods[k].update(v)
+
+        pprint({k: sorted(list(v)) for k, v in mods.items() if v})
