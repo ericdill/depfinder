@@ -1,5 +1,6 @@
 from setuptools import setup
-VERSION = 'v1.0.0'
+VERSION = '1.1.0dev'
+
 setup(name='depfinder',
       version=VERSION,
       author='Eric Dill',
