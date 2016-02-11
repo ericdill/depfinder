@@ -28,7 +28,7 @@ install:
       conda install nbformat;
     fi;
   - pip install codecov pytest-cov coveralls
-  - python setup.py install
+  - python setup.py develop
 
 script:
   - ./test
