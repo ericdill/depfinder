@@ -19,8 +19,9 @@ import json
 import ast
 import os
 from collections import defaultdict
+
+import yaml
 from stdlib_list import stdlib_list
-from pprint import pprint
 
 import sys
 pyver = '%s.%s' % (sys.version_info.major, sys.version_info.minor)
@@ -338,19 +339,24 @@ Tool for inspecting the dependencies of your python project.
 
     args = p.parse_args()
     file_or_dir = args.file_or_directory
+
+    def dump_deps(deps):
+        print(yaml.dump(deps, default_flow_style=False))
+
     if os.path.isdir(file_or_dir):
-        pprint(simple_import_search(file_or_dir))
+        deps = simple_import_search(file_or_dir)
+        dump_deps(deps)
     elif os.path.isfile(file_or_dir):
         if file_or_dir.endswith('ipynb'):
             deps = notebook_path_to_dependencies(file_or_dir)
-            pprint(deps)
+            dump_deps(deps)
         elif file_or_dir.endswith('.py'):
             mod, path, catcher = parse_file(file_or_dir)
             mods = defaultdict(set)
             for k, v in catcher.describe().items():
                 mods[k].update(v)
-
-            pprint({k: sorted(list(v)) for k, v in mods.items() if v})
+            deps = {k: sorted(list(v)) for k, v in mods.items() if v}
+            dump_deps(deps)
         else:
             raise RuntimeError("I do not know what to do with the file %s" %
                                file_or_dir)
