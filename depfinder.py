@@ -200,6 +200,9 @@ def get_imported_libs(code):
     {'builtin': {'__future__', 'json', 'ast', 'os', 'sys', 'collections'},
      'required': {'stdlib_list'}}
     """
+    # skip ipython notebook lines
+    code = '\n'.join([line for line in code.split('\n')
+                      if not line.startswith('%')])
     tree = ast.parse(code)
     catcher = ImportCatcher()
     catcher.visit(tree)
