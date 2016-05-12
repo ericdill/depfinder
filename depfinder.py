@@ -345,7 +345,6 @@ Tool for inspecting the dependencies of your python project.
                          "Defaults to %(default)s"))
 
     args = p.parse_args()
-    print('args are {}'.format(args))
     file_or_dir = args.file_or_directory
 
     def dump_deps(deps):
