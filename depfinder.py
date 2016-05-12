@@ -339,7 +339,12 @@ def cli():
 Tool for inspecting the dependencies of your python project.
 """,
     )
-    p.add_argument('file_or_directory')
+    p.add_argument(
+        'file_or_directory',
+        help=("Valid options are a single python file, a single jupyter "
+              "(ipython) notebook or a directory of files that include "
+              "python files")
+    )
     p.add_argument('-y', '--yaml', action='store_true', default=False,
                    help=("Output in syntactically valid yaml when true. "
                          "Defaults to %(default)s"))
