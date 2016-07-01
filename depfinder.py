@@ -19,6 +19,7 @@ import json
 import ast
 import os
 from collections import defaultdict
+from pprint import pprint
 
 import yaml
 from stdlib_list import stdlib_list
@@ -338,13 +339,24 @@ def cli():
 Tool for inspecting the dependencies of your python project.
 """,
     )
-    p.add_argument('file_or_directory')
+    p.add_argument(
+        'file_or_directory',
+        help=("Valid options are a single python file, a single jupyter "
+              "(ipython) notebook or a directory of files that include "
+              "python files")
+    )
+    p.add_argument('-y', '--yaml', action='store_true', default=False,
+                   help=("Output in syntactically valid yaml when true. "
+                         "Defaults to %(default)s"))
 
     args = p.parse_args()
     file_or_dir = args.file_or_directory
 
     def dump_deps(deps):
-        print(yaml.dump(deps, default_flow_style=False))
+        if args.yaml:
+            print(yaml.dump(deps, default_flow_style=False))
+        else:
+            pprint(deps)
 
     if os.path.isdir(file_or_dir):
         deps = simple_import_search(file_or_dir)
