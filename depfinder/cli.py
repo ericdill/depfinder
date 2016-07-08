@@ -16,7 +16,12 @@
 
 from __future__ import absolute_import, division, print_function
 from argparse import ArgumentParser
-
+import logging
+import os
+from pprint import pprint
+import yaml
+import sys
+logger = logging.getLogger('depfinder')
 
 from .main import (simple_import_search, notebook_path_to_dependencies,
                    parse_file)
@@ -47,27 +52,72 @@ Tool for inspecting the dependencies of your python project.
         default=False,
         help="Print out the version of depfinder and exit"
     )
+    p.add_argument(
+        '--no-remap',
+        action='store_true',
+        default=False,
+        help=("Do not remap the names of the imported libraries to their "
+              "proper conda name")
+    )
+    p.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        default=False,
+        help="Enable debug level logging info from depfinder"
+    )
+    p.add_argument(
+        '-q',
+        '--quiet',
+        action='store_true',
+        default=False,
+        help="Turn off all logging from depfinder"
+    )
     args = p.parse_args()
+    if args.verbose and args.quiet:
+        print("Come on. You can't enable verbose and quiet and think "
+              "something sensible will happen....")
+        sys.exit(1)
+    loglevel = logging.INFO
+    if args.quiet:
+        loglevel = logging.ERROR
+    elif args.verbose:
+        loglevel = logging.DEBUG
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(loglevel)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    stream_handler.setFormatter(formatter)
+    logger.setLevel(loglevel)
+    logger.addHandler(stream_handler)
+
     if args.version:
         from . import __version__
         print(__version__)
+        sys.exit(0)
 
     file_or_dir = args.file_or_directory
 
     def dump_deps(deps):
         if args.yaml:
+            deps = {k: list(v) for k, v in deps.items()}
             print(yaml.dump(deps, default_flow_style=False))
         else:
             pprint(deps)
 
     if os.path.isdir(file_or_dir):
+        logger.debug("Treating {} as a directory and recursively searching "
+                     "it for python files".format(file_or_dir))
         deps = simple_import_search(file_or_dir)
         dump_deps(deps)
     elif os.path.isfile(file_or_dir):
         if file_or_dir.endswith('ipynb'):
+            logger.debug("Treating {} as a jupyter notebook and searching "
+                         "all of its code cells".format(file_or_dir))
             deps = notebook_path_to_dependencies(file_or_dir)
             dump_deps(deps)
         elif file_or_dir.endswith('.py'):
+            logger.debug("Treating {} as a single python file"
+                         "".format(file_or_dir))
             mod, path, catcher = parse_file(file_or_dir)
             mods = defaultdict(set)
             for k, v in catcher.describe().items():

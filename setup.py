@@ -1,4 +1,4 @@
-from setuptools import setup, find_packagtes
+from setuptools import setup, find_packages
 import versioneer
 
 required = open('requirements.txt').read().split('\n')

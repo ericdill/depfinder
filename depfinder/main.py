@@ -19,15 +19,17 @@ import ast
 import os
 from collections import defaultdict
 from pprint import pprint
-
+import logging
 import yaml
+import sys
+import copy
 from stdlib_list import stdlib_list
 
-import sys
+logger = logging.getLogger('depfinder')
+
 pyver = '%s.%s' % (sys.version_info.major, sys.version_info.minor)
 builtin_modules = stdlib_list(pyver)
 del pyver
-del sys
 
 try:
     # python 3
@@ -222,6 +224,11 @@ def parse_file(python_file):
     catchers : tuple
         Yields tuples of (module_name, full_path_to_module, ImportCatcher)
     """
+    global PACKAGE_NAME
+    if PACKAGE_NAME is None:
+        PACKAGE_NAME = os.path.basename(python_file).split('.')[0]
+        logger.debug("Setting PACKAGE_NAME global variable to {}"
+                     "".format(PACKAGE_NAME))
     with open(python_file, 'r') as f:
         code = f.read()
     catcher = get_imported_libs(code)
@@ -246,6 +253,11 @@ def iterate_over_library(path_to_source_code):
     catchers : tuple
         Yields tuples of (module_name, full_path_to_module, ImportCatcher)
     """
+    global PACKAGE_NAME
+    if PACKAGE_NAME is None:
+        PACKAGE_NAME = os.path.basename(path_to_source_code).split('.')[0]
+        logger.debug("Setting PACKAGE_NAME global variable to {}"
+                     "".format(PACKAGE_NAME))
     for parent, folders, files in os.walk(path_to_source_code):
         for f in files:
             if f.endswith('.py'):
@@ -253,12 +265,14 @@ def iterate_over_library(path_to_source_code):
                 yield parse_file(full_file_path)
 
 
-def simple_import_search(path_to_source_code):
+def simple_import_search(path_to_source_code, remap=True):
     """Return all imported modules in all .py files in `path_to_source_code`
 
     Parameters
     ----------
     path_to_source_code : str
+    remap : bool, optional
+        Normalize the import names to be synonymous with their conda/pip names
 
     Returns
     -------
@@ -285,22 +299,27 @@ def simple_import_search(path_to_source_code):
                   'stdlib_list',
                   'test_with_code']}
     """
-    mods = defaultdict(set)
+    all_deps = defaultdict(set)
     catchers = iterate_over_library(path_to_source_code)
     for mod, path, catcher in catchers:
         for k, v in catcher.describe().items():
-            mods[k].update(v)
+            all_deps[k].update(v)
 
-    mods = {k: sorted(list(v)) for k, v in mods.items() if v}
-    return mods
+    all_deps = {k: sorted(list(v)) for k, v in all_deps.items() if v}
+    if remap:
+        return sanitize_deps(all_deps)
+    return all_deps
 
 
-def notebook_path_to_dependencies(path_to_notebook):
+def notebook_path_to_dependencies(path_to_notebook, remap=True):
     """Helper function that turns a jupyter notebook into a list of dependencies
 
     Parameters
     ----------
     path_to_notebook : str
+    remap : bool, optional
+        Normalize the import names to be synonymous with their conda/pip names
+
 
     Returns
     -------
@@ -327,4 +346,64 @@ def notebook_path_to_dependencies(path_to_notebook):
             all_deps[k].update(v)
 
     all_deps = {k: sorted(list(v)) for k, v in all_deps.items()}
+    if remap:
+        return sanitize_deps(all_deps)
     return all_deps
+
+PACKAGE_NAME = None
+
+_PACKAGE_MAPPING = {
+    'av': 'pyav',
+    'cv2': 'opencv',
+    'IPython': 'ipython',
+    'netCDF4': 'netcdf4',
+    'PIL': 'pillow',
+    'skimage': 'scikit-image',
+    'sklearn': 'scikit-learn',
+    'stdlib_list': 'stdlib-list',
+    'yaml': 'pyyaml',
+}
+
+_FAKE_PACKAGES = {
+    'matplotlib': {'mpl_toolkits'}
+}
+
+def sanitize_deps(deps_dict):
+    """
+    Helper function that takes the output of `notebook_path_to_dependencies`
+    or `simple_import_search` and turns normalizes the import names to be
+    synonymous with their conda/pip names
+
+    Parameters
+    ----------
+    deps_dict : dict
+        Output of `notebook_path_to_dependencies` or `simple_import_search`
+    Returns
+    -------
+    deps_dict : dict
+        If remap is True: Sanitized `deps_dict`
+        If remap is False: `deps_dict`
+    """
+    new_deps_dict = {}
+    list_of_possible_fakes = frozenset(*_FAKE_PACKAGES.values())
+    for k, packages_list in deps_dict.items():
+
+        pkgs = copy.copy(packages_list)
+        new_deps_dict[k] = set()
+        for pkg in pkgs:
+            # drop fake packages
+            if pkg in list_of_possible_fakes:
+                logger.debug("Ignoring {} from the list of imports. It is "
+                             "installed as part of another package. Set the "
+                             "`--no-remap` cli flag if you want to disable "
+                             "this".format(pkg))
+                continue
+            if pkg == PACKAGE_NAME:
+                logger.debug("Ignoring {} from the list of imports. It is "
+                             "the name of the package that we are trying to "
+                             "find the dependencies for. Set the `--no-remap` "
+                             "cli flag if you want to disable this.".format(pkg))
+                continue
+            new_deps_dict[k].add(pkg)
+
+    return new_deps_dict

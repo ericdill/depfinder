@@ -20,3 +20,6 @@ del get_versions
 
 from .main import (iterate_over_library, parse_file,
                    notebook_path_to_dependencies)
+
+import logging
+logger = logging.getLogger('depfinder')
