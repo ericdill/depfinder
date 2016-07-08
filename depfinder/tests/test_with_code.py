@@ -1,4 +1,4 @@
-import depfinder
+from depfinder import main
 
 # Testing spec:
 # - targets: dict
@@ -10,7 +10,8 @@ import depfinder
 complex_imports = [
     {'targets':
      {'questionable': ['atom', 'chemist', 'molecule', 'physicist']},
-     'code': """try:
+     'code': """
+try:
     import molecule
 except ImportError:
     import atom
@@ -91,14 +92,14 @@ class Initter:
 def test_imports():
     for simple_import in complex_imports + simple_imports:
         test_object = Initter(simple_import)
-        imports = depfinder.get_imported_libs(test_object.code)
+        imports = main.get_imported_libs(test_object.code)
         assert imports.describe() == test_object.targets
 
 
 def test_relative_imports():
     for rel in relative_imports:
         test_object = Initter(rel)
-        imports = depfinder.get_imported_libs(test_object.code)
+        imports = main.get_imported_libs(test_object.code)
         assert imports.describe() == test_object.targets
 
 
@@ -106,9 +107,9 @@ def test_for_smoke():
     """Do not validate the output of the functions, just make sure that calling
     them does not make depfinder blow up
     """
-    deps = list(depfinder.iterate_over_library('.'))
+    deps = list(main.iterate_over_library('.'))
     assert deps is not None
     assert str(deps) is not None
     assert repr(deps) is not None
     # hit the simple api
-    assert depfinder.simple_import_search('.') is not None
+    assert main.simple_import_search('.') is not None

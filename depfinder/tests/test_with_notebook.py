@@ -1,10 +1,10 @@
-import depfinder
+from depfinder.main import notebook_path_to_dependencies
 from nbformat import v4
-from test_with_code import complex_imports, relative_imports, simple_imports
 import pytest
 import tempfile
 import os
 from collections import defaultdict
+from .test_with_code import complex_imports, relative_imports, simple_imports
 
 @pytest.mark.parametrize("import_list_dict", [complex_imports, simple_imports,
                                               relative_imports])
@@ -21,7 +21,7 @@ def tester(import_list_dict):
             f.write(v4.writes(nb))
 
         # parse the notebook!
-        assert target == depfinder.notebook_path_to_dependencies(fname)
+        assert target == notebook_path_to_dependencies(fname)
 
         os.remove(fname)
 
@@ -50,7 +50,7 @@ def test_multiple_code_cells():
     print('temp file name = %s' % fname)
 
     # parse the notebook!
-    assert targets == depfinder.notebook_path_to_dependencies(fname)
+    assert targets == notebook_path_to_dependencies(fname)
 
     # note this might fail on windows
     # os.unlink(fname)
