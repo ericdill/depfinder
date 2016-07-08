@@ -10,5 +10,5 @@ def test_cli():
     dependencies_file = join(dirname(dirname(depfinder.__file__)),
                              'requirements.txt')
     print(output)
-    dependencies = set(open(dependencies_file, 'r').read().split('\n'))
+    dependencies = set([dep for dep in open(dependencies_file, 'r').read().split('\n') if dep])
     assert dependencies == set(eval(output)['required'])

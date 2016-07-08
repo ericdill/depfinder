@@ -405,6 +405,9 @@ def sanitize_deps(deps_dict):
                              "find the dependencies for. Set the `--no-remap` "
                              "cli flag if you want to disable this.".format(pkg))
                 continue
-            new_deps_dict[k].add(pkg)
+            pkg_to_add = _PACKAGE_MAPPING.get(pkg, pkg)
+            if pkg != pkg_to_add:
+                logger.debug("Renaming {} to {}".format(pkg, pkg_to_add))
+            new_deps_dict[k].add(pkg_to_add)
     new_deps_dict = {k: sorted(list(v)) for k, v in new_deps_dict.items()}
     return new_deps_dict

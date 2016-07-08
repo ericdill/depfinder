@@ -1,2 +1,2 @@
 pyyaml
-stdlib_list
+stdlib-list
