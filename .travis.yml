@@ -19,7 +19,7 @@ install:
   - export GIT_FULL_HASH=`git rev-parse HEAD`
   - conda config --add channels ericdill
   - conda config --set always_yes true
-  - conda create -n testenv python=$TRAVIS_PYTHON_VERSION pytest stdlib-list
+  - conda create -n testenv python=$TRAVIS_PYTHON_VERSION pytest stdlib-list coverage
   - source activate testenv
   - echo $TRAVIS_PYTHON_VERSION
   - if [ $TRAVIS_PYTHON_VERSION == "3.3" ]; then
@@ -27,12 +27,11 @@ install:
     else
       conda install nbformat;
     fi;
-  - pip install codecov pytest-cov coveralls
+  - pip install codecov
   - python setup.py develop
 
 script:
-  - ./test
+  - coverage run run_tests.py
 
 after_success:
   - codecov
-  - coveralls

@@ -1,2 +1,0 @@
-#!/bin/bash
-py.test tests --cov depfinder --cov-report html -sv

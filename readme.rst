@@ -1,15 +1,5 @@
-`docs <https://ericdill.github.io/depfinder>`_
 
-`github <https://github.com/ericdill/depfinder>`_
 
-.. image:: http://mybinder.org/badge.svg :target: http://mybinder.org/repo/ericdill/depfinder
-
-.. image:: https://travis-ci.org/ericdill/depfinder.svg?branch=master
-    :target: https://travis-ci.org/ericdill/depfinder
-.. image:: http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=master
-    :target: http://codecov.io/github/ericdill/depfinder?branch=master
-.. image:: https://coveralls.io/repos/ericdill/depfinder/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/ericdill/depfinder?branch=master
 
 .. depfinder documentation master file, created by
    sphinx-quickstart on Wed Oct  7 22:23:01 2015.
@@ -18,6 +8,36 @@
 
 depfinder
 =========
+
+.. image:: https://travis-ci.org/ericdill/depfinder.svg?branch=master
+   :target: https://travis-ci.org/ericdill/depfinder
+.. image:: http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=master
+   :target: http://codecov.io/github/ericdill/depfinder?branch=master
+
+- `docs <https://ericdill.github.io/depfinder>`_
+- `github repo <https://github.com/ericdill/depfinder>`_
+
+Using depfinder
+---------------
+::
+
+    $ depfinder depfinder.py
+    {'builtin': ['__future__',
+                 'argparse',
+                 'ast',
+                 'collections',
+                 'json',
+                 'os',
+                 'pprint',
+                 'sys'],
+     'required': ['stdlib_list', 'yaml']}
+
+`Also see this notebook <https://github.com/ericdill/depfinder/blob/master/depfinder_usage.ipynb>`_
+
+
+Description
+-----------
+
 Find all the unique imports in your library, automatically, because who likes
 do it by hand?  `depfinder <https://github.com/ericdill/depfinder>`_ uses the `ast
 <https://docs.python.org/2/library/ast.html>`_ (Abstract Syntax Tree) module
@@ -50,7 +70,7 @@ according to the following categories, in order of decreasing precedence:
     environment, or the module will not be importable.
 
 Installation
-============
+------------
 
 ``depfinder`` is on pypi. It is tested against Python 2.7, 3.3, 3.4 and 3.5.  ::
 
@@ -81,10 +101,6 @@ installed via pip ::
 or conda ::
 
     conda install -c ericdill stdlib-list
-
-Using depfinder
-===============
-`See this notebook <https://github.com/ericdill/depfinder/blob/master/depfinder_usage.ipynb>`_
 
 API
 ====
