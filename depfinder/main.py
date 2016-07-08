@@ -386,7 +386,7 @@ def sanitize_deps(deps_dict):
         If remap is False: `deps_dict`
     """
     new_deps_dict = {}
-    list_of_possible_fakes = frozenset(*_FAKE_PACKAGES.values())
+    list_of_possible_fakes = set([v for val in _FAKE_PACKAGES.values() for v in val])
     for k, packages_list in deps_dict.items():
 
         pkgs = copy.copy(packages_list)
@@ -406,5 +406,5 @@ def sanitize_deps(deps_dict):
                              "cli flag if you want to disable this.".format(pkg))
                 continue
             new_deps_dict[k].add(pkg)
-
+    new_deps_dict = {k: sorted(list(v)) for k, v in new_deps_dict.items()}
     return new_deps_dict
