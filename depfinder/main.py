@@ -365,7 +365,8 @@ _PACKAGE_MAPPING = {
 }
 
 _FAKE_PACKAGES = {
-    'matplotlib': {'mpl_toolkits'}
+    'matplotlib': {'mpl_toolkits'},
+    'pymongo': {'bson', 'gridfs'},
 }
 
 def sanitize_deps(deps_dict):
