@@ -45,7 +45,7 @@ except AttributeError:
 AST_QUESTIONABLE = tuple(list(AST_TRY) + [ast.FunctionDef, ast.ClassDef])
 del AST_TRY
 
-class ImportCatcher(ast.NodeVisitor):
+class ImportFinder(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
 
     Attributes
@@ -70,7 +70,7 @@ class ImportCatcher(ast.NodeVisitor):
         self.imports = []
         self.import_froms = []
         self.sketchy_nodes = {}
-        super(ImportCatcher, self).__init__()
+        super(ImportFinder, self).__init__()
 
     def visit(self, node):
         """Recursively visit all ast nodes.
@@ -89,7 +89,7 @@ class ImportCatcher(ast.NodeVisitor):
         # something potentially odd is going on in this import
         if isinstance(node, AST_QUESTIONABLE):
             self.sketchy_nodes[node] = node
-        super(ImportCatcher, self).visit(node)
+        super(ImportFinder, self).visit(node)
         # after the node has been recursed in to, remove the try node
         self.sketchy_nodes.pop(node, None)
 
@@ -206,9 +206,9 @@ def get_imported_libs(code):
     code = '\n'.join([line for line in code.split('\n')
                       if not line.startswith('%')])
     tree = ast.parse(code)
-    catcher = ImportCatcher()
-    catcher.visit(tree)
-    return catcher
+    import_finder = ImportFinder()
+    import_finder.visit(tree)
+    return import_finder
 
 
 def parse_file(python_file):
@@ -363,7 +363,6 @@ _PACKAGE_MAPPING = {
     'stdlib_list': 'stdlib-list',
     'yaml': 'pyyaml',
 }
-
 _FAKE_PACKAGES = {
     'matplotlib': {'mpl_toolkits'},
     'pymongo': {'bson', 'gridfs'},

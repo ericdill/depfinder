@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import, division, print_function
 from argparse import ArgumentParser
+from collections import defaultdict
 import logging
 import os
 from pprint import pprint
@@ -26,7 +27,8 @@ logger = logging.getLogger('depfinder')
 from .main import (simple_import_search, notebook_path_to_dependencies,
                    parse_file)
 
-def cli():
+
+def _init_parser():
     p = ArgumentParser(
         description="""
 Tool for inspecting the dependencies of your python project.
@@ -73,11 +75,18 @@ Tool for inspecting the dependencies of your python project.
         default=False,
         help="Turn off all logging from depfinder"
     )
+    return p
+
+
+def cli():
+    p = _init_parser()
     args = p.parse_args()
     if args.verbose and args.quiet:
-        print("Come on. You can't enable verbose and quiet and think "
-              "something sensible will happen....")
+        print("You have enabled both verbose mode (--verbose or -v) and quiet "
+              "mode (-q or --quiet).  Please pick one. Exiting...")
         sys.exit(1)
+
+    # Configure Logging
     loglevel = logging.INFO
     if args.quiet:
         loglevel = logging.ERROR
@@ -85,12 +94,15 @@ Tool for inspecting the dependencies of your python project.
         loglevel = logging.DEBUG
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(loglevel)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    f = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    formatter = logging.Formatter(f)
     stream_handler.setFormatter(formatter)
     logger.setLevel(loglevel)
     logger.addHandler(stream_handler)
 
     if args.version:
+        # handle the case where the user just cares about the version. Print
+        # version and exit
         from . import __version__
         print(__version__)
         sys.exit(0)
@@ -98,6 +110,14 @@ Tool for inspecting the dependencies of your python project.
     file_or_dir = args.file_or_directory
 
     def dump_deps(deps):
+        """
+        Helper function to print the dependencies to the console.
+
+        Parameters
+        ----------
+        deps : dict
+            Dictionary of dependencies that were found
+        """
         if args.yaml:
             deps = {k: list(v) for k, v in deps.items()}
             print(yaml.dump(deps, default_flow_style=False))
@@ -107,28 +127,42 @@ Tool for inspecting the dependencies of your python project.
     if os.path.isdir(file_or_dir):
         logger.debug("Treating {} as a directory and recursively searching "
                      "it for python files".format(file_or_dir))
+        # directories are a little easier from the purpose of the API call.
         deps = simple_import_search(file_or_dir)
+        # print the dependencies to the console and then exit
         dump_deps(deps)
+        sys.exit(0)
     elif os.path.isfile(file_or_dir):
         if file_or_dir.endswith('ipynb'):
             logger.debug("Treating {} as a jupyter notebook and searching "
                          "all of its code cells".format(file_or_dir))
             deps = notebook_path_to_dependencies(file_or_dir)
+            # print the dependencies to the console and then exit
             dump_deps(deps)
+            sys.exit(0)
         elif file_or_dir.endswith('.py'):
             logger.debug("Treating {} as a single python file"
                          "".format(file_or_dir))
-            mod, path, catcher = parse_file(file_or_dir)
+            mod, path, import_finder = parse_file(file_or_dir)
             mods = defaultdict(set)
-            for k, v in catcher.describe().items():
+            for k, v in import_finder.describe().items():
                 mods[k].update(v)
             deps = {k: sorted(list(v)) for k, v in mods.items() if v}
+            # print the dependencies to the console and then exit
             dump_deps(deps)
+            sys.exit(0)
         else:
-            raise RuntimeError("I do not know what to do with the file %s" %
-                               file_or_dir)
+            # Any file with a suffix that is not ".ipynb" or ".py" will not
+            # be parsed correctly
+            msg = ("depfinder is only configured to work with jupyter "
+                   "notebooks and python source code files. It is anticipated "
+                   "that the file {} will not work with depfinder"
+                   "".format(file_or_dir))
+            raise RuntimeError(msg)
     else:
-        raise RuntimeError("I do not know what to do with %s" % file_or_dir)
+        raise RuntimeError("I do not know what to do with {}.  It does not "
+                           "appear to be a directory or a file"
+                           "".format(file_or_dir))
 
 
 if __name__ == "__main__":
