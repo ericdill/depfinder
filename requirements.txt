@@ -1,2 +1,3 @@
 pyyaml
 stdlib-list
+nbformat six

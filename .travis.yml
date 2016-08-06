@@ -13,6 +13,7 @@ install:
 
 script:
   - coverage run -m pytest -vrsx
+  - coverage report -m
 
 after_success:
   - codecov
