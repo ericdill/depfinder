@@ -28,6 +28,10 @@ from .main import (simple_import_search, notebook_path_to_dependencies,
                    parse_file)
 
 
+class InvalidSelection(RuntimeError):
+    pass
+
+
 def _init_parser():
     p = ArgumentParser(
         description="""
@@ -82,9 +86,9 @@ def cli():
     p = _init_parser()
     args = p.parse_args()
     if args.verbose and args.quiet:
-        print("You have enabled both verbose mode (--verbose or -v) and quiet "
-              "mode (-q or --quiet).  Please pick one. Exiting...")
-        sys.exit(1)
+        msg = ("You have enabled both verbose mode (--verbose or -v) and "
+               "quiet mode (-q or --quiet).  Please pick one. Exiting...")
+        raise InvalidSelection(msg)
 
     # Configure Logging
     loglevel = logging.INFO
@@ -105,7 +109,7 @@ def cli():
         # version and exit
         from . import __version__
         print(__version__)
-        sys.exit(0)
+        return 0
 
     file_or_dir = args.file_or_directory
 
@@ -131,7 +135,7 @@ def cli():
         deps = simple_import_search(file_or_dir)
         # print the dependencies to the console and then exit
         dump_deps(deps)
-        sys.exit(0)
+        return 0
     elif os.path.isfile(file_or_dir):
         if file_or_dir.endswith('ipynb'):
             logger.debug("Treating {} as a jupyter notebook and searching "
@@ -139,7 +143,7 @@ def cli():
             deps = notebook_path_to_dependencies(file_or_dir)
             # print the dependencies to the console and then exit
             dump_deps(deps)
-            sys.exit(0)
+            return 0
         elif file_or_dir.endswith('.py'):
             logger.debug("Treating {} as a single python file"
                          "".format(file_or_dir))
@@ -150,7 +154,7 @@ def cli():
             deps = {k: sorted(list(v)) for k, v in mods.items() if v}
             # print the dependencies to the console and then exit
             dump_deps(deps)
-            sys.exit(0)
+            return 0
         else:
             # Any file with a suffix that is not ".ipynb" or ".py" will not
             # be parsed correctly

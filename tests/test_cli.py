@@ -9,14 +9,13 @@ import random
 import itertools
 from depfinder import cli
 import six
+import sys
 
 random.seed(12345)
 
 
-def _run_cli(path_to_check=None, extra_flags=None):
+def _process_args(path_to_check, extra_flags):
     """
-    Helper function to run depfinder in its cli mode
-
     Parameters
     ----------
     path_to_check : str, optional
@@ -31,6 +30,12 @@ def _run_cli(path_to_check=None, extra_flags=None):
         extra_flags = [extra_flags]
     if extra_flags is None:
         extra_flags = []
+
+    return path_to_check, extra_flags
+
+
+def _subprocess_cli(path_to_check=None, extra_flags=None):
+    path_to_check, extra_flags = _process_args(path_to_check, extra_flags)
     p = subprocess.Popen(
         ['depfinder', path_to_check] + extra_flags,
         env=dict(os.environ),
@@ -40,8 +45,17 @@ def _run_cli(path_to_check=None, extra_flags=None):
 
     stdout, stderr = p.communicate()
     returncode = p.returncode
+    return stdout, stderr, returncode
 
-    return stdout.decode(), stderr.decode(), returncode
+
+def _run_cli(path_to_check=None, extra_flags=None):
+    """
+    Helper function to run depfinder in its cli mode
+    """
+    path_to_check, extra_flags = _process_args(path_to_check, extra_flags)
+    sys.argv = ['depfinder', path_to_check] + extra_flags
+    cli.cli()
+    return None
 
 
 @pytest.fixture(scope="module")
@@ -71,7 +85,7 @@ def test_cli_with_random_flags(flags):
     flags : list
         Random combination of valid command line flags
     """
-    stdout, stderr, returncode = _run_cli(extra_flags=flags)
+    out, err, returncode = _subprocess_cli(extra_flags=flags)
     if returncode != 0:
         # The only thing that I know of that will exit with a nonzero status
         # is if you try to combine quiet mode and verbose mode. This handles
@@ -85,17 +99,21 @@ def test_cli_with_random_flags(flags):
     assert returncode == 0
 
 
-def test_cli():
+def test_cli(capsys):
     """
     Test to ensure that the depfinder cli is finding the dependencies in the
     source the depfinder package that are listed in the requirements.txt file
     """
-    stdout, stderr, returncode = _run_cli()
+    old_argv = sys.argv
+    sys.argv = ['depfinder', dirname(depfinder.__file__)]
+    _run_cli()
+    sys.argv = old_argv
+    # read stdout and stderr with pytest's built-in capturing mechanism
+    stdout, stderr = capsys.readouterr()
     dependencies_file = join(dirname(dirname(depfinder.__file__)),
                              'requirements.txt')
     print('stdout\n{}'.format(stdout))
     print('stderr\n{}'.format(stderr))
-    print('returncode\n{}'.format(returncode))
     dependencies = set([dep for dep in open(dependencies_file, 'r').read().split('\n') if dep])
     assert dependencies == set(eval(stdout)['required'])
 
@@ -106,5 +124,5 @@ def test_known_fail_cli(tmpdir):
     with open(tmpfile, 'w') as f:
         f.write("".join([this.d.get(this.c, this.c) for this.c in this.s]))
 
-    stdout, stderr, returncode = _run_cli(path_to_check=tmpfile)
-    assert returncode != 0
+    with pytest.raises(RuntimeError):
+        _run_cli(path_to_check=tmpfile)
