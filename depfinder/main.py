@@ -13,22 +13,23 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 from __future__ import print_function, division, absolute_import
 import json
 import ast
 import os
 from collections import defaultdict
 from pprint import pprint
-
+import logging
 import yaml
+import sys
+import copy
 from stdlib_list import stdlib_list
 
-import sys
+logger = logging.getLogger('depfinder')
+
 pyver = '%s.%s' % (sys.version_info.major, sys.version_info.minor)
 builtin_modules = stdlib_list(pyver)
 del pyver
-del sys
 
 try:
     # python 3
@@ -44,7 +45,7 @@ except AttributeError:
 AST_QUESTIONABLE = tuple(list(AST_TRY) + [ast.FunctionDef, ast.ClassDef])
 del AST_TRY
 
-class ImportCatcher(ast.NodeVisitor):
+class ImportFinder(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
 
     Attributes
@@ -69,7 +70,7 @@ class ImportCatcher(ast.NodeVisitor):
         self.imports = []
         self.import_froms = []
         self.sketchy_nodes = {}
-        super(ImportCatcher, self).__init__()
+        super(ImportFinder, self).__init__()
 
     def visit(self, node):
         """Recursively visit all ast nodes.
@@ -88,7 +89,7 @@ class ImportCatcher(ast.NodeVisitor):
         # something potentially odd is going on in this import
         if isinstance(node, AST_QUESTIONABLE):
             self.sketchy_nodes[node] = node
-        super(ImportCatcher, self).visit(node)
+        super(ImportFinder, self).visit(node)
         # after the node has been recursed in to, remove the try node
         self.sketchy_nodes.pop(node, None)
 
@@ -205,9 +206,9 @@ def get_imported_libs(code):
     code = '\n'.join([line for line in code.split('\n')
                       if not line.startswith('%')])
     tree = ast.parse(code)
-    catcher = ImportCatcher()
-    catcher.visit(tree)
-    return catcher
+    import_finder = ImportFinder()
+    import_finder.visit(tree)
+    return import_finder
 
 
 def parse_file(python_file):
@@ -223,6 +224,11 @@ def parse_file(python_file):
     catchers : tuple
         Yields tuples of (module_name, full_path_to_module, ImportCatcher)
     """
+    global PACKAGE_NAME
+    if PACKAGE_NAME is None:
+        PACKAGE_NAME = os.path.basename(python_file).split('.')[0]
+        logger.debug("Setting PACKAGE_NAME global variable to {}"
+                     "".format(PACKAGE_NAME))
     with open(python_file, 'r') as f:
         code = f.read()
     catcher = get_imported_libs(code)
@@ -247,6 +253,11 @@ def iterate_over_library(path_to_source_code):
     catchers : tuple
         Yields tuples of (module_name, full_path_to_module, ImportCatcher)
     """
+    global PACKAGE_NAME
+    if PACKAGE_NAME is None:
+        PACKAGE_NAME = os.path.basename(path_to_source_code).split('.')[0]
+        logger.debug("Setting PACKAGE_NAME global variable to {}"
+                     "".format(PACKAGE_NAME))
     for parent, folders, files in os.walk(path_to_source_code):
         for f in files:
             if f.endswith('.py'):
@@ -254,12 +265,14 @@ def iterate_over_library(path_to_source_code):
                 yield parse_file(full_file_path)
 
 
-def simple_import_search(path_to_source_code):
+def simple_import_search(path_to_source_code, remap=True):
     """Return all imported modules in all .py files in `path_to_source_code`
 
     Parameters
     ----------
     path_to_source_code : str
+    remap : bool, optional
+        Normalize the import names to be synonymous with their conda/pip names
 
     Returns
     -------
@@ -286,22 +299,27 @@ def simple_import_search(path_to_source_code):
                   'stdlib_list',
                   'test_with_code']}
     """
-    mods = defaultdict(set)
+    all_deps = defaultdict(set)
     catchers = iterate_over_library(path_to_source_code)
     for mod, path, catcher in catchers:
         for k, v in catcher.describe().items():
-            mods[k].update(v)
+            all_deps[k].update(v)
 
-    mods = {k: sorted(list(v)) for k, v in mods.items() if v}
-    return mods
+    all_deps = {k: sorted(list(v)) for k, v in all_deps.items() if v}
+    if remap:
+        return sanitize_deps(all_deps)
+    return all_deps
 
 
-def notebook_path_to_dependencies(path_to_notebook):
+def notebook_path_to_dependencies(path_to_notebook, remap=True):
     """Helper function that turns a jupyter notebook into a list of dependencies
 
     Parameters
     ----------
     path_to_notebook : str
+    remap : bool, optional
+        Normalize the import names to be synonymous with their conda/pip names
+
 
     Returns
     -------
@@ -328,52 +346,67 @@ def notebook_path_to_dependencies(path_to_notebook):
             all_deps[k].update(v)
 
     all_deps = {k: sorted(list(v)) for k, v in all_deps.items()}
+    if remap:
+        return sanitize_deps(all_deps)
     return all_deps
 
+PACKAGE_NAME = None
 
-from argparse import ArgumentParser
+_PACKAGE_MAPPING = {
+    'av': 'pyav',
+    'cv2': 'opencv',
+    'IPython': 'ipython',
+    'netCDF4': 'netcdf4',
+    'PIL': 'pillow',
+    'skimage': 'scikit-image',
+    'sklearn': 'scikit-learn',
+    'stdlib_list': 'stdlib-list',
+    'yaml': 'pyyaml',
+}
+_FAKE_PACKAGES = {
+    'matplotlib': {'mpl_toolkits'},
+    'pymongo': {'bson', 'gridfs'},
+}
 
-def cli():
-    p = ArgumentParser(
-        description="""
-Tool for inspecting the dependencies of your python project.
-""",
-    )
-    p.add_argument(
-        'file_or_directory',
-        help=("Valid options are a single python file, a single jupyter "
-              "(ipython) notebook or a directory of files that include "
-              "python files")
-    )
-    p.add_argument('-y', '--yaml', action='store_true', default=False,
-                   help=("Output in syntactically valid yaml when true. "
-                         "Defaults to %(default)s"))
+def sanitize_deps(deps_dict):
+    """
+    Helper function that takes the output of `notebook_path_to_dependencies`
+    or `simple_import_search` and turns normalizes the import names to be
+    synonymous with their conda/pip names
 
-    args = p.parse_args()
-    file_or_dir = args.file_or_directory
+    Parameters
+    ----------
+    deps_dict : dict
+        Output of `notebook_path_to_dependencies` or `simple_import_search`
+    Returns
+    -------
+    deps_dict : dict
+        If remap is True: Sanitized `deps_dict`
+        If remap is False: `deps_dict`
+    """
+    new_deps_dict = {}
+    list_of_possible_fakes = set([v for val in _FAKE_PACKAGES.values() for v in val])
+    for k, packages_list in deps_dict.items():
 
-    def dump_deps(deps):
-        if args.yaml:
-            print(yaml.dump(deps, default_flow_style=False))
-        else:
-            pprint(deps)
-
-    if os.path.isdir(file_or_dir):
-        deps = simple_import_search(file_or_dir)
-        dump_deps(deps)
-    elif os.path.isfile(file_or_dir):
-        if file_or_dir.endswith('ipynb'):
-            deps = notebook_path_to_dependencies(file_or_dir)
-            dump_deps(deps)
-        elif file_or_dir.endswith('.py'):
-            mod, path, catcher = parse_file(file_or_dir)
-            mods = defaultdict(set)
-            for k, v in catcher.describe().items():
-                mods[k].update(v)
-            deps = {k: sorted(list(v)) for k, v in mods.items() if v}
-            dump_deps(deps)
-        else:
-            raise RuntimeError("I do not know what to do with the file %s" %
-                               file_or_dir)
-    else:
-        raise RuntimeError("I do not know what to do with %s" % file_or_dir)
+        pkgs = copy.copy(packages_list)
+        new_deps_dict[k] = set()
+        for pkg in pkgs:
+            # drop fake packages
+            if pkg in list_of_possible_fakes:
+                logger.debug("Ignoring {} from the list of imports. It is "
+                             "installed as part of another package. Set the "
+                             "`--no-remap` cli flag if you want to disable "
+                             "this".format(pkg))
+                continue
+            if pkg == PACKAGE_NAME:
+                logger.debug("Ignoring {} from the list of imports. It is "
+                             "the name of the package that we are trying to "
+                             "find the dependencies for. Set the `--no-remap` "
+                             "cli flag if you want to disable this.".format(pkg))
+                continue
+            pkg_to_add = _PACKAGE_MAPPING.get(pkg, pkg)
+            if pkg != pkg_to_add:
+                logger.debug("Renaming {} to {}".format(pkg, pkg_to_add))
+            new_deps_dict[k].add(pkg_to_add)
+    new_deps_dict = {k: sorted(list(v)) for k, v in new_deps_dict.items() if v}
+    return new_deps_dict
