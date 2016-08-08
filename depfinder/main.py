@@ -408,5 +408,5 @@ def sanitize_deps(deps_dict):
             if pkg != pkg_to_add:
                 logger.debug("Renaming {} to {}".format(pkg, pkg_to_add))
             new_deps_dict[k].add(pkg_to_add)
-    new_deps_dict = {k: sorted(list(v)) for k, v in new_deps_dict.items()}
+    new_deps_dict = {k: sorted(list(v)) for k, v in new_deps_dict.items() if v}
     return new_deps_dict

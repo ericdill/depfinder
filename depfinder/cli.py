@@ -25,7 +25,7 @@ import sys
 logger = logging.getLogger('depfinder')
 
 from .main import (simple_import_search, notebook_path_to_dependencies,
-                   parse_file)
+                   parse_file, sanitize_deps)
 
 
 class InvalidSelection(RuntimeError):
@@ -132,17 +132,19 @@ def cli():
         logger.debug("Treating {} as a directory and recursively searching "
                      "it for python files".format(file_or_dir))
         # directories are a little easier from the purpose of the API call.
-        deps = simple_import_search(file_or_dir)
         # print the dependencies to the console and then exit
+        deps = simple_import_search(file_or_dir, remap=not args.no_remap)
         dump_deps(deps)
         return 0
     elif os.path.isfile(file_or_dir):
         if file_or_dir.endswith('ipynb'):
             logger.debug("Treating {} as a jupyter notebook and searching "
                          "all of its code cells".format(file_or_dir))
-            deps = notebook_path_to_dependencies(file_or_dir)
+            deps = notebook_path_to_dependencies(file_or_dir,
+                                                 remap=not args.no_remap)
+            sanitized = sanitize_deps(deps)
             # print the dependencies to the console and then exit
-            dump_deps(deps)
+            dump_deps(sanitized)
             return 0
         elif file_or_dir.endswith('.py'):
             logger.debug("Treating {} as a single python file"
@@ -152,8 +154,10 @@ def cli():
             for k, v in import_finder.describe().items():
                 mods[k].update(v)
             deps = {k: sorted(list(v)) for k, v in mods.items() if v}
+
+            sanitized = sanitize_deps(deps)
             # print the dependencies to the console and then exit
-            dump_deps(deps)
+            dump_deps(sanitized)
             return 0
         else:
             # Any file with a suffix that is not ".ipynb" or ".py" will not
@@ -163,11 +167,3 @@ def cli():
                    "that the file {} will not work with depfinder"
                    "".format(file_or_dir))
             raise RuntimeError(msg)
-    else:
-        raise RuntimeError("I do not know what to do with {}.  It does not "
-                           "appear to be a directory or a file"
-                           "".format(file_or_dir))
-
-
-if __name__ == "__main__":
-    cli()
