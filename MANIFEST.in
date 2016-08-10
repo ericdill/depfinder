@@ -1,2 +1,3 @@
 include versioneer.py
 include depfinder/_version.py
+include requirements.txt
