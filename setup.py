@@ -14,6 +14,6 @@ setup(
     url='http://github.com/ericdill/depfinder',
     platforms='Cross platform (Linux, Mac OSX, Windows)',
     install_requires=required,
-    license='GPLv3',
+    license='BSD 3-Clause',
     entry_points = {"console_scripts": ['depfinder = depfinder.cli:cli']},
 )
