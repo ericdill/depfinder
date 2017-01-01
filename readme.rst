@@ -19,18 +19,55 @@ depfinder
 
 Using depfinder
 ---------------
+
 ::
 
-    $ depfinder depfinder.py
+    $ depfinder -h
+    usage: depfinder [-h] [-y] [-V] [--no-remap] [-v] [-q] file_or_directory
+
+    Tool for inspecting the dependencies of your python project.
+
+    positional arguments:
+      file_or_directory  Valid options are a single python file, a single jupyter
+                         (ipython) notebook or a directory of files that include
+                         python files
+
+    optional arguments:
+      -h, --help         show this help message and exit
+      -y, --yaml         Output in syntactically valid yaml when true. Defaults to
+                         False
+      -V, --version      Print out the version of depfinder and exit
+      --no-remap         Do not remap the names of the imported libraries to their
+                         proper conda name
+      -v, --verbose      Enable debug level logging info from depfinder
+      -q, --quiet        Turn off all logging from depfinder
+
+Ok, great. That's the help output.  Not super helpful.  What does the output of
+depfinder look like when we run it on the source code for depfinder?
+
+::
+
+    $ depfinder depfinder
     {'builtin': ['__future__',
                  'argparse',
                  'ast',
                  'collections',
+                 'copy',
+                 'errno',
                  'json',
+                 'logging',
                  'os',
                  'pprint',
+                 're',
+                 'subprocess',
                  'sys'],
-     'required': ['stdlib_list', 'yaml']}
+     'relative': ['_version', 'main'],
+     'required': ['pyyaml', 'stdlib-list']}
+
+So, what do these things mean?  Well `builtin` are modules that are built in to
+the standard library.  `required` are modules that are not from the standard
+library or from within the `depfinder` package and `relative` are modules that
+are imported from one module to another within the `depfinder` source code.
 
 `Also see this notebook <https://github.com/ericdill/depfinder/blob/master/depfinder_usage.ipynb>`_
 
@@ -104,7 +141,7 @@ or conda ::
 
 API
 ====
-.. currentmodule:: depfinder
+.. currentmodule:: depfinder.main
 .. autofunction:: get_imported_libs
 .. autofunction:: iterate_over_library
 .. autofunction:: simple_import_search
