@@ -17,13 +17,40 @@ depfinder
 - `docs <https://ericdill.github.io/depfinder>`_
 - `github repo <https://github.com/ericdill/depfinder>`_
 
+Installation
+------------
+
+``depfinder`` is on pypi. It is tested against Python 2.7, 3.4 and 3.5.  It is
+not available for 3.6 yet as one of the dependencies is not yet 3.6 compatible
+::
+
+    pip install depfinder
+
+It is available via conda. ::
+
+    conda install -c ericdill depfinder
+
+It is also via github. ::
+
+    git clone git@github.com:ericdill/depfinder
+    cd depfinder
+    python setup.py install
+
+or ::
+
+    pip install https://github.com/ericdill/depfinder/zipball/master#egg=depfinder
+
+
+
 Using depfinder
 ---------------
 
 ::
 
     $ depfinder -h
-    usage: depfinder [-h] [-y] [-V] [--no-remap] [-v] [-q] file_or_directory
+    usage: depfinder [-h] [-y] [-V] [--no-remap] [-v] [-q] [-k KEY] [--conda]
+                 [--pdb]
+                 file_or_directory
 
     Tool for inspecting the dependencies of your python project.
 
@@ -41,6 +68,12 @@ Using depfinder
                          proper conda name
       -v, --verbose      Enable debug level logging info from depfinder
       -q, --quiet        Turn off all logging from depfinder
+      -k KEY, --key KEY  Select some or all of the output keys. Valid options are
+                         'required', 'optional', 'builtin', 'relative', 'all'.
+                         Defaults to 'all'
+      --conda            Format output so it can be passed as an argument to conda
+                         install or conda create
+      --pdb              Enable PDB debugging on exception
 
 Ok, great. That's the help output.  Not super helpful.  What does the output of
 depfinder look like when we run it on the source code for depfinder?
@@ -106,38 +139,24 @@ according to the following categories, in order of decreasing precedence:
     when the module is imported. These imports must be accounted for in an
     environment, or the module will not be importable.
 
-Installation
-------------
+Testing
+-------
 
-``depfinder`` is on pypi. It is tested against Python 2.7, 3.3, 3.4 and 3.5.  ::
+It has dependencies on, `stdlib-list
+<https://github.com/jackmaney/python-stdlib-list>`_ and `pyyaml
+<http://pyyaml.org/wiki/PyYAML>`_. I use ``stdlib-list`` to get the list of
+libraries built in to the standard library. These requirements can be installed
+via pip ::
 
-    pip install depfinder
+    pip install -r requirements.txt
 
-It is available via conda. ::
+Also install the test-requiements ::
 
-    conda install -c ericdill depfinder
+    pip install -r test-requirements.txt
 
-It is also via github. ::
+Then you can run the tests from the root of the git repository ::
 
-    git clone git@github.com:ericdill/depfinder
-    cd depfinder
-    python setup.py install
-
-or ::
-
-    pip install https://github.com/ericdill/depfinder/zipball/master#egg=depfinder
-
-
-It has one dependency, `stdlib_list
-<https://github.com/jackmaney/python-stdlib-list>`_, which is where I get the
-list of libraries built in to the standard library. ``stdlib-list`` can be
-installed via pip ::
-
-    pip install stdlib-list
-
-or conda ::
-
-    conda install -c ericdill stdlib-list
+    coverage run run_tests.py
 
 API
 ====
