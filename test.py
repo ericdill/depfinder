@@ -159,6 +159,7 @@ def test_notebook_remapping():
         assert {'required': ['mpl_toolkits']} == deps
         assert {} == main.notebook_path_to_dependencies(fname)
 
+
 @pytest.mark.parametrize("import_list_dict", [complex_imports,
                                               simple_imports,
                                               relative_imports])
@@ -252,6 +253,11 @@ def known_flags():
     flags = [flag for flag in flags if flag]
     # now flatten the nested list
     flags = [flag for flag_twins in flags for flag in flag_twins]
+    flags.remove('-k')
+    flags.remove('--key')
+    flags.remove('--pdb')
+    flags.extend(['-k all', '-k required', '-k optional', '-k builtin',
+                  '-k relative'])
     return flags
 
 
