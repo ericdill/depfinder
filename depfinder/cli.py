@@ -33,12 +33,16 @@ from collections import defaultdict
 import logging
 import os
 from pprint import pprint
-import yaml
+import itertools
+import pdb
 import sys
-logger = logging.getLogger('depfinder')
+
+import yaml
 
 from .main import (simple_import_search, notebook_path_to_dependencies,
                    parse_file, sanitize_deps)
+
+logger = logging.getLogger('depfinder')
 
 
 class InvalidSelection(RuntimeError):
@@ -92,6 +96,27 @@ Tool for inspecting the dependencies of your python project.
         default=False,
         help="Turn off all logging from depfinder"
     )
+    p.add_argument(
+        '-k', '--key',
+        action="append",
+        default=[],
+        help=("Select some or all of the output keys. Valid options are "
+              "'required', 'optional', 'builtin', 'relative', 'all'. Defaults "
+              "to 'all'")
+    )
+    p.add_argument(
+        '--conda',
+        action="store_true",
+        default=False,
+        help=("Format output so it can be passed as an argument to conda "
+              "install or conda create")
+    )
+    p.add_argument(
+        '--pdb',
+        action="store_true",
+        help="Enable PDB debugging on exception",
+        default=False,
+    )
     return p
 
 
@@ -102,6 +127,13 @@ def cli():
         msg = ("You have enabled both verbose mode (--verbose or -v) and "
                "quiet mode (-q or --quiet).  Please pick one. Exiting...")
         raise InvalidSelection(msg)
+
+    if args.pdb:
+        # set the pdb_hook as the except hook for all exceptions
+        def pdb_hook(exctype, value, traceback):
+            pdb.post_mortem(traceback)
+        sys.excepthook = pdb_hook
+
 
     # Configure Logging
     loglevel = logging.INFO
@@ -125,8 +157,12 @@ def cli():
         return 0
 
     file_or_dir = args.file_or_directory
+    keys = args.key
+    if keys == []:
+        keys = None
+    logging.debug('keys', keys)
 
-    def dump_deps(deps):
+    def dump_deps(deps, keys):
         """
         Helper function to print the dependencies to the console.
 
@@ -135,9 +171,15 @@ def cli():
         deps : dict
             Dictionary of dependencies that were found
         """
+        if keys is None:
+            keys = list(deps.keys())
+        deps = {k: list(v) for k, v in deps.items() if k in keys}
         if args.yaml:
-            deps = {k: list(v) for k, v in deps.items()}
             print(yaml.dump(deps, default_flow_style=False))
+        elif args.conda:
+            list_of_deps = [item for sublist in itertools.chain(deps.values())
+                            for item in sublist]
+            print(' '.join(list_of_deps))
         else:
             pprint(deps)
 
@@ -147,7 +189,7 @@ def cli():
         # directories are a little easier from the purpose of the API call.
         # print the dependencies to the console and then exit
         deps = simple_import_search(file_or_dir, remap=not args.no_remap)
-        dump_deps(deps)
+        dump_deps(deps, keys)
         return 0
     elif os.path.isfile(file_or_dir):
         if file_or_dir.endswith('ipynb'):
@@ -157,7 +199,7 @@ def cli():
                                                  remap=not args.no_remap)
             sanitized = sanitize_deps(deps)
             # print the dependencies to the console and then exit
-            dump_deps(sanitized)
+            dump_deps(sanitized, keys)
             return 0
         elif file_or_dir.endswith('.py'):
             logger.debug("Treating {} as a single python file"
@@ -170,7 +212,7 @@ def cli():
 
             sanitized = sanitize_deps(deps)
             # print the dependencies to the console and then exit
-            dump_deps(sanitized)
+            dump_deps(sanitized, keys)
             return 0
         else:
             # Any file with a suffix that is not ".ipynb" or ".py" will not

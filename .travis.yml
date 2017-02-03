@@ -5,6 +5,14 @@ python:
 - 2.7
 - 3.4
 - 3.5
+- 3.6
+
+matrix:
+  allow_failures:
+  # currently stdlib-list is not py36 compatible
+  # https://github.com/jackmaney/python-stdlib-list
+  - python: 3.6
+
 
 install:
   - pip install -r requirements.txt
