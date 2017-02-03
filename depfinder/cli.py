@@ -177,7 +177,9 @@ def cli():
         if args.yaml:
             print(yaml.dump(deps, default_flow_style=False))
         elif args.conda:
-            print(' '.join(itertools.chain(deps.values())))
+            list_of_deps = [item for sublist in itertools.chain(deps.values())
+                            for item in sublist]
+            print(' '.join(list_of_deps))
         else:
             pprint(deps)
 
