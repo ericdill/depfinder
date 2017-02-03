@@ -33,8 +33,9 @@ from collections import defaultdict
 import logging
 import os
 from pprint import pprint
-from functools import partial
 import itertools
+import pdb
+import sys
 
 import yaml
 
@@ -110,6 +111,12 @@ Tool for inspecting the dependencies of your python project.
         help=("Format output so it can be passed as an argument to conda "
               "install or conda create")
     )
+    p.add_argument(
+        '--pdb',
+        action="store_true",
+        help="Enable PDB debugging on exception",
+        default=False,
+    )
     return p
 
 
@@ -120,6 +127,13 @@ def cli():
         msg = ("You have enabled both verbose mode (--verbose or -v) and "
                "quiet mode (-q or --quiet).  Please pick one. Exiting...")
         raise InvalidSelection(msg)
+
+    if args.pdb:
+        # set the pdb_hook as the except hook for all exceptions
+        def pdb_hook(exctype, value, traceback):
+            pdb.post_mortem(traceback)
+        sys.excepthook = pdb_hook
+
 
     # Configure Logging
     loglevel = logging.INFO
