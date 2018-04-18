@@ -20,9 +20,7 @@ depfinder
 Installation
 ------------
 
-``depfinder`` is on pypi. It is tested against Python 2.7, 3.4 and 3.5.  It is
-not available for 3.6 yet as one of the dependencies is not yet 3.6 compatible
-::
+``depfinder`` is on pypi. It is tested against Python 2.7 and 3.4+ ::
 
     pip install depfinder
 
