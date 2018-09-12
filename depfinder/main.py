@@ -352,7 +352,7 @@ def notebook_path_to_dependencies(path_to_notebook, remap=True):
     """
     try:
         from IPython.core.inputsplitter import IPythonInputSplitter
-        transform = IPythonInputSplitter().transform_cell
+        transform = IPythonInputSplitter(line_input_checker=False).transform_cell
     except:
         transform = lambda code: code
 
