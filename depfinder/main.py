@@ -350,11 +350,19 @@ def notebook_path_to_dependencies(path_to_notebook, remap=True):
     >>> depfinder.notebook_path_to_dependencies('depfinder_usage.ipynb')
     {'builtin': ['os', 'pprint'], 'required': ['depfinder']}
     """
+    try:
+        from IPython.core.inputsplitter import IPythonInputSplitter
+        transform = IPythonInputSplitter(line_input_checker=False).transform_cell
+    except:
+        transform = lambda code: code
+
     nb = json.load(open(path_to_notebook))
     codeblocks = [''.join(cell['source']) for cell in nb['cells']
                   if cell['cell_type'] == 'code']
     all_deps = defaultdict(set)
+
     for codeblock in codeblocks:
+        codeblock = transform(codeblock)
         deps_dict = get_imported_libs(codeblock).describe()
         for k, v in deps_dict.items():
             all_deps[k].update(v)
