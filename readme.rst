@@ -20,7 +20,8 @@ depfinder
 Installation
 ------------
 
-``depfinder`` is on pypi. It is tested against Python 2.7 and 3.4+ ::
+``depfinder`` is on pypi. It is tested against Python 2.7 and 3.4-3.6. It is
+not yet available for py3.7 because stdlib-list is not yet py37 compatible.
 
     pip install depfinder
 
