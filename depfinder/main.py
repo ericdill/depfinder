@@ -30,6 +30,7 @@
 from __future__ import print_function, division, absolute_import
 import json
 import ast
+import io
 import os
 from collections import defaultdict
 from pprint import pprint
@@ -356,7 +357,7 @@ def notebook_path_to_dependencies(path_to_notebook, remap=True):
     except:
         transform = lambda code: code
 
-    nb = json.load(open(path_to_notebook))
+    nb = json.load(io.open(path_to_notebook, encoding='utf8'))
     codeblocks = [''.join(cell['source']) for cell in nb['cells']
                   if cell['cell_type'] == 'code']
     all_deps = defaultdict(set)
