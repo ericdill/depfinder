@@ -15,7 +15,5 @@ _NAMEDSPACE_MAPPING:
 
 
 _FAKE_PACKAGES:
-  matplotlib: mpl_toolkits
-  pymongo:
-    - bson
-    - gridfs
+  matplotlib: !!set {mpl_toolkits: null}
+  pymongo: !!set {bson: null, gridfs: null}
