@@ -59,6 +59,12 @@ except AttributeError:
 AST_QUESTIONABLE = tuple(list(AST_TRY) + [ast.FunctionDef, ast.ClassDef])
 del AST_TRY
 
+
+def _split(name):
+    named_space = _NAMEDSPACE_MAPPING.get(name)
+    return named_space if named_space else name.split('.')[0]
+
+
 class ImportFinder(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
 
@@ -118,7 +124,7 @@ class ImportFinder(ast.NodeVisitor):
         instance attribute
         """
         self.imports.append(node)
-        mods = set([name.name.split('.')[0] for name in node.names])
+        mods = set([_split(name.name) for name in node.names])
         for mod in mods:
             self._add_import_node(mod)
 
@@ -139,11 +145,11 @@ class ImportFinder(ast.NodeVisitor):
             return
         if node.level > 0:
             # this is a relative import like 'from .foo import bar'
-            node_name = node.module.split('.')[0]
+            node_name = _split(node.module)
             self.relative_modules.add(node_name)
             return
         # this is a non-relative import like 'from foo import bar'
-        node_name = node.module.split('.')[0]
+        node_name = _split(node.module)
         self._add_import_node(node_name)
 
     def _add_import_node(self, node_name):
@@ -386,6 +392,12 @@ _PACKAGE_MAPPING = {
     'stdlib_list': 'stdlib-list',
     'yaml': 'pyyaml',
 }
+
+_NAMEDSPACE_MAPPING = {
+    'ruamel.yaml': 'ruamel.yaml',
+}
+
+
 _FAKE_PACKAGES = {
     'matplotlib': {'mpl_toolkits'},
     'pymongo': {'bson', 'gridfs'},
