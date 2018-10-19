@@ -1,0 +1,21 @@
+_PACKAGE_MAPPING:
+  av: pyav
+  bs4: beautifulsoup4
+  cv2: opencv
+  IPython: ipython
+  netCDF4: netcdf4
+  PIL: pillow
+  skimage: scikit-image
+  sklearn: scikit-learn
+  stdlib_list: stdlib-list
+  yaml: pyyaml
+
+_NAMEDSPACE_MAPPING:
+  ruamel.yaml: ruamel.yaml
+
+
+_FAKE_PACKAGES:
+  matplotlib: mpl_toolkits
+  pymongo:
+    - bson
+    - gridfs
