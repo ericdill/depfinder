@@ -90,7 +90,7 @@ class ImportFinder(ast.NodeVisitor):
         """Recursively visit all ast nodes.
 
         Look for Import and ImportFrom nodes. Classify them as being imports
-        that are built in, relative, required or questionable. Qustionable
+        that are built in, relative, required or questionable. Questionable
         imports are those that occur within the context of a try/except block, a
         function definition or a class definition.
 
@@ -376,6 +376,7 @@ PACKAGE_NAME = None
 
 _PACKAGE_MAPPING = {
     'av': 'pyav',
+    'bs4': 'beautifulsoup4',
     'cv2': 'opencv',
     'IPython': 'ipython',
     'netCDF4': 'netcdf4',
