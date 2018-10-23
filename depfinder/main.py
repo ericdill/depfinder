@@ -60,6 +60,18 @@ except AttributeError:
 AST_QUESTIONABLE = tuple(list(AST_TRY) + [ast.FunctionDef, ast.ClassDef])
 del AST_TRY
 
+PACKAGE_NAME = None
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+with open(os.path.join(_HERE, 'pkg_data', 'pkg_data.yml')) as f:
+    pkg_data = yaml.load(f)
+
+
+def _split(name):
+    named_space = pkg_data['_NAMEDSPACE_MAPPING'].get(name)
+    return named_space if named_space else name.split('.')[0]
+
+
 class ImportFinder(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
 
@@ -119,7 +131,7 @@ class ImportFinder(ast.NodeVisitor):
         instance attribute
         """
         self.imports.append(node)
-        mods = set([name.name.split('.')[0] for name in node.names])
+        mods = set([_split(name.name) for name in node.names])
         for mod in mods:
             self._add_import_node(mod)
 
@@ -140,11 +152,11 @@ class ImportFinder(ast.NodeVisitor):
             return
         if node.level > 0:
             # this is a relative import like 'from .foo import bar'
-            node_name = node.module.split('.')[0]
+            node_name = _split(node.module)
             self.relative_modules.add(node_name)
             return
         # this is a non-relative import like 'from foo import bar'
-        node_name = node.module.split('.')[0]
+        node_name = _split(node.module)
         self._add_import_node(node_name)
 
     def _add_import_node(self, node_name):
@@ -373,24 +385,6 @@ def notebook_path_to_dependencies(path_to_notebook, remap=True):
         return sanitize_deps(all_deps)
     return all_deps
 
-PACKAGE_NAME = None
-
-_PACKAGE_MAPPING = {
-    'av': 'pyav',
-    'bs4': 'beautifulsoup4',
-    'cv2': 'opencv',
-    'IPython': 'ipython',
-    'netCDF4': 'netcdf4',
-    'PIL': 'pillow',
-    'skimage': 'scikit-image',
-    'sklearn': 'scikit-learn',
-    'stdlib_list': 'stdlib-list',
-    'yaml': 'pyyaml',
-}
-_FAKE_PACKAGES = {
-    'matplotlib': {'mpl_toolkits'},
-    'pymongo': {'bson', 'gridfs'},
-}
 
 def sanitize_deps(deps_dict):
     """
@@ -409,7 +403,7 @@ def sanitize_deps(deps_dict):
         If remap is False: `deps_dict`
     """
     new_deps_dict = {}
-    list_of_possible_fakes = set([v for val in _FAKE_PACKAGES.values() for v in val])
+    list_of_possible_fakes = set([v for val in pkg_data['_FAKE_PACKAGES'].values() for v in val])
     for k, packages_list in deps_dict.items():
 
         pkgs = copy.copy(packages_list)
@@ -428,7 +422,7 @@ def sanitize_deps(deps_dict):
                              "find the dependencies for. Set the `--no-remap` "
                              "cli flag if you want to disable this.".format(pkg))
                 continue
-            pkg_to_add = _PACKAGE_MAPPING.get(pkg, pkg)
+            pkg_to_add = pkg_data['_PACKAGE_MAPPING'].get(pkg, pkg)
             if pkg != pkg_to_add:
                 logger.debug("Renaming {} to {}".format(pkg, pkg_to_add))
             new_deps_dict[k].add(pkg_to_add)
