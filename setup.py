@@ -15,6 +15,6 @@ setup(
     platforms='Cross platform (Linux, Mac OSX, Windows)',
     install_requires=required,
     license='BSD 3-Clause',
-    entry_points = {"console_scripts": ['depfinder = depfinder.cli:cli']},
-    package_data = {'': ['pkg_data/*.yml']},
+    entry_points={"console_scripts": ['depfinder = depfinder.cli:cli']},
+    package_data={'': ['pkg_data/*.yml']},
 )
