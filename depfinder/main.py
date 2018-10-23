@@ -39,6 +39,7 @@ import yaml
 import sys
 import copy
 from stdlib_list import stdlib_list
+import pkgutil
 
 logger = logging.getLogger('depfinder')
 
@@ -62,9 +63,9 @@ del AST_TRY
 
 PACKAGE_NAME = None
 
-_HERE = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(_HERE, 'pkg_data', 'pkg_data.yml')) as f:
-    pkg_data = yaml.load(f)
+pkg_data = yaml.load(
+    pkgutil.get_data(__name__, 'pkg_data/pkg_data.yml').decode()
+)
 
 
 def _split(name):
