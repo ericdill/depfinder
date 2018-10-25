@@ -1,10 +1,16 @@
 _PACKAGE_MAPPING:
+  IPython: ipython
+  PIL: pillow
   av: pyav
   bs4: beautifulsoup4
+  cc_plugin_glider: cc-plugin-glider
+  cc_plugin_ncei: cc-plugin-ncei
+  cf_units: cf-units
+  compliance_checker: compliance-checker
   cv2: opencv
-  IPython: ipython
+  ioos_tools: ioos-tools
   netCDF4: netcdf4
-  PIL: pillow
+  pocean: pocean-core
   skimage: scikit-image
   sklearn: scikit-learn
   stdlib_list: stdlib-list
