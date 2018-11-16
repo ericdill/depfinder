@@ -10,23 +10,18 @@ python:
 # Enable 3.7 without globally enabling sudo and dist: xenial for other build jobs
 # see this issue for updates https://github.com/travis-ci/travis-ci/issues/9815
 matrix:
-  allow_failures:
-    - python: 3.7
-      dist: xenial
-      sudo: true
   include:
     - python: 3.7
       dist: xenial
       sudo: true
 
-install:
+before_install:
   - pip install -r requirements.txt
   - pip install -r test-requirements.txt
-  - pip install pytest coverage codecov
-  - pip install -e .
-  # Need to clean up the git repository or pytest gets confused by the extra
-  # cruft that python setup.py install leaves behind
-#  - git clean -xfd
+
+install:
+  - python setup.py sdist && version=$(python setup.py --version) && pushd dist && pip install depfinder-${version}.tar.gz && popd
+
 
 script:
   - coverage run -m pytest -vrsx test.py
