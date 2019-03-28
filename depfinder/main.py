@@ -64,7 +64,8 @@ del AST_TRY
 PACKAGE_NAME = None
 
 pkg_data = yaml.load(
-    pkgutil.get_data(__name__, 'pkg_data/pkg_data.yml').decode()
+    pkgutil.get_data(__name__, 'pkg_data/pkg_data.yml').decode(),
+    Loader=yaml.SafeLoader,
 )
 
 
