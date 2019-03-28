@@ -244,7 +244,6 @@ def _run_cli(path_to_check=None, extra_flags=None):
     return None
 
 
-@pytest.fixture(scope="module")
 def known_flags():
     # option_strings are the things like ['-h', '--help']
     # or are empty lists if the action is a positional
@@ -259,6 +258,10 @@ def known_flags():
     flags.extend(['-k all', '-k required', '-k optional', '-k builtin',
                   '-k relative'])
     return flags
+
+@pytest.fixture(scope="module")
+def flags():
+    yield known_flags()
 
 
 @pytest.mark.parametrize(
@@ -335,8 +338,8 @@ def test_known_fail_cli2():
     (dirname(depfinder.__file__),
      join(dirname(depfinder.__file__), 'main.py'))
 )
-def test_individual_args(path, known_flags):
-    for flag in known_flags:
+def test_individual_args(path, flags):
+    for flag in flags:
         if flag in ['-h', '--help']:
             # skip the help messages since they cause the system to exit
             continue
