@@ -20,7 +20,7 @@ before_install:
   - pip install -r test-requirements.txt
 
 install:
-  - python setup.py sdist && version=$(python setup.py --version) && pushd dist && pip install depfinder-${version}.tar.gz && popd
+  - python setup.py sdist && version=$(python setup.py --version) && pushd dist && pip install --no-deps --force-reinstall depfinder-${version}.tar.gz && popd
 
 
 script:
