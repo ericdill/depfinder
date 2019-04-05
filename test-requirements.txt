@@ -3,3 +3,4 @@ coverage
 nbformat
 pytest
 six
+attrs>=17.4.0 
