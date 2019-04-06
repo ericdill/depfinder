@@ -1,27 +1,34 @@
-language: python
+language: minimal
+
 sudo: false
 
-python:
-- 2.7
-- 3.4
-- 3.5
-- 3.6
-
-# Enable 3.7 without globally enabling sudo and dist: xenial for other build jobs
-# see this issue for updates https://github.com/travis-ci/travis-ci/issues/9815
 matrix:
+  fast_finish: true
   include:
-    - python: 3.7
-      dist: xenial
-      sudo: true
+    - name: "python-3.7"
+      env: PY=3.7
+    - name: "python-3.6"
+      env: PY=3.6
+    - name: "python-2.7"
+      env: PY=2.7
 
 before_install:
-  - pip install -r requirements.txt
-  - pip install -r test-requirements.txt
+  # Install miniconda and create TEST env.
+  - |
+    wget http://bit.ly/miniconda -O miniconda.sh
+    bash miniconda.sh -b -p $HOME/miniconda
+    export PATH="$HOME/miniconda/bin:$PATH"
+    conda config --set always_yes yes --set changeps1 no --set show_channel_urls true
+    conda update --quiet conda
+    conda config --add channels conda-forge --force
+    conda config --set channel_priority strict
+    conda config --set safety_checks disabled
+    conda create --name TEST python=$PY --file requirements.txt --file requirements-dev.txt
+    source activate TEST
+    conda info --all
 
 install:
-  - python setup.py sdist && version=$(python setup.py --version) && pushd dist && pip install depfinder-${version}.tar.gz && popd
-
+  - python setup.py sdist && version=$(python setup.py --version) && pushd dist && pip install --no-deps --force-reinstall depfinder-${version}.tar.gz && popd
 
 script:
   - coverage run -m pytest -vrsx test.py
