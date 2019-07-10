@@ -40,6 +40,7 @@ import sys
 import copy
 from stdlib_list import stdlib_list
 import pkgutil
+from fnmatch import fnmatch
 
 logger = logging.getLogger('depfinder')
 
@@ -294,7 +295,7 @@ def iterate_over_library(path_to_source_code):
                 yield parse_file(full_file_path)
 
 
-def simple_import_search(path_to_source_code, remap=True):
+def simple_import_search(path_to_source_code, remap=True, blacklist=None):
     """Return all imported modules in all .py files in `path_to_source_code`
 
     Parameters
@@ -302,6 +303,8 @@ def simple_import_search(path_to_source_code, remap=True):
     path_to_source_code : str
     remap : bool, optional
         Normalize the import names to be synonymous with their conda/pip names
+    blacklist : str, optional
+        String pattern which if matched causes the file to not be inspected
 
     Returns
     -------
@@ -331,6 +334,9 @@ def simple_import_search(path_to_source_code, remap=True):
     all_deps = defaultdict(set)
     catchers = iterate_over_library(path_to_source_code)
     for mod, path, catcher in catchers:
+        # if blacklist provided skip things which match the blacklist pattern
+        if blacklist and fnmatch(path, blacklist):
+            continue
         for k, v in catcher.describe().items():
             all_deps[k].update(v)
 
