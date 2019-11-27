@@ -20,7 +20,7 @@ depfinder
 Installation
 ------------
 
-``depfinder`` is on pypi. It is tested against Python 2.7 and 3.6-3.8. It is
+``depfinder`` is on pypi. It is tested against Python 2.7 and 3.6-3.8.
 
     pip install depfinder
 
