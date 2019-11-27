@@ -20,14 +20,13 @@ depfinder
 Installation
 ------------
 
-``depfinder`` is on pypi. It is tested against Python 2.7 and 3.4-3.6. It is
-not yet available for py3.7 because stdlib-list is not yet py37 compatible.
+``depfinder`` is on pypi. It is tested against Python 2.7 and 3.6-3.8. It is
 
     pip install depfinder
 
 It is available via conda. ::
 
-    conda install -c ericdill depfinder
+    conda install -c conda-forge depfinder
 
 It is also via github. ::
 
