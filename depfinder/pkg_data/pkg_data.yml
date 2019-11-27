@@ -9,11 +9,13 @@ _PACKAGE_MAPPING:
   compliance_checker: compliance-checker
   cv2: opencv
   ioos_tools: ioos-tools
+  janitor: pyjanitor
   netCDF4: netcdf4
   pocean: pocean-core
   skimage: scikit-image
   sklearn: scikit-learn
   stdlib_list: stdlib-list
+  tabula: tabula-py
   yaml: pyyaml
 
 _NAMEDSPACE_MAPPING:
