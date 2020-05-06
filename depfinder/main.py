@@ -289,17 +289,19 @@ def iterate_over_library(path_to_source_code):
         logger.debug("Setting PACKAGE_NAME global variable to {}"
                      "".format(PACKAGE_NAME))
     skipped_files = []
+    all_files = []
     for parent, folders, files in os.walk(path_to_source_code):
         for f in files:
             if f.endswith('.py'):
                 full_file_path = os.path.join(parent, f)
+                all_files.append(full_file_path)
                 try:
                     yield parse_file(full_file_path)
                 except Exception:
                     logger.exception("Could not parse file: {}".format(full_file_path))
                     skipped_files.append(full_file_path)
     if skipped_files:
-        logger.warning("Skipped {} files".format(len(skipped_files)))
+        logger.warning("Skipped {}/{} files".format(len(skipped_files), len(all_files)))
         for idx, f in enumerate(skipped_files):
             logger.warn("%s: %s" % (str(idx), f))
 
