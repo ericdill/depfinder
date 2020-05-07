@@ -39,6 +39,7 @@ import sys
 
 import yaml
 
+from . import main
 from .main import (simple_import_search, notebook_path_to_dependencies,
                    parse_file, sanitize_deps)
 
@@ -122,6 +123,12 @@ Tool for inspecting the dependencies of your python project.
         default=None,
         help="Blacklist pattern for files not to inpsect"
     )
+    p.add_argument(
+        '--strict',
+        default=False,
+        action="store_true",
+        help=("Immediately raise an Exception if any files fail to parse. Defaults to off.")
+    )
     return p
 
 
@@ -139,6 +146,7 @@ def cli():
             pdb.post_mortem(traceback)
         sys.excepthook = pdb_hook
 
+    main.STRICT_CHECKING = args.strict
 
     # Configure Logging
     loglevel = logging.INFO
@@ -165,7 +173,7 @@ def cli():
     keys = args.key
     if keys == []:
         keys = None
-    logging.debug('keys', keys)
+    logger.debug('keys: %s', keys)
 
     def dump_deps(deps, keys):
         """
