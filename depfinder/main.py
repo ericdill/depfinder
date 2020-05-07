@@ -63,6 +63,7 @@ AST_QUESTIONABLE = tuple(list(AST_TRY) + [ast.FunctionDef, ast.ClassDef])
 del AST_TRY
 
 PACKAGE_NAME = None
+STRICT_CHECKING = False
 
 pkg_data = yaml.load(
     pkgutil.get_data(__name__, 'pkg_data/pkg_data.yml').decode(),
@@ -284,6 +285,7 @@ def iterate_over_library(path_to_source_code):
         Yields tuples of (module_name, full_path_to_module, ImportCatcher)
     """
     global PACKAGE_NAME
+    global STRICT_CHECKING
     if PACKAGE_NAME is None:
         PACKAGE_NAME = os.path.basename(path_to_source_code).split('.')[0]
         logger.debug("Setting PACKAGE_NAME global variable to {}"
@@ -304,6 +306,9 @@ def iterate_over_library(path_to_source_code):
         logger.warning("Skipped {}/{} files".format(len(skipped_files), len(all_files)))
         for idx, f in enumerate(skipped_files):
             logger.warn("%s: %s" % (str(idx), f))
+        
+    if skipped_files and STRICT_CHECKING:
+        raise RuntimeError("Some files failed to parse. See logs for full stack traces.")
 
 
 def simple_import_search(path_to_source_code, remap=True, blacklist=None):
@@ -395,6 +400,9 @@ def notebook_path_to_dependencies(path_to_notebook, remap=True):
 
     for codeblock in codeblocks:
         codeblock = transform(codeblock)
+        # TODO this may fail on py2/py3 syntax when running in the other runtime. 
+        # May want to consider updating some error handling around that case.
+        # Will wait until that use case surfaces before modifying
         deps_dict = get_imported_libs(codeblock).describe()
         for k, v in deps_dict.items():
             all_deps[k].update(v)
