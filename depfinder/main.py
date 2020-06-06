@@ -311,7 +311,7 @@ def iterate_over_library(path_to_source_code):
         raise RuntimeError("Some files failed to parse. See logs for full stack traces.")
 
 
-def simple_import_search(path_to_source_code, remap=True, ban=None):
+def simple_import_search(path_to_source_code, remap=True, ignore=None):
     """Return all imported modules in all .py files in `path_to_source_code`
 
     Parameters
@@ -319,7 +319,7 @@ def simple_import_search(path_to_source_code, remap=True, ban=None):
     path_to_source_code : str
     remap : bool, optional
         Normalize the import names to be synonymous with their conda/pip names
-    ban : str, optional
+    ignore : str, optional
         String pattern which if matched causes the file to not be inspected
 
     Returns
@@ -350,8 +350,8 @@ def simple_import_search(path_to_source_code, remap=True, ban=None):
     all_deps = defaultdict(set)
     catchers = iterate_over_library(path_to_source_code)
     for mod, path, catcher in catchers:
-        # if ban provided skip things which match the ban pattern
-        if ban and fnmatch(path, ban):
+        # if ignore provided skip things which match the ignore pattern
+        if ignore and fnmatch(path, ignore):
             continue
         for k, v in catcher.describe().items():
             all_deps[k].update(v)
