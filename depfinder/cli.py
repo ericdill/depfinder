@@ -119,7 +119,7 @@ Tool for inspecting the dependencies of your python project.
         default=False,
     )
     p.add_argument(
-        '--blacklist',
+        '--ban',
         default=None,
         help="Blacklist pattern for files not to inpsect"
     )
@@ -202,7 +202,7 @@ def cli():
         # directories are a little easier from the purpose of the API call.
         # print the dependencies to the console and then exit
         deps = simple_import_search(file_or_dir, remap=not args.no_remap,
-                                    blacklist=args.blacklist)
+                                    ban=args.ban)
         dump_deps(deps, keys)
         return 0
     elif os.path.isfile(file_or_dir):
