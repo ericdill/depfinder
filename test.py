@@ -255,7 +255,7 @@ def known_flags():
     flags.remove('-k')
     flags.remove('--key')
     flags.remove('--pdb')
-    flags.remove('--blacklist')
+    flags.remove('--ban')
     flags.extend(['-k all', '-k required', '-k optional', '-k builtin',
                   '-k relative'])
     return flags
