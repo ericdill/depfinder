@@ -121,7 +121,7 @@ Tool for inspecting the dependencies of your python project.
     p.add_argument(
         '--ignore',
         default='',
-        help="Ignore pattern(s) for files not to inpsect"
+        help="Comma separated list of file patterns not to inspect"
     )
     p.add_argument(
         '--strict',
