@@ -120,7 +120,7 @@ Tool for inspecting the dependencies of your python project.
     )
     p.add_argument(
         '--ignore',
-        default=None,
+        default='',
         help="Ignore pattern(s) for files not to inpsect"
     )
     p.add_argument(
