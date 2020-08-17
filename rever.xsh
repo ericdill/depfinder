@@ -4,6 +4,7 @@ $ACTIVITIES = ['authors',
                'tag',
                'push_tag',
                'ghrelease',
+               'pypi',
                'conda_forge'
 ]
 
