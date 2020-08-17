@@ -1,0 +1,23 @@
+**Added:**
+
+* Support multiple ignore patterns at once
+
+**Changed:**
+
+* renamed blacklist to ignore
+
+**Deprecated:**
+
+* <news item>
+
+**Removed:**
+
+* <news item>
+
+**Fixed:**
+
+* Continue parsing despite errors
+
+**Security:**
+
+* <news item>
