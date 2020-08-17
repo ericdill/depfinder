@@ -319,7 +319,7 @@ def simple_import_search(path_to_source_code, remap=True, ignore=None):
     path_to_source_code : str
     remap : bool, optional
         Normalize the import names to be synonymous with their conda/pip names
-    ignore : str, optional
+    ignore : str or list, optional
         String pattern which if matched causes the file to not be inspected
 
     Returns
@@ -347,11 +347,12 @@ def simple_import_search(path_to_source_code, remap=True, ignore=None):
                   'stdlib_list',
                   'test_with_code']}
     """
+    ignore = [ignore] if isinstance(ignore, str) else ignore
     all_deps = defaultdict(set)
     catchers = iterate_over_library(path_to_source_code)
     for mod, path, catcher in catchers:
         # if ignore provided skip things which match the ignore pattern
-        if ignore and fnmatch(path, ignore):
+        if ignore and any(fnmatch(path, i) for i in ignore):
             continue
         for k, v in catcher.describe().items():
             all_deps[k].update(v)
