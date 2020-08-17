@@ -4,7 +4,7 @@ depfinder Change Log
 
 .. current developments
 
-vv2.4.0
+v2.4.0
 ====================
 
 **Added:**
