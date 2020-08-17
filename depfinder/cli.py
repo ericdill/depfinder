@@ -120,8 +120,8 @@ Tool for inspecting the dependencies of your python project.
     )
     p.add_argument(
         '--ignore',
-        default=None,
-        help="Blacklist pattern for files not to inpsect"
+        default='',
+        help="Comma separated list of file patterns not to inspect"
     )
     p.add_argument(
         '--strict',
@@ -201,8 +201,9 @@ def cli():
                      "it for python files".format(file_or_dir))
         # directories are a little easier from the purpose of the API call.
         # print the dependencies to the console and then exit
+        ignore = args.ignore.split(',')
         deps = simple_import_search(file_or_dir, remap=not args.no_remap,
-                                    ignore=args.ignore)
+                                    ignore=ignore)
         dump_deps(deps, keys)
         return 0
     elif os.path.isfile(file_or_dir):
