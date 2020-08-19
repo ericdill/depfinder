@@ -260,9 +260,14 @@ def parse_file(python_file):
         PACKAGE_NAME = os.path.basename(python_file).split('.')[0]
         logger.debug("Setting PACKAGE_NAME global variable to {}"
                      "".format(PACKAGE_NAME))
-    with open(python_file, 'r', encoding='utf-8-sig') as f:
-        code = f.read()
-    catcher = get_imported_libs(code)
+    try:
+        with open(python_file, 'r') as f:
+            code = f.read()
+        catcher = get_imported_libs(code)
+    except SyntaxError:
+        with open(python_file, 'r', encoding='utf-8-sig') as f:
+            code = f.read()
+        catcher = get_imported_libs(code)
     mod_name = os.path.split(python_file)[:-3]
     return mod_name, python_file, catcher
 
