@@ -4,6 +4,19 @@ depfinder Change Log
 
 .. current developments
 
+v2.4.1
+====================
+
+**Fixed:**
+
+* Handle different encodings, for instance the BOM used in adal
+
+**Authors:**
+
+* Christopher J. Wright
+
+
+
 v2.4.0
 ====================
 
