@@ -260,6 +260,8 @@ def parse_file(python_file):
         PACKAGE_NAME = os.path.basename(python_file).split('.')[0]
         logger.debug("Setting PACKAGE_NAME global variable to {}"
                      "".format(PACKAGE_NAME))
+    # Try except block added for adal package which has a BOM at the beginning,
+    # requiring a different encoding to load properly
     try:
         with open(python_file, 'r') as f:
             code = f.read()
