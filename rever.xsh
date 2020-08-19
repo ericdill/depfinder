@@ -8,6 +8,8 @@ $ACTIVITIES = ['authors',
                'conda_forge'
 ]
 
+$TAG_TEMPLATE = $GHRELEASE_NAME = 'v$VERSION'
+
 $CHANGELOG_FILENAME = 'CHANGELOG.rst'
 $CHANGELOG_IGNORE = ['TEMPLATE']
 
