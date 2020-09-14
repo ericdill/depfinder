@@ -70,8 +70,13 @@ pkg_data = yaml.load(
     Loader=yaml.SafeLoader,
 )
 
-with open('pkg_data/name_mapping_dict.yaml', 'r') as f:
-    namespace_mapping = yaml.load(f)
+with open('depfinder/pkg_data/name_mapping.yaml', 'r') as f:
+   mapping_list = yaml.load(f, Loader= yaml.SafeLoader)
+
+namespace_mapping = {}
+for pkg in mapping_list:
+   if pkg['import_name'] != pkg['conda_name']:
+       namespace_mapping[pkg['import_name']] = pkg['conda_name']
 
 def _split(name):
     mapped = namespace_mapping.get(name)
