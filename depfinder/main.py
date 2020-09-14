@@ -71,7 +71,7 @@ pkg_data = yaml.load(
 )
 
 with open('depfinder/pkg_data/name_mapping.yaml', 'r') as f:
-   mapping_list = yaml.load(f, Loader= yaml.SafeLoader)
+   mapping_list = yaml.load(f, Loader=yaml.SafeLoader)
 
 namespace_mapping = {}
 for pkg in mapping_list:
