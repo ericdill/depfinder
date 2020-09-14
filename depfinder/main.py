@@ -72,9 +72,15 @@ pkg_data = yaml.load(
 
 
 def _split(name):
-    named_space = pkg_data['_NAMEDSPACE_MAPPING'].get(name)
-    return named_space if named_space else name.split('.')[0]
-
+    mapped = pkg_data['_NAMEDSPACE_MAPPING'].get(name)
+    if mapped:
+        return mapped
+    else:
+        if not '.' in name:
+            return name
+        else:
+            pieces = name.split('.')[:-1]
+            return _split('.'.join(pieces))
 
 class ImportFinder(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
