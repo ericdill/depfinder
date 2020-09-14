@@ -83,7 +83,7 @@ def _split(name):
     if mapped:
         return mapped
     else:
-        if not '.' in name:
+        if '.' not in name:
             return name
         else:
             pieces = name.split('.')[:-1]
