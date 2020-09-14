@@ -78,7 +78,7 @@ for pkg in mapping_list:
    if pkg['import_name'] != pkg['conda_name']:
        namespace_mapping[pkg['import_name']] = pkg['conda_name']
 
-def _split(name):
+def get_top_level_import_name(name):
     mapped = namespace_mapping.get(name)
     if mapped:
         return mapped
@@ -87,7 +87,7 @@ def _split(name):
             return name
         else:
             pieces = name.split('.')[:-1]
-            return _split('.'.join(pieces))
+            return get_top_level_import_name('.'.join(pieces))
 
 class ImportFinder(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
@@ -148,7 +148,7 @@ class ImportFinder(ast.NodeVisitor):
         instance attribute
         """
         self.imports.append(node)
-        mods = set([_split(name.name) for name in node.names])
+        mods = set([get_top_level_import_name(name.name) for name in node.names])
         for mod in mods:
             self._add_import_node(mod)
 
@@ -169,11 +169,11 @@ class ImportFinder(ast.NodeVisitor):
             return
         if node.level > 0:
             # this is a relative import like 'from .foo import bar'
-            node_name = _split(node.module)
+            node_name = get_top_level_import_name(node.module)
             self.relative_modules.add(node_name)
             return
         # this is a non-relative import like 'from foo import bar'
-        node_name = _split(node.module)
+        node_name = get_top_level_import_name(node.module)
         self._add_import_node(node_name)
 
     def _add_import_node(self, node_name):
