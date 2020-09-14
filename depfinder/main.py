@@ -70,9 +70,11 @@ pkg_data = yaml.load(
     Loader=yaml.SafeLoader,
 )
 
+with open('pkg_data/name_mapping_dict.yaml', 'r') as f:
+    namespace_mapping = yaml.load(f)
 
 def _split(name):
-    mapped = pkg_data['_NAMEDSPACE_MAPPING'].get(name)
+    mapped = namespace_mapping.get(name)
     if mapped:
         return mapped
     else:
