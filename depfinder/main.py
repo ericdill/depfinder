@@ -41,6 +41,7 @@ import copy
 from stdlib_list import stdlib_list
 import pkgutil
 from fnmatch import fnmatch
+import requests
 
 logger = logging.getLogger('depfinder')
 
@@ -70,8 +71,12 @@ pkg_data = yaml.load(
     Loader=yaml.SafeLoader,
 )
 
-with open('depfinder/pkg_data/name_mapping.yml', 'r') as f:
-   mapping_list = yaml.load(f, Loader=yaml.SafeLoader)
+req = requests.get('https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/mappings/pypi/name_mapping.yaml')
+if req.status_code == 200:
+    mapping_list = yaml.load(req.text, Loader=yaml.SafeLoader)
+else:
+    with open('depfinder/pkg_data/name_mapping.yml', 'r') as f:
+        mapping_list = yaml.load(f, Loader=yaml.SafeLoader)
 
 namespace_mapping = {}
 for pkg in mapping_list:
