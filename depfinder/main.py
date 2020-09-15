@@ -80,8 +80,7 @@ else:
 
 namespace_mapping = {}
 for pkg in mapping_list:
-   if pkg['import_name'] != pkg['conda_name']:
-       namespace_mapping[pkg['import_name']] = pkg['conda_name']
+    namespace_mapping[pkg['import_name']] = pkg['conda_name']
 
 def get_top_level_import_name(name):
     mapped = namespace_mapping.get(name)
