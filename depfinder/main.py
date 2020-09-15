@@ -78,14 +78,11 @@ else:
     with open('depfinder/pkg_data/name_mapping.yml', 'r') as f:
         mapping_list = yaml.load(f, Loader=yaml.SafeLoader)
 
-namespace_mapping = {}
-for pkg in mapping_list:
-    namespace_mapping[pkg['import_name']] = pkg['conda_name']
+namespace_packages = {pkg['import_name'] for pkg in mapping_list if '.' in pkg['import_name']}
 
 def get_top_level_import_name(name):
-    mapped = namespace_mapping.get(name)
-    if mapped:
-        return mapped
+    if name in namespace_packages:
+        return name
     else:
         if '.' not in name:
             return name
