@@ -87,7 +87,7 @@ def get_top_level_import_name(name):
         if '.' not in name:
             return name
         else:
-            return get_top_level_import_name(name.rsplit('.', maxsplit=1)[0])
+            return get_top_level_import_name(name.rsplit('.', 1)[0])
 
 class ImportFinder(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
