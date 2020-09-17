@@ -73,10 +73,10 @@ pkg_data = yaml.load(
 
 req = requests.get('https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/mappings/pypi/name_mapping.yaml')
 if req.status_code == 200:
-    mapping_list = yaml.load(req.text, Loader=yaml.SafeLoader)
+    mapping_list = yaml.load(req.text, Loader=yaml.CSafeLoader)
 else:
     with open('depfinder/pkg_data/name_mapping.yml', 'r') as f:
-        mapping_list = yaml.load(f, Loader=yaml.SafeLoader)
+        mapping_list = yaml.load(f, Loader=yaml.CSafeLoader)
 
 namespace_packages = {pkg['import_name'] for pkg in mapping_list if '.' in pkg['import_name']}
 
