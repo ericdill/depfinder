@@ -41,6 +41,7 @@ import copy
 from stdlib_list import stdlib_list
 import pkgutil
 from fnmatch import fnmatch
+import requests
 
 logger = logging.getLogger('depfinder')
 
@@ -70,11 +71,23 @@ pkg_data = yaml.load(
     Loader=yaml.SafeLoader,
 )
 
+req = requests.get('https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/mappings/pypi/name_mapping.yaml')
+if req.status_code == 200:
+    mapping_list = yaml.load(req.text, Loader=yaml.CSafeLoader)
+else:
+    with open('depfinder/pkg_data/name_mapping.yml', 'r') as f:
+        mapping_list = yaml.load(f, Loader=yaml.CSafeLoader)
 
-def _split(name):
-    named_space = pkg_data['_NAMEDSPACE_MAPPING'].get(name)
-    return named_space if named_space else name.split('.')[0]
+namespace_packages = {pkg['import_name'] for pkg in mapping_list if '.' in pkg['import_name']}
 
+def get_top_level_import_name(name):
+    if name in namespace_packages:
+        return name
+    else:
+        if '.' not in name:
+            return name
+        else:
+            return get_top_level_import_name(name.rsplit('.', 1)[0])
 
 class ImportFinder(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
@@ -135,7 +148,7 @@ class ImportFinder(ast.NodeVisitor):
         instance attribute
         """
         self.imports.append(node)
-        mods = set([_split(name.name) for name in node.names])
+        mods = set([get_top_level_import_name(name.name) for name in node.names])
         for mod in mods:
             self._add_import_node(mod)
 
@@ -156,11 +169,11 @@ class ImportFinder(ast.NodeVisitor):
             return
         if node.level > 0:
             # this is a relative import like 'from .foo import bar'
-            node_name = _split(node.module)
+            node_name = get_top_level_import_name(node.module)
             self.relative_modules.add(node_name)
             return
         # this is a non-relative import like 'from foo import bar'
-        node_name = _split(node.module)
+        node_name = get_top_level_import_name(node.module)
         self._add_import_node(node_name)
 
     def _add_import_node(self, node_name):

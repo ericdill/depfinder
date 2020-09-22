@@ -353,3 +353,12 @@ def test_fake_packages():
     assert imports.describe() == {'required': {'mpl_toolkits'}}
     assert main.sanitize_deps(imports.describe()) == {}
 
+def test_get_top_level_import():
+
+    name = 'this.that.something'
+    top_level_name = main.get_top_level_import_name(name)
+    assert top_level_name == 'this'
+    
+    name = 'google.cloud.storage.something'
+    top_level_name = main.get_top_level_import_name(name)
+    assert top_level_name == 'google.cloud.storage'
