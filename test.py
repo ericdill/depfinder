@@ -77,6 +77,17 @@ class Class:
         from .relative_function_inside_class import a_third_function
         import pprint
 """},
+
+{'targets':
+     {'questionable': ['groucho', 'harpo', 'chico']},
+     'code': """
+if this:
+    import groucho
+elif that:
+    import harpo
+else:
+    import chico"""
+    },
 ]
 
 
