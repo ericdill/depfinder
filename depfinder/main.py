@@ -60,7 +60,7 @@ except AttributeError:
 # 1. inside a try/except block
 # 2. inside a function
 # 3. inside a class
-AST_QUESTIONABLE = tuple(list(AST_TRY) + [ast.FunctionDef, ast.ClassDef])
+AST_QUESTIONABLE = tuple(list(AST_TRY) + [ast.FunctionDef, ast.ClassDef, ast.If])
 del AST_TRY
 
 PACKAGE_NAME = None
