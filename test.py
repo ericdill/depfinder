@@ -79,7 +79,7 @@ class Class:
 """},
 
 {'targets':
-     {'questionable': ['groucho', 'harpo', 'chico']},
+     {'questionable': ['chico', 'groucho', 'harpo']},
      'code': """
 if this:
     import groucho
