@@ -40,8 +40,9 @@ import sys
 import yaml
 
 from . import main
+from .inspection import parse_file
 from .main import (simple_import_search, notebook_path_to_dependencies,
-                   parse_file, sanitize_deps)
+                   sanitize_deps)
 
 logger = logging.getLogger('depfinder')
 
