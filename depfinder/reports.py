@@ -31,6 +31,8 @@ from __future__ import print_function, division, absolute_import
 
 import logging
 import sys
+from concurrent.futures._base import as_completed
+from concurrent.futures.thread import ThreadPoolExecutor
 from functools import lru_cache
 
 import requests
@@ -77,12 +79,18 @@ def report_conda_forge_names_from_import_map(total_imports):
     report = {'required': set(), 'questionable': set(), 'builtin': set()}
     import_to_pkg = {}
     import_to_artifact = {}
+    futures = {}
 
-    for name, md in total_imports.items():
-        if name in builtin_modules:
-            report['builtin'].add(name)
-            continue
-        most_likely_pkg, _import_to_artifact, _import_to_pkg = extract_pkg_from_import(name)
+    with ThreadPoolExecutor() as pool:
+        for name, md in total_imports.items():
+            if name in builtin_modules:
+                report['builtin'].add(name)
+                continue
+            future = pool.submit(extract_pkg_from_import, name)
+            futures[future] = md
+    for future in as_completed(futures):
+        md = futures[future]
+        most_likely_pkg, _import_to_artifact, _import_to_pkg = future.result()
         import_to_pkg.update(_import_to_pkg)
         import_to_artifact.update(_import_to_artifact)
 

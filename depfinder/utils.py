@@ -32,7 +32,7 @@ except AttributeError:
 # 1. inside a try/except block
 # 2. inside a function
 # 3. inside a class
-AST_QUESTIONABLE = tuple(list(AST_TRY) + [ast.FunctionDef, ast.ClassDef, ast.If])
+AST_QUESTIONABLE = tuple(AST_TRY + [ast.FunctionDef, ast.ClassDef, ast.If])
 SKETCHY_TYPES_TABLE[ast.FunctionDef] = 'function'
 SKETCHY_TYPES_TABLE[ast.ClassDef] = 'class'
 SKETCHY_TYPES_TABLE[ast.If] = 'if'
@@ -40,14 +40,16 @@ del AST_TRY
 
 pkg_data = yaml.load(
     pkgutil.get_data(__name__, 'pkg_data/pkg_data.yml').decode(),
-    Loader=yaml.SafeLoader,
+    Loader=yaml.CSafeLoader,
 )
 
 req = requests.get('https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/mappings/pypi/name_mapping.yaml')
 if req.status_code == 200:
     mapping_list = yaml.load(req.text, Loader=yaml.CSafeLoader)
 else:
-    with open('depfinder/pkg_data/name_mapping.yml', 'r') as f:
-        mapping_list = yaml.load(f, Loader=yaml.CSafeLoader)
+    mapping_list = yaml.load(
+        pkgutil.get_data(__name__, 'pkg_data/name_mapping.yml').decode(),
+        Loader=yaml.CSafeLoader,
+    )
 
 namespace_packages = {pkg['import_name'] for pkg in mapping_list if '.' in pkg['import_name']}

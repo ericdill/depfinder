@@ -171,6 +171,8 @@ class ImportFinder(ast.NodeVisitor):
         elif isinstance(node, ast.ImportFrom):
             import_metadata['import_from'] = {node.module}
             names.add(node.module)
+        else:
+            raise NotImplementedError(f"Expected ast.Import or ast.ImportFrom this is {type(node)}")
 
         for name in names:
             self.total_imports[name].update({(self.filename, node.lineno): import_metadata})
