@@ -29,7 +29,6 @@
 
 from __future__ import print_function, division, absolute_import
 
-import json
 import logging
 import sys
 from functools import lru_cache
