@@ -31,8 +31,9 @@ from ._version import get_versions
 __version__ = get_versions()['version']
 del get_versions
 
-from .main import (iterate_over_library, parse_file,
-                   notebook_path_to_dependencies)
+from .inspection import parse_file
+
+from .main import (iterate_over_library, notebook_path_to_dependencies)
 
 import logging
 logger = logging.getLogger('depfinder')

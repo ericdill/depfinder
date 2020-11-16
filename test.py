@@ -16,7 +16,8 @@ import six
 from nbformat import v4
 
 import depfinder
-from depfinder import cli, main
+from depfinder import cli, main, inspection, parse_file
+from depfinder.reports import report_conda_forge_names_from_import_map
 
 random.seed(12345)
 
@@ -305,11 +306,11 @@ def test_cli_with_random_flags(flags):
     assert returncode == 0
 
 @pytest.mark.parametrize(
-    'path',
-    (dirname(depfinder.__file__),
-     join(dirname(depfinder.__file__), 'main.py'))
+    'path, req',
+    ((dirname(depfinder.__file__), None),
+     (join(dirname(depfinder.__file__), 'main.py'), set()))
 )
-def test_cli(path, capsys):
+def test_cli(path, req, capsys):
     """
     Test to ensure that the depfinder cli is finding the dependencies in the
     source the depfinder package that are listed in the requirements.txt file
@@ -321,13 +322,16 @@ def test_cli(path, capsys):
     sys.argv = old_argv
     # read stdout and stderr with pytest's built-in capturing mechanism
     stdout, stderr = capsys.readouterr()
-    dependencies_file = join(dirname(dirname(depfinder.__file__)),
-                             'requirements.txt')
     print('stdout\n{}'.format(stdout))
     print('stderr\n{}'.format(stderr))
-    dependencies = set(
-        [dep for dep in open(dependencies_file, 'r').read().split('\n') if dep])
-    assert dependencies == set(eval(stdout)['required'])
+    if req is None:
+        dependencies_file = join(dirname(dirname(depfinder.__file__)),
+                                 'requirements.txt')
+        dependencies = set(
+            [dep for dep in open(dependencies_file, 'r').read().split('\n') if dep])
+    else:
+        dependencies = req
+    assert dependencies == set(eval(stdout).get('required', set()))
 
 
 def test_known_fail_cli(tmpdir):
@@ -367,9 +371,15 @@ def test_fake_packages():
 def test_get_top_level_import():
 
     name = 'this.that.something'
-    top_level_name = main.get_top_level_import_name(name)
+    top_level_name = inspection.get_top_level_import_name(name)
     assert top_level_name == 'this'
     
     name = 'google.cloud.storage.something'
-    top_level_name = main.get_top_level_import_name(name)
+    top_level_name = inspection.get_top_level_import_name(name)
     assert top_level_name == 'google.cloud.storage'
+
+
+def test_report_conda_forge_names_from_import_map():
+    m, f, c = parse_file(join(dirname(depfinder.__file__), 'inspection.py'))
+    report, import_to_artifact, import_to_pkg = report_conda_forge_names_from_import_map(c.total_imports)
+    assert report['required'] == {'stdlib-list'}
