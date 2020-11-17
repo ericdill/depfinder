@@ -193,6 +193,39 @@ def sanitize_deps(deps_dict):
 
 
 def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=None):
+    """Return all conda-forge packages used in all .py files in `path_to_source_code`
+
+    Parameters
+    ----------
+    path_to_source_code : str
+    builtins : list, optional
+        List of python builtins to partition into their own section
+
+    Returns
+    -------
+    dict
+        The list of all imported modules, sorted according to the keys listed
+        in the docstring of depfinder.ImportCatcher.describe()
+
+    Examples
+    --------
+    >>> depfinder.simple_import_search_conda_forge_import_map('/path/to/depfinder/source')
+    {'builtin': ['__future__',
+                 'ast',
+                 'collections',
+                 'json',
+                 'os',
+                 'shlex',
+                 'sys',
+                 'tempfile'],
+     'required': ['depfinder',
+                  'nbformat',
+                  'pytest',
+                  'setuptools',
+                  'sphinx_rtd_theme',
+                  'stdlib_list',
+                  'test_with_code']}
+    """
     # run depfinder on source code
     total_imports_list = []
     for _, _, c in iterate_over_library(path_to_source_code):
@@ -204,4 +237,4 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
     imports, _, _ = report_conda_forge_names_from_import_map(
         total_imports, builtin_modules=builtins,
     )
-    return {k: set(v) for k, v in imports.items()}
+    return {k: sorted(list(v)) for k, v in imports.items()}

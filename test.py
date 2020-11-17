@@ -387,5 +387,6 @@ def test_report_conda_forge_names_from_import_map():
 
 
 def test_simple_import_search_conda_forge_import_map():
-    report = simple_import_search_conda_forge_import_map(dirname(depfinder.__file__))
-    assert report['required'] == {"pyyaml", "stdlib-list", "setuptools", "versioneer"}
+    path_to_source = dirname(depfinder.__file__)
+    report = simple_import_search_conda_forge_import_map(path_to_source)
+    assert report['required'] == sorted(list({"pyyaml", "stdlib-list", "requests"}))
