@@ -20,7 +20,7 @@
   github: ocefpaf
 - name: Christopher J. Wright
   email: cjwright4242@gmail.com
-  num_commits: 25
+  num_commits: 30
   first_commit: 2019-07-06 13:51:23
 - name: Tony Fast
   email: tony.fast@gmail.com
@@ -30,6 +30,6 @@
   email: jkarp314@gmail.com
   aliases:
   - jkarp314
-  num_commits: 2
+  num_commits: 19
   first_commit: 2020-09-14 11:23:16
   github: jkarp314
