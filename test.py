@@ -17,6 +17,7 @@ from nbformat import v4
 
 import depfinder
 from depfinder import cli, main, inspection, parse_file
+from depfinder.main import simple_import_search_conda_forge_import_map
 from depfinder.reports import report_conda_forge_names_from_import_map
 
 random.seed(12345)
@@ -383,3 +384,9 @@ def test_report_conda_forge_names_from_import_map():
     m, f, c = parse_file(join(dirname(depfinder.__file__), 'inspection.py'))
     report, import_to_artifact, import_to_pkg = report_conda_forge_names_from_import_map(c.total_imports)
     assert report['required'] == {'stdlib-list'}
+
+
+def test_simple_import_search_conda_forge_import_map():
+    path_to_source = dirname(depfinder.__file__)
+    report = simple_import_search_conda_forge_import_map(path_to_source)
+    assert report['required'] == sorted(list({"pyyaml", "stdlib-list", "requests"}))
