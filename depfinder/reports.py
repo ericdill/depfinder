@@ -43,7 +43,7 @@ from .utils import SKETCHY_TYPES_TABLE
 logger = logging.getLogger('depfinder')
 
 pyver = '%s.%s' % (sys.version_info.major, sys.version_info.minor)
-builtin_modules = stdlib_list(pyver)
+_builtin_modules = stdlib_list(pyver)
 del pyver
 
 
@@ -51,7 +51,7 @@ del pyver
 def _import_map_cache(import_first_two_letters):
     return {k: set(v['elements']) for k, v in requests.get(
         f'https://raw.githubusercontent.com/regro/libcfgraph'
-        f'/master/import_maps/{import_first_two_letters}.json').json().items()}
+        f'/master/import_maps/{import_first_two_letters.lower()}.json').json().items()}
 
 
 FILE_LISTING = requests.get('https://raw.githubusercontent.com/regro/libcfgraph/master/.file_listing.json').json()
@@ -75,7 +75,9 @@ def extract_pkg_from_import(name):
     return next(iter(k for k in hubs_auths if k in supplying_pkgs)), import_to_artifact, import_to_pkg
 
 
-def report_conda_forge_names_from_import_map(total_imports):
+def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None):
+    if builtin_modules is None:
+        builtin_modules = _builtin_modules
     report = {'required': set(), 'questionable': set(), 'builtin': set()}
     import_to_pkg = {}
     import_to_artifact = {}
@@ -94,8 +96,9 @@ def report_conda_forge_names_from_import_map(total_imports):
         import_to_pkg.update(_import_to_pkg)
         import_to_artifact.update(_import_to_artifact)
 
-        if any(md.get(v, False) for k, v in SKETCHY_TYPES_TABLE.items()):
-            report['questionable'].add(most_likely_pkg)
-        else:
-            report['required'].add(most_likely_pkg)
+        for (filename, lineno), import_metadata in md.items():
+            if any(import_metadata.get(v, False) for v in SKETCHY_TYPES_TABLE.values()):
+                report['questionable'].add(most_likely_pkg)
+            else:
+                report['required'].add(most_likely_pkg)
     return report, import_to_artifact, import_to_pkg
