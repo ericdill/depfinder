@@ -414,7 +414,6 @@ def test_extract_pkg_from_import_for_complex_imports(import_name, expected_resul
 
 
 @pytest.mark.parametrize('import_name, expected_result', [
-    ('importlib.metadata', 'importlib'),
     ('six.moves', False),
 ])
 def test_search_for_name(import_name, expected_result):
