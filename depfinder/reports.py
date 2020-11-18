@@ -63,9 +63,30 @@ hubs_auths = requests.get(
 
 
 def extract_pkg_from_import(name):
+    """Provide the name of the package that matches with the import provided,
+    with the maps between the imports and artifacts and packages that matches
+
+    Parameters
+    ----------
+    name : str
+        The name of the import to be searched for
+
+    Returns
+    -------
+
+    """
     ftl = name[:2]
     import_map = _import_map_cache(ftl)
-    supplying_artifacts = import_map[name]
+    while True:
+        try:
+            supplying_artifacts = import_map[name]
+        except KeyError:
+            if '.' not in name:
+                raise RuntimeError('No import map entry for ')
+            name = name.rsplit('.', 1)[0]
+            pass
+        else:
+            break
     import_to_artifact = {name: supplying_artifacts}
     # TODO: launder supplying_pkgs through centrality scoring so we have one thing
     #  but keep the rest for the more detailed reports
@@ -73,6 +94,17 @@ def extract_pkg_from_import(name):
     import_to_pkg = {name: supplying_pkgs}
 
     return next(iter(k for k in hubs_auths if k in supplying_pkgs)), import_to_artifact, import_to_pkg
+
+
+def recursively_search_for_name(name, module_names):
+    while True:
+        if name in module_names:
+            return name
+        else:
+            if '.' in name:
+                name = name.rsplit('.', 1)[0]
+            else:
+                return False
 
 
 def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None):
@@ -85,7 +117,7 @@ def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None
 
     with ThreadPoolExecutor() as pool:
         for name, md in total_imports.items():
-            if name in builtin_modules:
+            if recursively_search_for_name(name, builtin_modules):
                 report['builtin'].add(name)
                 continue
             future = pool.submit(extract_pkg_from_import, name)
