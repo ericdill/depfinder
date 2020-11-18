@@ -391,6 +391,12 @@ def test_report_conda_forge_names_from_import_map():
     assert report['required'] == {'stdlib-list'}
 
 
+def test_report_conda_forge_names_from_import_map_ignore():
+    m, f, c = parse_file(join(dirname(depfinder.__file__), 'inspection.py'))
+    report, import_to_artifact, import_to_pkg = report_conda_forge_names_from_import_map(c.total_imports, ignore=['*insp*'])
+    assert report['required'] == set()
+
+
 def test_simple_import_search_conda_forge_import_map():
     path_to_source = dirname(depfinder.__file__)
     report = simple_import_search_conda_forge_import_map(path_to_source)
@@ -400,6 +406,7 @@ def test_simple_import_search_conda_forge_import_map():
 @pytest.mark.parametrize('import_name, expected_result', [
     ('six.moves', 'six'),
     ('win32com.shell', 'pywin32'),
+    ('win32com', 'pywin32')
 ])
 def test_extract_pkg_from_import_for_complex_imports(import_name, expected_result):
     result, _, _ = extract_pkg_from_import(import_name)

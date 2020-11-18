@@ -33,6 +33,7 @@ import logging
 import sys
 from concurrent.futures._base import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
+from fnmatch import fnmatch
 from functools import lru_cache
 
 import requests
@@ -49,9 +50,12 @@ del pyver
 
 @lru_cache()
 def _import_map_cache(import_first_two_letters):
-    return {k: set(v['elements']) for k, v in requests.get(
+    req = requests.get(
         f'https://raw.githubusercontent.com/regro/libcfgraph'
-        f'/master/import_maps/{import_first_two_letters.lower()}.json').json().items()}
+        f'/master/import_maps/{import_first_two_letters.lower()}.json')
+    if not req.ok:
+        raise RuntimeError('Request to {req_url} failed'.format(req_url=req.url))
+    return {k: set(v['elements']) for k, v in req.json().items()}
 
 
 FILE_LISTING = requests.get('https://raw.githubusercontent.com/regro/libcfgraph/master/.file_listing.json').json()
@@ -77,12 +81,13 @@ def extract_pkg_from_import(name):
     """
     ftl = name[:2]
     import_map = _import_map_cache(ftl)
+    original_name = name
     while True:
         try:
             supplying_artifacts = import_map[name]
         except KeyError:
             if '.' not in name:
-                raise RuntimeError('No import map entry for ')
+                raise RuntimeError('No import map entry for {original_name}'.format(original_name=original_name))
             name = name.rsplit('.', 1)[0]
             pass
         else:
@@ -107,7 +112,9 @@ def recursively_search_for_name(name, module_names):
                 return False
 
 
-def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None):
+def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None, ignore=None):
+    if ignore is None:
+        ignore = []
     if builtin_modules is None:
         builtin_modules = _builtin_modules
     report = {'required': set(), 'questionable': set(), 'builtin': set()}
@@ -117,7 +124,9 @@ def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None
 
     with ThreadPoolExecutor() as pool:
         for name, md in total_imports.items():
-            if recursively_search_for_name(name, builtin_modules):
+            if all([any(fnmatch(filename, ignore_element) for ignore_element in ignore) for filename, _ in md]):
+                continue
+            elif recursively_search_for_name(name, builtin_modules):
                 report['builtin'].add(name)
                 continue
             future = pool.submit(extract_pkg_from_import, name)
