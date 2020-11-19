@@ -18,7 +18,8 @@ from nbformat import v4
 import depfinder
 from depfinder import cli, main, inspection, parse_file
 from depfinder.main import simple_import_search_conda_forge_import_map
-from depfinder.reports import report_conda_forge_names_from_import_map
+from depfinder.reports import report_conda_forge_names_from_import_map, extract_pkg_from_import, \
+    recursively_search_for_name, _builtin_modules
 
 random.seed(12345)
 
@@ -31,7 +32,7 @@ random.seed(12345)
 
 complex_imports = [
     {'targets':
-     {'questionable': ['atom', 'chemist', 'molecule', 'physicist']},
+         {'questionable': ['atom', 'chemist', 'molecule', 'physicist']},
      'code': """
 try:
     import molecule
@@ -41,7 +42,7 @@ else:
     import chemist
 finally:
     import physicist"""
-    },
+     },
     {'targets': {'required': ['foo'], 'builtin': ['os']},
      'code': """
 import foo
@@ -80,8 +81,8 @@ class Class:
         import pprint
 """},
 
-{'targets':
-     {'questionable': ['chico', 'groucho', 'harpo']},
+    {'targets':
+         {'questionable': ['chico', 'groucho', 'harpo']},
      'code': """
 if this:
     import groucho
@@ -89,9 +90,8 @@ elif that:
     import harpo
 else:
     import chico"""
-    },
+     },
 ]
-
 
 simple_imports = [
     {'targets': {'required': ['foo']},
@@ -115,6 +115,7 @@ relative_imports = [
     {'targets': {'relative': ['bar']},
      'code': 'from ..bar import baz'},
 ]
+
 
 class Initter(object):
     def __init__(self, artifact):
@@ -211,6 +212,7 @@ def test_multiple_code_cells(capsys):
         stdout, stderr = capsys.readouterr()
         assert targets == eval(stdout)
 
+
 ### CLI TESTING CODE ###
 
 def _process_args(path_to_check, extra_flags):
@@ -273,6 +275,7 @@ def known_flags():
                   '-k relative'])
     return flags
 
+
 @pytest.fixture(scope="module")
 def flags():
     yield known_flags()
@@ -305,6 +308,7 @@ def test_cli_with_random_flags(flags):
         return
 
     assert returncode == 0
+
 
 @pytest.mark.parametrize(
     'path, req',
@@ -363,18 +367,19 @@ def test_individual_args(path, flags):
         _run_cli(path_to_check=path, extra_flags=[flag])
         _run_cli(path_to_check=path, extra_flags=[flag])
 
+
 def test_fake_packages():
     fake_import = "import mpl_toolkits"
     imports = main.get_imported_libs(fake_import)
     assert imports.describe() == {'required': {'mpl_toolkits'}}
     assert main.sanitize_deps(imports.describe()) == {}
 
-def test_get_top_level_import():
 
+def test_get_top_level_import():
     name = 'this.that.something'
     top_level_name = inspection.get_top_level_import_name(name)
     assert top_level_name == 'this'
-    
+
     name = 'google.cloud.storage.something'
     top_level_name = inspection.get_top_level_import_name(name)
     assert top_level_name == 'google.cloud.storage'
@@ -386,7 +391,31 @@ def test_report_conda_forge_names_from_import_map():
     assert report['required'] == {'stdlib-list'}
 
 
+def test_report_conda_forge_names_from_import_map_ignore():
+    m, f, c = parse_file(join(dirname(depfinder.__file__), 'inspection.py'))
+    report, import_to_artifact, import_to_pkg = report_conda_forge_names_from_import_map(c.total_imports, ignore=['*insp*'])
+    assert report['required'] == set()
+
+
 def test_simple_import_search_conda_forge_import_map():
     path_to_source = dirname(depfinder.__file__)
     report = simple_import_search_conda_forge_import_map(path_to_source)
     assert report['required'] == sorted(list({"pyyaml", "stdlib-list", "requests"}))
+
+
+@pytest.mark.parametrize('import_name, expected_result', [
+    ('six.moves', 'six'),
+    ('win32com.shell', 'pywin32'),
+    ('win32com', 'pywin32')
+])
+def test_extract_pkg_from_import_for_complex_imports(import_name, expected_result):
+    result, _, _ = extract_pkg_from_import(import_name)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('import_name, expected_result', [
+    ('six.moves', False),
+])
+def test_search_for_name(import_name, expected_result):
+    builtin_name_maybe = recursively_search_for_name(import_name, _builtin_modules)
+    assert builtin_name_maybe == expected_result

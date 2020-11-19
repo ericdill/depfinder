@@ -192,7 +192,7 @@ def sanitize_deps(deps_dict):
     return new_deps_dict
 
 
-def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=None):
+def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=None, ignore=None):
     """Return all conda-forge packages used in all .py files in `path_to_source_code`
 
     Parameters
@@ -200,6 +200,8 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
     path_to_source_code : str
     builtins : list, optional
         List of python builtins to partition into their own section
+    ignore : list, optional
+        String pattern which if matched causes the file to not be inspected
 
     Returns
     -------
@@ -227,6 +229,8 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
                   'test_with_code']}
     """
     # run depfinder on source code
+    if ignore is None:
+        ignore = []
     total_imports_list = []
     for _, _, c in iterate_over_library(path_to_source_code):
         total_imports_list.append(c.total_imports)
@@ -235,6 +239,6 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
         for name, md in total_import.items():
             total_imports[name].update(md)
     imports, _, _ = report_conda_forge_names_from_import_map(
-        total_imports, builtin_modules=builtins,
+        total_imports, builtin_modules=builtins, ignore=ignore
     )
     return {k: sorted(list(v)) for k, v in imports.items()}
