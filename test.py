@@ -406,7 +406,9 @@ def test_simple_import_search_conda_forge_import_map():
 @pytest.mark.parametrize('import_name, expected_result', [
     ('six.moves', 'six'),
     ('win32com.shell', 'pywin32'),
-    ('win32com', 'pywin32')
+    ('win32com', 'pywin32'),
+    # this comes from cython but doesn't seem to be a real pkg
+    ('refnanny.hi', 'refnanny.hi')
 ])
 def test_extract_pkg_from_import_for_complex_imports(import_name, expected_result):
     result, _, _ = extract_pkg_from_import(import_name)

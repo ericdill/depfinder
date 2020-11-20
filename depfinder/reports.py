@@ -87,7 +87,7 @@ def extract_pkg_from_import(name):
             supplying_artifacts = import_map[name]
         except KeyError:
             if '.' not in name:
-                raise RuntimeError('No import map entry for {original_name}'.format(original_name=original_name))
+                return original_name, {}, {}
             name = name.rsplit('.', 1)[0]
             pass
         else:
@@ -117,7 +117,8 @@ def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None
         ignore = []
     if builtin_modules is None:
         builtin_modules = _builtin_modules
-    report = {'required': set(), 'questionable': set(), 'builtin': set()}
+    report = {'required': set(), 'questionable': set(), 'builtin': set(), 'questionable no match': set(),
+              'required no match': set()}
     import_to_pkg = {}
     import_to_artifact = {}
     futures = {}
@@ -139,7 +140,14 @@ def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None
 
         for (filename, lineno), import_metadata in md.items():
             if any(import_metadata.get(v, False) for v in SKETCHY_TYPES_TABLE.values()):
-                report['questionable'].add(most_likely_pkg)
+                # if we couldn't find any artifacts to represent this then it doesn't exist in our maps
+                if not _import_to_artifact:
+                    report['questionable no match'].add(most_likely_pkg)
+                else:
+                    report['questionable'].add(most_likely_pkg)
             else:
+                # if we couldn't find any artifacts to represent this then it doesn't exist in our maps
+                if not _import_to_artifact:
+                    report['required no match'].add(most_likely_pkg)
                 report['required'].add(most_likely_pkg)
     return report, import_to_artifact, import_to_pkg
