@@ -4,6 +4,15 @@ depfinder Change Log
 
 .. current developments
 
+v2.6.1
+====================
+
+**Authors:**
+
+* Christopher J. Wright
+
+
+
 v2.6.0
 ====================
 
