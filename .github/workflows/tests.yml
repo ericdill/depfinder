@@ -1,0 +1,60 @@
+name: tests
+
+on:
+  push: null
+  pull_request: null
+
+jobs:
+  tests:
+    name: tests
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v2
+
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: 3.8
+          channels: conda-forge,defaults
+          channel-priority: strict
+          show-channel-urls: true
+
+      - name: configure conda and install code
+        shell: bash -l {0}
+        run: |
+          conda config --set always_yes yes --set changeps1 no --set show_channel_urls true
+          conda update --quiet conda
+          conda config --add channels conda-forge --force
+          conda config --set channel_priority strict
+          conda config --set safety_checks disabled
+          conda create --name TEST python=$PY --file requirements.txt --file requirements-dev.txt
+          source activate TEST
+          conda info --all
+          python setup.py sdist && version=$(python setup.py --version) && pushd dist && pip install --no-deps --force-reinstall depfinder-${version}.tar.gz && popd
+
+      - name: test
+        shell: bash -l {0}
+        run: |
+          coverage run -m pytest -vrsx test.py
+          coverage report -m
+          codecov
+
+#      - name: build docs
+#        shell: bash -l {0}
+#        run: |
+#          pushd docs
+#          make html
+#          popd
+
+#      - name: deploy docs
+#        uses: JamesIves/github-pages-deploy-action@3.7.1
+#        if: github.ref == 'refs/heads/master' && success()
+#        with:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          BRANCH: gh-pages            # The branch the action should deploy to.
+#          FOLDER: ./docs/_build/html  # The folder the action should deploy.
+#          CLEAN: true                 # Automatically remove deleted files from the deploy branch
