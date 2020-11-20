@@ -31,10 +31,10 @@ jobs:
           conda config --add channels conda-forge --force
           conda config --set channel_priority strict
           conda config --set safety_checks disabled
-          conda create --name TEST python=$PY --file requirements.txt --file requirements-dev.txt
-          source activate TEST
           conda info --all
-          python setup.py sdist && version=$(python setup.py --version) && pushd dist && pip install --no-deps --force-reinstall depfinder-${version}.tar.gz && popd
+          conda create --name TEST --file requirements.txt --file requirements-dev.txt
+          conda activate TEST
+          python -m pip install -e .
 
       - name: test
         shell: bash -l {0}
