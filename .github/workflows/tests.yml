@@ -31,9 +31,9 @@ jobs:
           conda config --add channels conda-forge --force
           conda config --set channel_priority strict
           conda config --set safety_checks disabled
+          conda info --all
           conda create --name TEST python=$PY --file requirements.txt --file requirements-dev.txt
           source activate TEST
-          conda info --all
           python -m pip install -e .
 
       - name: test
