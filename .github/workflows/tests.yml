@@ -34,7 +34,7 @@ jobs:
           conda create --name TEST python=$PY --file requirements.txt --file requirements-dev.txt
           source activate TEST
           conda info --all
-          python setup.py sdist && version=$(python setup.py --version) && pushd dist && pip install --no-deps --force-reinstall depfinder-${version}.tar.gz && popd
+          python -m pip install -e .
 
       - name: test
         shell: bash -l {0}
