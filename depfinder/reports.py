@@ -54,14 +54,14 @@ def _import_map_cache(import_first_two_letters):
         f'https://raw.githubusercontent.com/regro/libcfgraph'
         f'/master/import_maps/{import_first_two_letters.lower()}.json')
     if not req.ok:
-        raise RuntimeError('Request to {req_url} failed'.format(req_url=req.url))
+        print('Request to {req_url} failed'.format(req_url=req.url))
+        return {}
     return {k: set(v['elements']) for k, v in req.json().items()}
 
 
 FILE_LISTING = requests.get('https://raw.githubusercontent.com/regro/libcfgraph/master/.file_listing.json').json()
 # TODO: upstream this to libcfgraph so we just request it, so we reduce bandwidth requirements
-ARTIFACT_TO_PKG = {v.split('/')[-1].rsplit('.', 1)[0]: v.split('/')[1] for v in FILE_LISTING}
-
+ARTIFACT_TO_PKG = {v.split('/')[-1].rsplit('.', 1)[0]: v.split('/')[1] for v in FILE_LISTING if 'artifacts' in v}
 hubs_auths = requests.get(
     'https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/ranked_hubs_authorities.json').json()
 
@@ -98,7 +98,7 @@ def extract_pkg_from_import(name):
     supplying_pkgs = {ARTIFACT_TO_PKG[k] for k in supplying_artifacts}
     import_to_pkg = {name: supplying_pkgs}
 
-    return next(iter(k for k in hubs_auths if k in supplying_pkgs)), import_to_artifact, import_to_pkg
+    return next(iter(k for k in hubs_auths if k in supplying_pkgs), original_name), import_to_artifact, import_to_pkg
 
 
 def recursively_search_for_name(name, module_names):
@@ -149,5 +149,6 @@ def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None
                 # if we couldn't find any artifacts to represent this then it doesn't exist in our maps
                 if not _import_to_artifact:
                     report['required no match'].add(most_likely_pkg)
-                report['required'].add(most_likely_pkg)
+                else:
+                    report['required'].add(most_likely_pkg)
     return report, import_to_artifact, import_to_pkg
