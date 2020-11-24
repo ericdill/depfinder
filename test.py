@@ -17,7 +17,7 @@ from nbformat import v4
 
 import depfinder
 from depfinder import cli, main, inspection, parse_file
-from depfinder.main import simple_import_search_conda_forge_import_map
+from depfinder.main import simple_import_search_conda_forge_import_map, simple_import_to_pkg_map
 from depfinder.reports import report_conda_forge_names_from_import_map, extract_pkg_from_import, \
     recursively_search_for_name, _builtin_modules
 
@@ -393,7 +393,8 @@ def test_report_conda_forge_names_from_import_map():
 
 def test_report_conda_forge_names_from_import_map_ignore():
     m, f, c = parse_file(join(dirname(depfinder.__file__), 'inspection.py'))
-    report, import_to_artifact, import_to_pkg = report_conda_forge_names_from_import_map(c.total_imports, ignore=['*insp*'])
+    report, import_to_artifact, import_to_pkg = report_conda_forge_names_from_import_map(c.total_imports,
+                                                                                         ignore=['*insp*'])
     assert report['required'] == set()
 
 
@@ -421,3 +422,20 @@ def test_extract_pkg_from_import_for_complex_imports(import_name, expected_resul
 def test_search_for_name(import_name, expected_result):
     builtin_name_maybe = recursively_search_for_name(import_name, _builtin_modules)
     assert builtin_name_maybe == expected_result
+
+
+def test_simple_import_to_pkg_map():
+    path_to_source = dirname(depfinder.__file__)
+    import_to_artifact = simple_import_to_pkg_map(path_to_source)
+    assert import_to_artifact == {'builtin': {},
+                                  'questionable': {'IPython.core.inputsplitter': {'ipython', 'autovizwidget'}},
+                                  'questionable no match': {},
+                                  'required': {'requests': {'apache-libcloud',
+                                                            'autovizwidget',
+                                                            'dbxfs',
+                                                            'google-api-core',
+                                                            'google-cloud-bigquery-storage-core',
+                                                            'requests'},
+                                               'stdlib_list': {'stdlib-list'},
+                                               'yaml': {'google-cloud-bigquery-storage-core', 'pyyaml'}},
+                                  'required no match': {}}

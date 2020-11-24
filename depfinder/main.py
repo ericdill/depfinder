@@ -242,3 +242,37 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
         total_imports, builtin_modules=builtins, ignore=ignore
     )
     return {k: sorted(list(v)) for k, v in imports.items()}
+
+
+def simple_import_to_pkg_map(path_to_source_code, builtins=None, ignore=None):
+    """Provide the map beteen all the imports and their possible packages
+
+    Parameters
+    ----------
+    path_to_source_code : str
+    builtins : list, optional
+        List of python builtins to partition into their own section
+    ignore : list, optional
+        String pattern which if matched causes the file to not be inspected
+
+    Returns
+    -------
+    dict of dict of sets:
+        The classes of requirements (required, questionable, builtin, no match required, no match questionable),
+        name of the import and packages that provide that import
+
+    """
+    # run depfinder on source code
+    if ignore is None:
+        ignore = []
+    total_imports_list = []
+    for _, _, c in iterate_over_library(path_to_source_code):
+        total_imports_list.append(c.total_imports)
+    total_imports = defaultdict(dict)
+    for total_import in total_imports_list:
+        for name, md in total_import.items():
+            total_imports[name].update(md)
+    _, _, import_to_artifact = report_conda_forge_names_from_import_map(
+        total_imports, builtin_modules=builtins, ignore=ignore
+    )
+    return import_to_artifact
