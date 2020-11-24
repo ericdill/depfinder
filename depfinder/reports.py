@@ -117,10 +117,10 @@ def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None
         ignore = []
     if builtin_modules is None:
         builtin_modules = _builtin_modules
-    report = {'required': set(), 'questionable': set(), 'builtin': set(), 'questionable no match': set(),
-              'required no match': set()}
-    import_to_pkg = {}
-    import_to_artifact = {}
+    report_keys = ['required', 'questionable', 'builtin', 'questionable no match', 'required no match']
+    report = {k: set() for k in report_keys}
+    import_to_pkg = {k: {} for k in report_keys}
+    import_to_artifact = {k: {} for k in report_keys}
     futures = {}
 
     with ThreadPoolExecutor() as pool:
@@ -135,20 +135,27 @@ def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None
     for future in as_completed(futures):
         md = futures[future]
         most_likely_pkg, _import_to_artifact, _import_to_pkg = future.result()
-        import_to_pkg.update(_import_to_pkg)
-        import_to_artifact.update(_import_to_artifact)
 
         for (filename, lineno), import_metadata in md.items():
+            # Make certain to throw out imports, since an import can happen multiple times
+            # under different situations, import matplotlib is required by a test file
+            # but is questionable for a regular file
+            if any(fnmatch(filename, ignore_element) for ignore_element in ignore):
+                continue
             if any(import_metadata.get(v, False) for v in SKETCHY_TYPES_TABLE.values()):
                 # if we couldn't find any artifacts to represent this then it doesn't exist in our maps
                 if not _import_to_artifact:
-                    report['questionable no match'].add(most_likely_pkg)
+                    report_key = 'questionable no match'
                 else:
-                    report['questionable'].add(most_likely_pkg)
+                    report_key = 'questionable'
             else:
                 # if we couldn't find any artifacts to represent this then it doesn't exist in our maps
                 if not _import_to_artifact:
-                    report['required no match'].add(most_likely_pkg)
+                    report_key = 'required no match'
                 else:
-                    report['required'].add(most_likely_pkg)
+                    report_key = 'required'
+
+            report[report_key].add(most_likely_pkg)
+            import_to_pkg[report_key].update(_import_to_pkg)
+            import_to_artifact[report_key].update(_import_to_artifact)
     return report, import_to_artifact, import_to_pkg
