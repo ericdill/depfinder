@@ -38,18 +38,23 @@ SKETCHY_TYPES_TABLE[ast.ClassDef] = 'class'
 SKETCHY_TYPES_TABLE[ast.If] = 'if'
 del AST_TRY
 
+try:
+    yaml_loader = yaml.CSafeLoader
+except ImportError:
+    yaml_loader = yaml.SafeLoader
+
 pkg_data = yaml.load(
     pkgutil.get_data(__name__, 'pkg_data/pkg_data.yml').decode(),
-    Loader=yaml.CSafeLoader,
+    Loader=yaml_loader,
 )
 
 req = requests.get('https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/mappings/pypi/name_mapping.yaml')
 if req.status_code == 200:
-    mapping_list = yaml.load(req.text, Loader=yaml.CSafeLoader)
+    mapping_list = yaml.load(req.text, Loader=yaml_loader)
 else:
     mapping_list = yaml.load(
         pkgutil.get_data(__name__, 'pkg_data/name_mapping.yml').decode(),
-        Loader=yaml.CSafeLoader,
+        Loader=yaml_loader,
     )
 
 namespace_packages = {pkg['import_name'] for pkg in mapping_list if '.' in pkg['import_name']}
