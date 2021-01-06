@@ -39,8 +39,11 @@ SKETCHY_TYPES_TABLE[ast.If] = 'if'
 del AST_TRY
 
 try:
+    # Try and use the C extensions because they're faster
     yaml_loader = yaml.CSafeLoader
 except ImportError:
+    # Fall back to the slower python implementation of the extensions because
+    # that is what is available from the PyYAML pip package
     yaml_loader = yaml.SafeLoader
 
 pkg_data = yaml.load(
