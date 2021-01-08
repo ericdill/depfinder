@@ -4,6 +4,15 @@ depfinder Change Log
 
 .. current developments
 
+v2.7.1
+====================
+
+**Authors:**
+
+* Eric Dill
+
+
+
 v2.7.0
 ====================
 
