@@ -5,9 +5,10 @@
   - edill@anaconda.com
   - eric.dill@maxpoint.com
   - thedizzle@gmail.com
+  - eric.dill@dtn.com
   aliases:
   - ericdill
-  num_commits: 139
+  num_commits: 141
   first_commit: 2015-10-02 08:42:27
 - name: Filipe Fernandes
   aliases:
@@ -20,7 +21,7 @@
   github: ocefpaf
 - name: Christopher J. Wright
   email: cjwright4242@gmail.com
-  num_commits: 51
+  num_commits: 53
   first_commit: 2019-07-06 13:51:23
 - name: Tony Fast
   email: tony.fast@gmail.com
