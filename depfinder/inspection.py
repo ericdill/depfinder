@@ -38,7 +38,10 @@ from typing import Union
 
 from stdlib_list import stdlib_list
 
-from .utils import AST_QUESTIONABLE, namespace_packages, SKETCHY_TYPES_TABLE
+from .utils import (
+    AST_QUESTIONABLE, namespace_packages, SKETCHY_TYPES_TABLE,
+    custom_namespaces
+)
 
 logger = logging.getLogger('depfinder')
 
@@ -52,7 +55,16 @@ STRICT_CHECKING = False
 
 
 def get_top_level_import_name(name):
+    num_dot = name.count(".")
+
     if name in namespace_packages:
+        return name
+    elif any(
+        ((num_dot - nsp.count(".")) == 1) and name.startswith(nsp + ".")
+        for nsp in custom_namespaces
+    ):
+        # this branch happens when name is foo.bar.baz and the namespace is
+        # foo.bar
         return name
     else:
         if '.' not in name:

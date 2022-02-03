@@ -43,6 +43,7 @@ from . import main
 from .inspection import parse_file
 from .main import (simple_import_search, notebook_path_to_dependencies,
                    sanitize_deps)
+from .utils import custom_namespaces
 
 logger = logging.getLogger('depfinder')
 
@@ -130,6 +131,16 @@ Tool for inspecting the dependencies of your python project.
         action="store_true",
         help=("Immediately raise an Exception if any files fail to parse. Defaults to off.")
     )
+    p.add_argument(
+        '--custom-namespaces',
+        default='',
+        help=(
+            "A comma-separated list of custom namespace packages. "
+            "Listing namespaces here will enable depfinder to properly report "
+            "dependencies when a namespace is in use (e.g., depfinder will report "
+            "both foo.bar and foo.baz instead of foo when run with --custom-namespaces=foo)."
+        )
+    )
     return p
 
 
@@ -146,6 +157,11 @@ def cli():
         def pdb_hook(exctype, value, traceback):
             pdb.post_mortem(traceback)
         sys.excepthook = pdb_hook
+
+    global custom_namespaces
+    cs = args.custom_namespaces.split(",")
+    if len(cs) > 0:
+        custom_namespaces.extend(cs)
 
     main.STRICT_CHECKING = args.strict
 
