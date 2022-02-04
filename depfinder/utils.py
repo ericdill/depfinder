@@ -61,7 +61,3 @@ else:
     )
 
 namespace_packages = {pkg['import_name'] for pkg in mapping_list if '.' in pkg['import_name']}
-
-# this global holds custom namespaces for namespace packages (e.g., a set of
-# packages like foo.bar and foo.baz where foo itself is not a package)
-custom_namespaces = []
