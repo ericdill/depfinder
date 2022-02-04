@@ -45,7 +45,7 @@ logger = logging.getLogger('depfinder')
 STRICT_CHECKING = False
 
 
-def simple_import_search(path_to_source_code, remap=True, ignore=None):
+def simple_import_search(path_to_source_code, remap=True, ignore=None, custom_namespaces=None):
     """Return all imported modules in all .py files in `path_to_source_code`
 
     Parameters
@@ -55,6 +55,10 @@ def simple_import_search(path_to_source_code, remap=True, ignore=None):
         Normalize the import names to be synonymous with their conda/pip names
     ignore : list, optional
         String pattern which if matched causes the file to not be inspected
+    custom_namespaces : list of str or None
+        If not None, then resulting package outputs will list everying under these
+        namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar
+        and foo.baz instead of foo if custom_namespaces=["foo"]).
 
     Returns
     -------
@@ -82,7 +86,7 @@ def simple_import_search(path_to_source_code, remap=True, ignore=None):
                   'test_with_code']}
     """
     all_deps = defaultdict(set)
-    catchers = iterate_over_library(path_to_source_code)
+    catchers = iterate_over_library(path_to_source_code, custom_namespaces=custom_namespaces)
     for mod, path, catcher in catchers:
         # if ignore provided skip things which match the ignore pattern
         if ignore and any(fnmatch(path, i) for i in ignore):
@@ -96,7 +100,7 @@ def simple_import_search(path_to_source_code, remap=True, ignore=None):
     return all_deps
 
 
-def notebook_path_to_dependencies(path_to_notebook, remap=True):
+def notebook_path_to_dependencies(path_to_notebook, remap=True, custom_namespaces=None):
     """Helper function that turns a jupyter notebook into a list of dependencies
 
     Parameters
@@ -104,7 +108,10 @@ def notebook_path_to_dependencies(path_to_notebook, remap=True):
     path_to_notebook : str
     remap : bool, optional
         Normalize the import names to be synonymous with their conda/pip names
-
+    custom_namespaces : list of str ot None, optional
+        If not None, then resulting package outputs will list everying under these
+        namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar
+        and foo.baz instead of foo if custom_namespaces=["foo"]).
 
     Returns
     -------
@@ -134,10 +141,10 @@ def notebook_path_to_dependencies(path_to_notebook, remap=True):
 
     for codeblock in codeblocks:
         codeblock = transform(codeblock)
-        # TODO this may fail on py2/py3 syntax when running in the other runtime. 
+        # TODO this may fail on py2/py3 syntax when running in the other runtime.
         # May want to consider updating some error handling around that case.
         # Will wait until that use case surfaces before modifying
-        deps_dict = get_imported_libs(codeblock).describe()
+        deps_dict = get_imported_libs(codeblock, custom_namespaces=custom_namespaces).describe()
         for k, v in deps_dict.items():
             all_deps[k].update(v)
 
@@ -192,7 +199,7 @@ def sanitize_deps(deps_dict):
     return new_deps_dict
 
 
-def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=None, ignore=None):
+def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=None, ignore=None, custom_namespaces=None):
     """Return all conda-forge packages used in all .py files in `path_to_source_code`
 
     Parameters
@@ -202,6 +209,10 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
         List of python builtins to partition into their own section
     ignore : list, optional
         String pattern which if matched causes the file to not be inspected
+    custom_namespaces : list of str or None
+        If not None, then resulting package outputs will list everying under these
+        namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar
+        and foo.baz instead of foo if custom_namespaces=["foo"]).
 
     Returns
     -------
@@ -232,7 +243,7 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
     if ignore is None:
         ignore = []
     total_imports_list = []
-    for _, _, c in iterate_over_library(path_to_source_code):
+    for _, _, c in iterate_over_library(path_to_source_code, custom_namespaces=custom_namespaces):
         total_imports_list.append(c.total_imports)
     total_imports = defaultdict(dict)
     for total_import in total_imports_list:
@@ -244,7 +255,7 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
     return {k: sorted(list(v)) for k, v in imports.items()}
 
 
-def simple_import_to_pkg_map(path_to_source_code, builtins=None, ignore=None):
+def simple_import_to_pkg_map(path_to_source_code, builtins=None, ignore=None, custom_namespaces=None):
     """Provide the map beteen all the imports and their possible packages
 
     Parameters
@@ -254,6 +265,10 @@ def simple_import_to_pkg_map(path_to_source_code, builtins=None, ignore=None):
         List of python builtins to partition into their own section
     ignore : list, optional
         String pattern which if matched causes the file to not be inspected
+    custom_namespaces : list of str or None
+        If not None, then resulting package outputs will list everying under these
+        namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar
+        and foo.baz instead of foo if custom_namespaces=["foo"]).
 
     Returns
     -------
@@ -266,7 +281,7 @@ def simple_import_to_pkg_map(path_to_source_code, builtins=None, ignore=None):
     if ignore is None:
         ignore = []
     total_imports_list = []
-    for _, _, c in iterate_over_library(path_to_source_code):
+    for _, _, c in iterate_over_library(path_to_source_code, custom_namespaces=custom_namespaces):
         total_imports_list.append(c.total_imports)
     total_imports = defaultdict(dict)
     for total_import in total_imports_list:

@@ -43,7 +43,6 @@ from . import main
 from .inspection import parse_file
 from .main import (simple_import_search, notebook_path_to_dependencies,
                    sanitize_deps)
-from .utils import custom_namespaces
 
 logger = logging.getLogger('depfinder')
 
@@ -158,10 +157,7 @@ def cli():
             pdb.post_mortem(traceback)
         sys.excepthook = pdb_hook
 
-    global custom_namespaces
     cs = args.custom_namespaces.split(",")
-    if len(cs) > 0:
-        custom_namespaces.extend(cs)
 
     main.STRICT_CHECKING = args.strict
 
@@ -219,16 +215,21 @@ def cli():
         # directories are a little easier from the purpose of the API call.
         # print the dependencies to the console and then exit
         ignore = args.ignore.split(',')
-        deps = simple_import_search(file_or_dir, remap=not args.no_remap,
-                                    ignore=ignore)
+        deps = simple_import_search(
+            file_or_dir, remap=not args.no_remap,
+            ignore=ignore, custom_namespaces=cs,
+        )
         dump_deps(deps, keys)
         return 0
     elif os.path.isfile(file_or_dir):
         if file_or_dir.endswith('ipynb'):
             logger.debug("Treating {} as a jupyter notebook and searching "
                          "all of its code cells".format(file_or_dir))
-            deps = notebook_path_to_dependencies(file_or_dir,
-                                                 remap=not args.no_remap)
+            deps = notebook_path_to_dependencies(
+                file_or_dir,
+                remap=not args.no_remap,
+                custom_namespaces=cs,
+            )
             sanitized = sanitize_deps(deps)
             # print the dependencies to the console and then exit
             dump_deps(sanitized, keys)
@@ -236,7 +237,7 @@ def cli():
         elif file_or_dir.endswith('.py'):
             logger.debug("Treating {} as a single python file"
                          "".format(file_or_dir))
-            mod, path, import_finder = parse_file(file_or_dir)
+            mod, path, import_finder = parse_file(file_or_dir, custom_namespaces=cs)
             mods = defaultdict(set)
             for k, v in import_finder.describe().items():
                 mods[k].update(v)

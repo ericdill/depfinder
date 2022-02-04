@@ -39,8 +39,9 @@ from typing import Union
 from stdlib_list import stdlib_list
 
 from .utils import (
-    AST_QUESTIONABLE, namespace_packages, SKETCHY_TYPES_TABLE,
-    custom_namespaces
+    AST_QUESTIONABLE,
+    namespace_packages,
+    SKETCHY_TYPES_TABLE,
 )
 
 logger = logging.getLogger('depfinder')
@@ -54,8 +55,9 @@ PACKAGE_NAME = None
 STRICT_CHECKING = False
 
 
-def get_top_level_import_name(name):
+def get_top_level_import_name(name, custom_namespaces=None):
     num_dot = name.count(".")
+    custom_namespaces = custom_namespaces or []
 
     if name in namespace_packages:
         return name
@@ -70,7 +72,10 @@ def get_top_level_import_name(name):
         if '.' not in name:
             return name
         else:
-            return get_top_level_import_name(name.rsplit('.', 1)[0])
+            return get_top_level_import_name(
+                name.rsplit('.', 1)[0],
+                custom_namespaces=custom_namespaces
+            )
 
 
 class ImportFinder(ast.NodeVisitor):
@@ -91,7 +96,7 @@ class ImportFinder(ast.NodeVisitor):
 
     """
 
-    def __init__(self, filename=''):
+    def __init__(self, filename='', custom_namespaces=None):
         self.filename = filename
         self.required_modules = set()
         self.sketchy_modules = set()
@@ -101,6 +106,7 @@ class ImportFinder(ast.NodeVisitor):
         self.import_froms = []
         self.total_imports = defaultdict(dict)
         self.sketchy_nodes = {}
+        self.custom_namespaces = custom_namespaces or []
         super(ImportFinder, self).__init__()
 
     def visit(self, node):
@@ -137,7 +143,10 @@ class ImportFinder(ast.NodeVisitor):
         self.imports.append(node)
         self._add_to_total_imports(node)
 
-        mods = set([get_top_level_import_name(name.name) for name in node.names])
+        mods = set([
+            get_top_level_import_name(name.name, custom_namespaces=self.custom_namespaces)
+            for name in node.names
+        ])
         for mod in mods:
             self._add_import_node(mod)
 
@@ -158,12 +167,17 @@ class ImportFinder(ast.NodeVisitor):
             return
         if node.level > 0:
             # this is a relative import like 'from .foo import bar'
-            node_name = get_top_level_import_name(node.module)
+            node_name = get_top_level_import_name(
+                node.module, custom_namespaces=self.custom_namespaces
+            )
             self.relative_modules.add(node_name)
             return
         # this is a non-relative import like 'from foo import bar'
         self._add_to_total_imports(node)
-        node_name = get_top_level_import_name(node.module)
+        node_name = get_top_level_import_name(
+            node.module,
+            custom_namespaces=self.custom_namespaces,
+        )
         self._add_import_node(node_name)
 
     def _add_to_total_imports(self, node: Union[ast.Import, ast.ImportFrom]):
@@ -231,7 +245,7 @@ class ImportFinder(ast.NodeVisitor):
         return 'ImportCatcher: %s' % repr(self.describe())
 
 
-def get_imported_libs(code, filename=''):
+def get_imported_libs(code, filename='', custom_namespaces=None):
     """Given a code snippet, return a list of the imported libraries
 
     Parameters
@@ -262,12 +276,12 @@ def get_imported_libs(code, filename=''):
     code = '\n'.join([line for line in code.split('\n')
                       if not line.startswith('%')])
     tree = ast.parse(code)
-    import_finder = ImportFinder(filename=filename)
+    import_finder = ImportFinder(filename=filename, custom_namespaces=custom_namespaces)
     import_finder.visit(tree)
     return import_finder
 
 
-def parse_file(python_file):
+def parse_file(python_file, custom_namespaces=None):
     """Parse a single python file
 
     Parameters
@@ -290,17 +304,21 @@ def parse_file(python_file):
     try:
         with open(python_file, 'r') as f:
             code = f.read()
-        catcher = get_imported_libs(code, filename=python_file)
+        catcher = get_imported_libs(
+            code, filename=python_file, custom_namespaces=custom_namespaces
+        )
     except SyntaxError:
         with open(python_file, 'r', encoding='utf-8-sig') as f:
             code = f.read()
-        catcher = get_imported_libs(code, filename=python_file)
+        catcher = get_imported_libs(
+            code, filename=python_file, custom_namespaces=custom_namespaces
+        )
     catcher.total_imports = dict(catcher.total_imports)
     mod_name = os.path.split(python_file)[:-3]
     return mod_name, python_file, catcher
 
 
-def iterate_over_library(path_to_source_code):
+def iterate_over_library(path_to_source_code, custom_namespaces=None):
     """Helper function to recurse into a library and find imports in .py files.
 
     This allows the user to apply filters on the user-side to exclude imports
@@ -331,7 +349,7 @@ def iterate_over_library(path_to_source_code):
                 full_file_path = os.path.join(parent, f)
                 all_files.append(full_file_path)
                 try:
-                    yield parse_file(full_file_path)
+                    yield parse_file(full_file_path, custom_namespaces=custom_namespaces)
                 except Exception:
                     logger.exception("Could not parse file: {}".format(full_file_path))
                     skipped_files.append(full_file_path)
