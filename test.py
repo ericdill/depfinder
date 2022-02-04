@@ -271,6 +271,7 @@ def known_flags():
     flags.remove('--key')
     flags.remove('--pdb')
     flags.remove('--ignore')
+    flags.remove('--custom-namespaces')
     flags.extend(['-k all', '-k required', '-k optional', '-k builtin',
                   '-k relative'])
     return flags
