@@ -130,6 +130,16 @@ Tool for inspecting the dependencies of your python project.
         action="store_true",
         help=("Immediately raise an Exception if any files fail to parse. Defaults to off.")
     )
+    p.add_argument(
+        '--custom-namespaces',
+        default='',
+        help=(
+            "A comma-separated list of custom namespace packages. "
+            "Listing namespaces here will enable depfinder to properly report "
+            "dependencies when a namespace is in use (e.g., depfinder will report "
+            "both foo.bar and foo.baz instead of foo when run with --custom-namespaces=foo)."
+        )
+    )
     return p
 
 
@@ -146,6 +156,8 @@ def cli():
         def pdb_hook(exctype, value, traceback):
             pdb.post_mortem(traceback)
         sys.excepthook = pdb_hook
+
+    cs = args.custom_namespaces.split(",")
 
     main.STRICT_CHECKING = args.strict
 
@@ -203,16 +215,21 @@ def cli():
         # directories are a little easier from the purpose of the API call.
         # print the dependencies to the console and then exit
         ignore = args.ignore.split(',')
-        deps = simple_import_search(file_or_dir, remap=not args.no_remap,
-                                    ignore=ignore)
+        deps = simple_import_search(
+            file_or_dir, remap=not args.no_remap,
+            ignore=ignore, custom_namespaces=cs,
+        )
         dump_deps(deps, keys)
         return 0
     elif os.path.isfile(file_or_dir):
         if file_or_dir.endswith('ipynb'):
             logger.debug("Treating {} as a jupyter notebook and searching "
                          "all of its code cells".format(file_or_dir))
-            deps = notebook_path_to_dependencies(file_or_dir,
-                                                 remap=not args.no_remap)
+            deps = notebook_path_to_dependencies(
+                file_or_dir,
+                remap=not args.no_remap,
+                custom_namespaces=cs,
+            )
             sanitized = sanitize_deps(deps)
             # print the dependencies to the console and then exit
             dump_deps(sanitized, keys)
@@ -220,7 +237,7 @@ def cli():
         elif file_or_dir.endswith('.py'):
             logger.debug("Treating {} as a single python file"
                          "".format(file_or_dir))
-            mod, path, import_finder = parse_file(file_or_dir)
+            mod, path, import_finder = parse_file(file_or_dir, custom_namespaces=cs)
             mods = defaultdict(set)
             for k, v in import_finder.describe().items():
                 mods[k].update(v)
