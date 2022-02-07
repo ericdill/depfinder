@@ -52,7 +52,7 @@ del pyver
 def _import_map_num_letters():
     req = requests.get(
         'https://raw.githubusercontent.com/regro/libcfgraph/master'
-        'import_maps_meta.json')
+        '/import_maps_meta.json')
     req.raise_for_status()
     return int(req.json()['num_letters'])
 
