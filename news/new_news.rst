@@ -4,4 +4,4 @@
 
 **Changed:**
 
-* Changed handling of import maps to compute number of letters from upstream data.
+* Changed handling of import maps to compute number of letters from upstream data. 
