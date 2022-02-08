@@ -89,11 +89,11 @@ def extract_pkg_from_import(name):
 
     """
     num_letters = _import_map_num_letters()
-    fllt = name[:min(len(name), num_letters)]
-    import_map = _import_map_cache(fllt)
     original_name = name
     while True:
         try:
+            fllt = name[:min(len(name), num_letters)]
+            import_map = _import_map_cache(fllt)
             supplying_artifacts = import_map[name]
         except KeyError:
             if '.' not in name:
