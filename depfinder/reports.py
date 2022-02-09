@@ -49,10 +49,19 @@ del pyver
 
 
 @lru_cache()
-def _import_map_cache(import_first_two_letters):
+def _import_map_num_letters():
+    req = requests.get(
+        'https://raw.githubusercontent.com/regro/libcfgraph/master'
+        '/import_maps_meta.json')
+    req.raise_for_status()
+    return int(req.json()['num_letters'])
+
+
+@lru_cache()
+def _import_map_cache(import_first_letters):
     req = requests.get(
         f'https://raw.githubusercontent.com/regro/libcfgraph'
-        f'/master/import_maps/{import_first_two_letters.lower()}.json')
+        f'/master/import_maps/{import_first_letters.lower()}.json')
     if not req.ok:
         print('Request to {req_url} failed'.format(req_url=req.url))
         return {}
@@ -79,11 +88,12 @@ def extract_pkg_from_import(name):
     -------
 
     """
-    ftl = name[:2]
-    import_map = _import_map_cache(ftl)
+    num_letters = _import_map_num_letters()
     original_name = name
     while True:
         try:
+            fllt = name[:min(len(name), num_letters)]
+            import_map = _import_map_cache(fllt)
             supplying_artifacts = import_map[name]
         except KeyError:
             if '.' not in name:
