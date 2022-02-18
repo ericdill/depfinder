@@ -4,6 +4,23 @@ depfinder Change Log
 
 .. current developments
 
+v2.8.0
+====================
+
+**Added:**
+
+* Added ``--custom-namespaces`` option for custom name space searching.
+
+**Changed:**
+
+* Changed handling of import maps to compute number of letters from upstream data.
+
+**Authors:**
+
+* Matthew R. Becker
+
+
+
 v2.7.1
 ====================
 
