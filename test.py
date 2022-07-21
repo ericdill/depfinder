@@ -432,6 +432,7 @@ def test_simple_import_to_pkg_map():
                                   'questionable': {'IPython.core.inputsplitter': {'ipython', 'autovizwidget'}},
                                   'questionable no match': {},
                                   'required': {'requests': {'apache-libcloud',
+                                                            'arm_pyart',
                                                             'autovizwidget',
                                                             'dbxfs',
                                                             'google-api-core',
