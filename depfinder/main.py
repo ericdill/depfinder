@@ -37,7 +37,6 @@ from collections import defaultdict
 from fnmatch import fnmatch
 
 from .inspection import iterate_over_library, get_imported_libs
-from .reports import report_conda_forge_names_from_import_map
 from .utils import pkg_data
 
 logger = logging.getLogger('depfinder')
@@ -249,6 +248,7 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
     for total_import in total_imports_list:
         for name, md in total_import.items():
             total_imports[name].update(md)
+    from .reports import report_conda_forge_names_from_import_map
     imports, _, _ = report_conda_forge_names_from_import_map(
         total_imports, builtin_modules=builtins, ignore=ignore
     )
@@ -287,6 +287,7 @@ def simple_import_to_pkg_map(path_to_source_code, builtins=None, ignore=None, cu
     for total_import in total_imports_list:
         for name, md in total_import.items():
             total_imports[name].update(md)
+    from .reports import report_conda_forge_names_from_import_map
     _, _, import_to_artifact = report_conda_forge_names_from_import_map(
         total_imports, builtin_modules=builtins, ignore=ignore
     )
