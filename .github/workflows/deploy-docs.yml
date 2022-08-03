@@ -27,9 +27,9 @@ jobs:
     - name: Build environment
       shell: bash -l {0}
       run: |
-        micromamba create --name TEST python=3.9 --file requirements.txt --file requirements-dev.txt --channel conda-forge
+        micromamba create --name TEST python=3 pip --file requirements-dev.txt --channel conda-forge
         micromamba activate TEST
-        python -m pip install -e . --no-deps --force-reinstall
+        python -m pip install -e .
 
     - name: Get the version
       id: get_version

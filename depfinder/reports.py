@@ -37,15 +37,11 @@ from fnmatch import fnmatch
 from functools import lru_cache
 
 import requests
-from stdlib_list import stdlib_list
 
+from .stdliblist import builtin_modules as _builtin_modules
 from .utils import SKETCHY_TYPES_TABLE
 
 logger = logging.getLogger('depfinder')
-
-pyver = '%s.%s' % (sys.version_info.major, sys.version_info.minor)
-_builtin_modules = stdlib_list(pyver)
-del pyver
 
 
 @lru_cache()

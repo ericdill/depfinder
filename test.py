@@ -336,8 +336,7 @@ def test_cli(path, req, capsys):
     if req is None:
         dependencies_file = join(dirname(dirname(depfinder.__file__)),
                                  'requirements.txt')
-        dependencies = set(
-            [dep for dep in open(dependencies_file, 'r').read().split('\n') if dep])
+        dependencies = set([dep for dep in open(dependencies_file, 'r').read().split('\n') if not dep.startswith("stdlib")])
     else:
         dependencies = req
     assert dependencies == set(eval(stdout).get('required', set()))
@@ -390,9 +389,9 @@ def test_get_top_level_import():
 
 
 def test_report_conda_forge_names_from_import_map():
-    m, f, c = parse_file(join(dirname(depfinder.__file__), 'inspection.py'))
+    m, f, c = parse_file(join(dirname(depfinder.__file__), 'utils.py'))
     report, import_to_artifact, import_to_pkg = report_conda_forge_names_from_import_map(c.total_imports)
-    assert report['required'] == {'stdlib-list'}
+    assert report['required'] == {'pyyaml', 'requests'}
 
 
 def test_report_conda_forge_names_from_import_map_ignore():
@@ -404,8 +403,9 @@ def test_report_conda_forge_names_from_import_map_ignore():
 
 def test_simple_import_search_conda_forge_import_map():
     path_to_source = dirname(depfinder.__file__)
+    expected_result = sorted(list({"pyyaml", "requests"}))
     report = simple_import_search_conda_forge_import_map(path_to_source)
-    assert report['required'] == sorted(list({"pyyaml", "stdlib-list", "requests"}))
+    assert report['required'] == expected_result
 
 
 @pytest.mark.parametrize('import_name, expected_result', [
@@ -431,8 +431,8 @@ def test_search_for_name(import_name, expected_result):
 def test_simple_import_to_pkg_map():
     path_to_source = dirname(depfinder.__file__)
     import_to_artifact = simple_import_to_pkg_map(path_to_source)
-    assert import_to_artifact == {'builtin': {},
-                                  'questionable': {'IPython.core.inputsplitter': {'ipython', 'autovizwidget'}},
+    expected_result = {'builtin': {},
+                                  'questionable': {'stdlib_list': {'stdlib-list'}, 'IPython.core.inputsplitter': {'ipython', 'autovizwidget'}},
                                   'questionable no match': {},
                                   'required': {'requests': {'apache-libcloud',
                                                             'arm_pyart',
@@ -441,6 +441,6 @@ def test_simple_import_to_pkg_map():
                                                             'google-api-core',
                                                             'google-cloud-bigquery-storage-core',
                                                             'requests'},
-                                               'stdlib_list': {'stdlib-list'},
                                                'yaml': {'google-cloud-bigquery-storage-core', 'pyyaml'}},
                                   'required no match': {}}
+    assert import_to_artifact == expected_result
