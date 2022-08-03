@@ -1,73 +1,35 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>depfinder.main &mdash; depfinder v1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="depfinder v1.0 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
-
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
-
-          
+        <div class="wy-side-nav-search" >
             <a href="../../index.html" class="icon icon-home"> depfinder
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 v1.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -75,58 +37,34 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-                <!-- Local TOC -->
-                <div class="local-toc"></div>
-            
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">depfinder</a>
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">depfinder</a>
       </nav>
 
-
-      
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>depfinder.main</li>
+      <li>depfinder.main</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
-        
       </li>
   </ul>
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for depfinder.main</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Copyright (c) &lt;2015-2016&gt;, Eric Dill</span>
 <span class="c1">#</span>
@@ -157,259 +95,24 @@
 <span class="c1"># ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
 <span class="c1"># POSSIBILITY OF SUCH DAMAGE.</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">absolute_import</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">ast</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pprint</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">absolute_import</span>
+
 <span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">stdlib_list</span> <span class="k">import</span> <span class="n">stdlib_list</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">fnmatch</span> <span class="kn">import</span> <span class="n">fnmatch</span>
+
+<span class="kn">from</span> <span class="nn">.inspection</span> <span class="kn">import</span> <span class="n">iterate_over_library</span><span class="p">,</span> <span class="n">get_imported_libs</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">pkg_data</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;depfinder&#39;</span><span class="p">)</span>
 
-<span class="n">pyver</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span><span class="p">)</span>
-<span class="n">builtin_modules</span> <span class="o">=</span> <span class="n">stdlib_list</span><span class="p">(</span><span class="n">pyver</span><span class="p">)</span>
-<span class="k">del</span> <span class="n">pyver</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="c1"># python 3</span>
-    <span class="n">AST_TRY</span> <span class="o">=</span> <span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">Try</span><span class="p">]</span>
-<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-    <span class="c1"># python 2.7</span>
-    <span class="n">AST_TRY</span> <span class="o">=</span> <span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">TryExcept</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">TryFinally</span><span class="p">]</span>
-
-<span class="c1"># this AST_QUESTIONABLE list comprises the various ways an import can be weird</span>
-<span class="c1"># 1. inside a try/except block</span>
-<span class="c1"># 2. inside a function</span>
-<span class="c1"># 3. inside a class</span>
-<span class="n">AST_QUESTIONABLE</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">AST_TRY</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">FunctionDef</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">ClassDef</span><span class="p">])</span>
-<span class="k">del</span> <span class="n">AST_TRY</span>
-
-<span class="k">class</span> <span class="nc">ImportFinder</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">NodeVisitor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Find all imports in an Abstract Syntax Tree (AST).</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    required_modules : list</span>
-<span class="sd">        The list of imports that were found outside of try/except blocks,</span>
-<span class="sd">        function definitions and class definitions</span>
-<span class="sd">    sketchy_modules : list</span>
-<span class="sd">        The list of imports that were found inside of try/except blocks,</span>
-<span class="sd">        function definitions and class definitions</span>
-<span class="sd">    imports : list</span>
-<span class="sd">        The list of all ast.Import nodes in the AST</span>
-<span class="sd">    import_froms : list</span>
-<span class="sd">        The list of all ast.ImportFrom nodes in the AST</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">required_modules</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sketchy_modules</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">builtin_modules</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">relative_modules</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">imports</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">import_froms</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sketchy_nodes</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ImportFinder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Recursively visit all ast nodes.</span>
-
-<span class="sd">        Look for Import and ImportFrom nodes. Classify them as being imports</span>
-<span class="sd">        that are built in, relative, required or questionable. Qustionable</span>
-<span class="sd">        imports are those that occur within the context of a try/except block, a</span>
-<span class="sd">        function definition or a class definition.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        node : ast.AST</span>
-<span class="sd">            The node to start the recursion</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># add the node to the try/except block to signify that</span>
-        <span class="c1"># something potentially odd is going on in this import</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">AST_QUESTIONABLE</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sketchy_nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ImportFinder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-        <span class="c1"># after the node has been recursed in to, remove the try node</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sketchy_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">visit_Import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Executes when an ast.Import node is encountered</span>
-
-<span class="sd">        an ast.Import node is something like &#39;import bar&#39;</span>
-
-<span class="sd">        If ImportCatcher is inside of a try block then the import that has just</span>
-<span class="sd">        been encountered will be added to the `sketchy_modules` instance</span>
-<span class="sd">        attribute. Otherwise the module will be added to the `required_modules`</span>
-<span class="sd">        instance attribute</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">imports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-        <span class="n">mods</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">name</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">names</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">mods</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_add_import_node</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">visit_ImportFrom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Executes when an ast.ImportFrom node is encountered</span>
-
-<span class="sd">        an ast.ImportFrom node is something like &#39;from foo import bar&#39;</span>
-
-<span class="sd">        If ImportCatcher is inside of a try block then the import that has just</span>
-<span class="sd">        been encountered will be added to the `sketchy_modules` instance</span>
-<span class="sd">        attribute. Otherwise the module will be added to the `required_modules`</span>
-<span class="sd">        instance attribute</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">import_froms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">module</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># this is a relative import like &#39;from . import bar&#39;</span>
-            <span class="c1"># so do nothing</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">level</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># this is a relative import like &#39;from .foo import bar&#39;</span>
-            <span class="n">node_name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">relative_modules</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="c1"># this is a non-relative import like &#39;from foo import bar&#39;</span>
-        <span class="n">node_name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_import_node</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_add_import_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_name</span><span class="p">):</span>
-        <span class="c1"># see if the module is a builtin</span>
-        <span class="k">if</span> <span class="n">node_name</span> <span class="ow">in</span> <span class="n">builtin_modules</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">builtin_modules</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="c1"># see if we are in a try block</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sketchy_nodes</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sketchy_modules</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="c1"># if none of the above cases are true, it is likely that this</span>
-        <span class="c1"># ImportFrom node occurs at the top level of the module</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">required_modules</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the found imports</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        dict :</span>
-<span class="sd">            &#39;required&#39;: The modules that were encountered outside of a</span>
-<span class="sd">                        try/except block</span>
-<span class="sd">            &#39;questionable&#39;: The modules that were encountered inside of a</span>
-<span class="sd">                            try/except block</span>
-<span class="sd">            &#39;relative&#39;: The modules that were imported via relative import</span>
-<span class="sd">                        syntax</span>
-<span class="sd">            &#39;builtin&#39; : The modules that are part of the standard library</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">desc</span> <span class="o">=</span>  <span class="p">{</span>
-            <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">required_modules</span><span class="p">,</span>
-            <span class="s1">&#39;relative&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_modules</span><span class="p">,</span>
-            <span class="s1">&#39;questionable&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sketchy_modules</span><span class="p">,</span>
-            <span class="s1">&#39;builtin&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">builtin_modules</span>
-        <span class="p">}</span>
-        <span class="n">desc</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">desc</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">}</span>
-        <span class="k">return</span> <span class="n">desc</span>
+<span class="n">STRICT_CHECKING</span> <span class="o">=</span> <span class="kc">False</span>
 
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;ImportCatcher: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">describe</span><span class="p">())</span>
-
-
-<div class="viewcode-block" id="get_imported_libs"><a class="viewcode-back" href="../../index.html#depfinder.get_imported_libs">[docs]</a><span class="k">def</span> <span class="nf">get_imported_libs</span><span class="p">(</span><span class="n">code</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Given a code snippet, return a list of the imported libraries</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    code : str</span>
-<span class="sd">        The code to parse and look for imports</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    ImportCatcher</span>
-<span class="sd">        The ImportCatcher is the object in `depfinder` that contains all the</span>
-<span class="sd">        information regarding which imports were found where.  You will most</span>
-<span class="sd">        likely be interested in calling the describe() function on this return</span>
-<span class="sd">        value.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; depfinder.get_imported_libs(&#39;from foo import bar&#39;)</span>
-<span class="sd">    {&#39;required&#39;: {&#39;foo&#39;}, &#39;questionable&#39;: set()}</span>
-<span class="sd">    &gt;&gt;&gt; with open(&#39;depfinder.py&#39;) as f:</span>
-<span class="sd">            code = f.read()</span>
-<span class="sd">            imports = depfinder.get_imported_libs(code)</span>
-<span class="sd">            print(imports.describe())</span>
-<span class="sd">    {&#39;builtin&#39;: {&#39;__future__&#39;, &#39;json&#39;, &#39;ast&#39;, &#39;os&#39;, &#39;sys&#39;, &#39;collections&#39;},</span>
-<span class="sd">     &#39;required&#39;: {&#39;stdlib_list&#39;}}</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># skip ipython notebook lines</span>
-    <span class="n">code</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">code</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-                      <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;%&#39;</span><span class="p">)])</span>
-    <span class="n">tree</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
-    <span class="n">import_finder</span> <span class="o">=</span> <span class="n">ImportFinder</span><span class="p">()</span>
-    <span class="n">import_finder</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">import_finder</span></div>
-
-
-<span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="n">python_file</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse a single python file</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    python_file : str</span>
-<span class="sd">        Path to the python file to parse for imports</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    catchers : tuple</span>
-<span class="sd">        Yields tuples of (module_name, full_path_to_module, ImportCatcher)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">PACKAGE_NAME</span>
-    <span class="k">if</span> <span class="n">PACKAGE_NAME</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">PACKAGE_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">python_file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting PACKAGE_NAME global variable to </span><span class="si">{}</span><span class="s2">&quot;</span>
-                     <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">PACKAGE_NAME</span><span class="p">))</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">python_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">code</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="n">catcher</span> <span class="o">=</span> <span class="n">get_imported_libs</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
-    <span class="n">mod_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">python_file</span><span class="p">)[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">mod_name</span><span class="p">,</span> <span class="n">python_file</span><span class="p">,</span> <span class="n">catcher</span>
-
-
-<div class="viewcode-block" id="iterate_over_library"><a class="viewcode-back" href="../../index.html#depfinder.iterate_over_library">[docs]</a><span class="k">def</span> <span class="nf">iterate_over_library</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Helper function to recurse into a library and find imports in .py files.</span>
-
-<span class="sd">    This allows the user to apply filters on the user-side to exclude imports</span>
-<span class="sd">    based on their file names.</span>
-<span class="sd">    `conda-skeletor &lt;https://github.com/ericdill/conda-skeletor&gt;`_</span>
-<span class="sd">    makes heavy use of this function</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    path_to_source_code : str</span>
-
-<span class="sd">    Yields</span>
-<span class="sd">    -------</span>
-<span class="sd">    catchers : tuple</span>
-<span class="sd">        Yields tuples of (module_name, full_path_to_module, ImportCatcher)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">PACKAGE_NAME</span>
-    <span class="k">if</span> <span class="n">PACKAGE_NAME</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">PACKAGE_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting PACKAGE_NAME global variable to </span><span class="si">{}</span><span class="s2">&quot;</span>
-                     <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">PACKAGE_NAME</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">parent</span><span class="p">,</span> <span class="n">folders</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.py&#39;</span><span class="p">):</span>
-                <span class="n">full_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-                <span class="k">yield</span> <span class="n">parse_file</span><span class="p">(</span><span class="n">full_file_path</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="simple_import_search"><a class="viewcode-back" href="../../index.html#depfinder.simple_import_search">[docs]</a><span class="k">def</span> <span class="nf">simple_import_search</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="simple_import_search"><a class="viewcode-back" href="../../index.html#depfinder.main.simple_import_search">[docs]</a><span class="k">def</span> <span class="nf">simple_import_search</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return all imported modules in all .py files in `path_to_source_code`</span>
 
 <span class="sd">    Parameters</span>
@@ -417,6 +120,12 @@
 <span class="sd">    path_to_source_code : str</span>
 <span class="sd">    remap : bool, optional</span>
 <span class="sd">        Normalize the import names to be synonymous with their conda/pip names</span>
+<span class="sd">    ignore : list, optional</span>
+<span class="sd">        String pattern which if matched causes the file to not be inspected</span>
+<span class="sd">    custom_namespaces : list of str or None</span>
+<span class="sd">        If not None, then resulting package outputs will list everying under these</span>
+<span class="sd">        namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar</span>
+<span class="sd">        and foo.baz instead of foo if custom_namespaces=[&quot;foo&quot;]).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -444,8 +153,11 @@
 <span class="sd">                  &#39;test_with_code&#39;]}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">all_deps</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
-    <span class="n">catchers</span> <span class="o">=</span> <span class="n">iterate_over_library</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">)</span>
+    <span class="n">catchers</span> <span class="o">=</span> <span class="n">iterate_over_library</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="n">custom_namespaces</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">mod</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">catcher</span> <span class="ow">in</span> <span class="n">catchers</span><span class="p">:</span>
+        <span class="c1"># if ignore provided skip things which match the ignore pattern</span>
+        <span class="k">if</span> <span class="n">ignore</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ignore</span><span class="p">):</span>
+            <span class="k">continue</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">catcher</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">all_deps</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
@@ -455,7 +167,7 @@
     <span class="k">return</span> <span class="n">all_deps</span></div>
 
 
-<div class="viewcode-block" id="notebook_path_to_dependencies"><a class="viewcode-back" href="../../index.html#depfinder.notebook_path_to_dependencies">[docs]</a><span class="k">def</span> <span class="nf">notebook_path_to_dependencies</span><span class="p">(</span><span class="n">path_to_notebook</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="notebook_path_to_dependencies"><a class="viewcode-back" href="../../index.html#depfinder.main.notebook_path_to_dependencies">[docs]</a><span class="k">def</span> <span class="nf">notebook_path_to_dependencies</span><span class="p">(</span><span class="n">path_to_notebook</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Helper function that turns a jupyter notebook into a list of dependencies</span>
 
 <span class="sd">    Parameters</span>
@@ -463,7 +175,10 @@
 <span class="sd">    path_to_notebook : str</span>
 <span class="sd">    remap : bool, optional</span>
 <span class="sd">        Normalize the import names to be synonymous with their conda/pip names</span>
-
+<span class="sd">    custom_namespaces : list of str ot None, optional</span>
+<span class="sd">        If not None, then resulting package outputs will list everying under these</span>
+<span class="sd">        namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar</span>
+<span class="sd">        and foo.baz instead of foo if custom_namespaces=[&quot;foo&quot;]).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -480,12 +195,23 @@
 <span class="sd">    &gt;&gt;&gt; depfinder.notebook_path_to_dependencies(&#39;depfinder_usage.ipynb&#39;)</span>
 <span class="sd">    {&#39;builtin&#39;: [&#39;os&#39;, &#39;pprint&#39;], &#39;required&#39;: [&#39;depfinder&#39;]}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">nb</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">path_to_notebook</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">IPython.core.inputsplitter</span> <span class="kn">import</span> <span class="n">IPythonInputSplitter</span>
+        <span class="n">transform</span> <span class="o">=</span> <span class="n">IPythonInputSplitter</span><span class="p">(</span><span class="n">line_input_checker</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">transform_cell</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">transform</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">code</span><span class="p">:</span> <span class="n">code</span>
+
+    <span class="n">nb</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path_to_notebook</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">))</span>
     <span class="n">codeblocks</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">nb</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">]</span>
                   <span class="k">if</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;cell_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;code&#39;</span><span class="p">]</span>
     <span class="n">all_deps</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+
     <span class="k">for</span> <span class="n">codeblock</span> <span class="ow">in</span> <span class="n">codeblocks</span><span class="p">:</span>
-        <span class="n">deps_dict</span> <span class="o">=</span> <span class="n">get_imported_libs</span><span class="p">(</span><span class="n">codeblock</span><span class="p">)</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+        <span class="n">codeblock</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">codeblock</span><span class="p">)</span>
+        <span class="c1"># TODO this may fail on py2/py3 syntax when running in the other runtime.</span>
+        <span class="c1"># May want to consider updating some error handling around that case.</span>
+        <span class="c1"># Will wait until that use case surfaces before modifying</span>
+        <span class="n">deps_dict</span> <span class="o">=</span> <span class="n">get_imported_libs</span><span class="p">(</span><span class="n">codeblock</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="n">custom_namespaces</span><span class="p">)</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">deps_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">all_deps</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
@@ -494,23 +220,6 @@
         <span class="k">return</span> <span class="n">sanitize_deps</span><span class="p">(</span><span class="n">all_deps</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">all_deps</span></div>
 
-<span class="n">PACKAGE_NAME</span> <span class="o">=</span> <span class="kc">None</span>
-
-<span class="n">_PACKAGE_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;av&#39;</span><span class="p">:</span> <span class="s1">&#39;pyav&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;cv2&#39;</span><span class="p">:</span> <span class="s1">&#39;opencv&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;IPython&#39;</span><span class="p">:</span> <span class="s1">&#39;ipython&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;netCDF4&#39;</span><span class="p">:</span> <span class="s1">&#39;netcdf4&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;PIL&#39;</span><span class="p">:</span> <span class="s1">&#39;pillow&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;skimage&#39;</span><span class="p">:</span> <span class="s1">&#39;scikit-image&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;sklearn&#39;</span><span class="p">:</span> <span class="s1">&#39;scikit-learn&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;stdlib_list&#39;</span><span class="p">:</span> <span class="s1">&#39;stdlib-list&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;yaml&#39;</span><span class="p">:</span> <span class="s1">&#39;pyyaml&#39;</span><span class="p">,</span>
-<span class="p">}</span>
-<span class="n">_FAKE_PACKAGES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;matplotlib&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;mpl_toolkits&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;pymongo&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;bson&#39;</span><span class="p">,</span> <span class="s1">&#39;gridfs&#39;</span><span class="p">},</span>
-<span class="p">}</span>
 
 <span class="k">def</span> <span class="nf">sanitize_deps</span><span class="p">(</span><span class="n">deps_dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -528,8 +237,9 @@
 <span class="sd">        If remap is True: Sanitized `deps_dict`</span>
 <span class="sd">        If remap is False: `deps_dict`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">.inspection</span> <span class="kn">import</span> <span class="n">PACKAGE_NAME</span>
     <span class="n">new_deps_dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">list_of_possible_fakes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">_FAKE_PACKAGES</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span><span class="p">])</span>
+    <span class="n">list_of_possible_fakes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">pkg_data</span><span class="p">[</span><span class="s1">&#39;_FAKE_PACKAGES&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">packages_list</span> <span class="ow">in</span> <span class="n">deps_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
 
         <span class="n">pkgs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">packages_list</span><span class="p">)</span>
@@ -548,70 +258,139 @@
                              <span class="s2">&quot;find the dependencies for. Set the `--no-remap` &quot;</span>
                              <span class="s2">&quot;cli flag if you want to disable this.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pkg</span><span class="p">))</span>
                 <span class="k">continue</span>
-            <span class="n">pkg_to_add</span> <span class="o">=</span> <span class="n">_PACKAGE_MAPPING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pkg</span><span class="p">,</span> <span class="n">pkg</span><span class="p">)</span>
+            <span class="n">pkg_to_add</span> <span class="o">=</span> <span class="n">pkg_data</span><span class="p">[</span><span class="s1">&#39;_PACKAGE_MAPPING&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pkg</span><span class="p">,</span> <span class="n">pkg</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">pkg</span> <span class="o">!=</span> <span class="n">pkg_to_add</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Renaming </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pkg</span><span class="p">,</span> <span class="n">pkg_to_add</span><span class="p">))</span>
             <span class="n">new_deps_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pkg_to_add</span><span class="p">)</span>
     <span class="n">new_deps_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">new_deps_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">new_deps_dict</span>
+
+
+<span class="k">def</span> <span class="nf">simple_import_search_conda_forge_import_map</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">builtins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return all conda-forge packages used in all .py files in `path_to_source_code`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path_to_source_code : str</span>
+<span class="sd">    builtins : list, optional</span>
+<span class="sd">        List of python builtins to partition into their own section</span>
+<span class="sd">    ignore : list, optional</span>
+<span class="sd">        String pattern which if matched causes the file to not be inspected</span>
+<span class="sd">    custom_namespaces : list of str or None</span>
+<span class="sd">        If not None, then resulting package outputs will list everying under these</span>
+<span class="sd">        namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar</span>
+<span class="sd">        and foo.baz instead of foo if custom_namespaces=[&quot;foo&quot;]).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        The list of all imported modules, sorted according to the keys listed</span>
+<span class="sd">        in the docstring of depfinder.ImportCatcher.describe()</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; depfinder.simple_import_search_conda_forge_import_map(&#39;/path/to/depfinder/source&#39;)</span>
+<span class="sd">    {&#39;builtin&#39;: [&#39;__future__&#39;,</span>
+<span class="sd">                 &#39;ast&#39;,</span>
+<span class="sd">                 &#39;collections&#39;,</span>
+<span class="sd">                 &#39;json&#39;,</span>
+<span class="sd">                 &#39;os&#39;,</span>
+<span class="sd">                 &#39;shlex&#39;,</span>
+<span class="sd">                 &#39;sys&#39;,</span>
+<span class="sd">                 &#39;tempfile&#39;],</span>
+<span class="sd">     &#39;required&#39;: [&#39;depfinder&#39;,</span>
+<span class="sd">                  &#39;nbformat&#39;,</span>
+<span class="sd">                  &#39;pytest&#39;,</span>
+<span class="sd">                  &#39;setuptools&#39;,</span>
+<span class="sd">                  &#39;sphinx_rtd_theme&#39;,</span>
+<span class="sd">                  &#39;stdlib_list&#39;,</span>
+<span class="sd">                  &#39;test_with_code&#39;]}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># run depfinder on source code</span>
+    <span class="k">if</span> <span class="n">ignore</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ignore</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">total_imports_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">iterate_over_library</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="n">custom_namespaces</span><span class="p">):</span>
+        <span class="n">total_imports_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">total_imports</span><span class="p">)</span>
+    <span class="n">total_imports</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">total_import</span> <span class="ow">in</span> <span class="n">total_imports_list</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">md</span> <span class="ow">in</span> <span class="n">total_import</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">total_imports</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">.reports</span> <span class="kn">import</span> <span class="n">report_conda_forge_names_from_import_map</span>
+    <span class="n">imports</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">report_conda_forge_names_from_import_map</span><span class="p">(</span>
+        <span class="n">total_imports</span><span class="p">,</span> <span class="n">builtin_modules</span><span class="o">=</span><span class="n">builtins</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="n">ignore</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">imports</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+
+<span class="k">def</span> <span class="nf">simple_import_to_pkg_map</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">builtins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Provide the map beteen all the imports and their possible packages</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path_to_source_code : str</span>
+<span class="sd">    builtins : list, optional</span>
+<span class="sd">        List of python builtins to partition into their own section</span>
+<span class="sd">    ignore : list, optional</span>
+<span class="sd">        String pattern which if matched causes the file to not be inspected</span>
+<span class="sd">    custom_namespaces : list of str or None</span>
+<span class="sd">        If not None, then resulting package outputs will list everying under these</span>
+<span class="sd">        namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar</span>
+<span class="sd">        and foo.baz instead of foo if custom_namespaces=[&quot;foo&quot;]).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict of dict of sets:</span>
+<span class="sd">        The classes of requirements (required, questionable, builtin, no match required, no match questionable),</span>
+<span class="sd">        name of the import and packages that provide that import</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># run depfinder on source code</span>
+    <span class="k">if</span> <span class="n">ignore</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ignore</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">total_imports_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">iterate_over_library</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="n">custom_namespaces</span><span class="p">):</span>
+        <span class="n">total_imports_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">total_imports</span><span class="p">)</span>
+    <span class="n">total_imports</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">total_import</span> <span class="ow">in</span> <span class="n">total_imports_list</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">md</span> <span class="ow">in</span> <span class="n">total_import</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">total_imports</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">.reports</span> <span class="kn">import</span> <span class="n">report_conda_forge_names_from_import_map</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">import_to_artifact</span> <span class="o">=</span> <span class="n">report_conda_forge_names_from_import_map</span><span class="p">(</span>
+        <span class="n">total_imports</span><span class="p">,</span> <span class="n">builtin_modules</span><span class="o">=</span><span class="n">builtins</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="n">ignore</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">import_to_artifact</span>
 </pre></div>
 
            </div>
           </div>
+    <a href="https://github.com/ericdill/depfinder">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_red_aa0000.png?resize=149%2C149" alt="Fork me on GitHub">
+    </a>
+
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2015, Eric Dill.
-
-    </p>
+    <p>&#169; Copyright 2015, Eric Dill.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'v1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

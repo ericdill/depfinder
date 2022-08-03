@@ -1,72 +1,36 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>depfinder &mdash; depfinder v1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="depfinder v1.0 documentation" href="#"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
-
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
-
-          
+        <div class="wy-side-nav-search" >
             <a href="#" class="icon icon-home"> depfinder
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 v1.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -74,81 +38,80 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-                <!-- Local TOC -->
-                <div class="local-toc"><ul>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">depfinder</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#using-depfinder">Using depfinder</a></li>
 <li><a class="reference internal" href="#description">Description</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#api">API</a></li>
 <li><a class="reference internal" href="#ipython-jupyter-notebook-support">IPython/Jupyter Notebook support</a></li>
 </ul>
 </div>
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">depfinder</a>
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">depfinder</a>
       </nav>
 
-
-      
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
- 
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="#">Docs</a> &raquo;</li>
-      
-    <li>depfinder</li>
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>depfinder</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
   </ul>
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
            <div itemprop="articleBody">
-            
-  <p>&lt;a href=&#8221;<a class="reference external" href="https://github.com/you">https://github.com/you</a>&#8220;&gt;&lt;img style=&#8221;position: absolute; top: 0; right: 0; border: 0;&#8221; src=&#8221;<a class="reference external" href="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67">https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67</a>&#8221; alt=&#8221;Fork me on GitHub&#8221; data-canonical-src=&#8221;<a class="reference external" href="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png</a>&#8220;&gt;&lt;/a&gt;</p>
-<div class="section" id="depfinder">
-<h1>depfinder<a class="headerlink" href="#depfinder" title="Permalink to this headline">¶</a></h1>
-<a class="reference external image-reference" href="https://travis-ci.org/ericdill/depfinder"><img alt="https://travis-ci.org/ericdill/depfinder.svg?branch=master" src="https://travis-ci.org/ericdill/depfinder.svg?branch=master" /></a>
+             
+  <section id="depfinder">
+<h1>depfinder<a class="headerlink" href="#depfinder" title="Permalink to this heading">¶</a></h1>
+<a class="reference external image-reference" href="https://github.com/ericdill/depfinder/actions/workflows/tests.yml"><img alt="https://github.com/ericdill/depfinder/actions/workflows/tests.yml/badge.svg" src="https://github.com/ericdill/depfinder/actions/workflows/tests.yml/badge.svg" /></a>
 <a class="reference external image-reference" href="http://codecov.io/github/ericdill/depfinder?branch=master"><img alt="http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=master" src="http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=master" /></a>
 <ul class="simple">
-<li><a class="reference external" href="https://ericdill.github.io/depfinder">docs</a></li>
-<li><a class="reference external" href="https://github.com/ericdill/depfinder">github repo</a></li>
+<li><p><a class="reference external" href="https://ericdill.github.io/depfinder">docs</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ericdill/depfinder">github repo</a></p></li>
 </ul>
-<div class="section" id="using-depfinder">
-<h2>Using depfinder<a class="headerlink" href="#using-depfinder" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ depfinder -h
-usage: depfinder [-h] [-y] [-V] [--no-remap] [-v] [-q] file_or_directory
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">depfinder</span></code> is on pypi. It is tested against Python 2.7 and 3.6-3.8.</p>
+<blockquote>
+<div><p>pip install depfinder</p>
+</div></blockquote>
+<p>It is available via conda.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">depfinder</span>
+</pre></div>
+</div>
+<p>It is also via github.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">ericdill</span><span class="o">/</span><span class="n">depfinder</span>
+<span class="n">cd</span> <span class="n">depfinder</span>
+<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ericdill</span><span class="o">/</span><span class="n">depfinder</span><span class="o">/</span><span class="n">zipball</span><span class="o">/</span><span class="n">master</span><span class="c1">#egg=depfinder</span>
+</pre></div>
+</div>
+</section>
+<section id="using-depfinder">
+<h2>Using depfinder<a class="headerlink" href="#using-depfinder" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ depfinder -h
+usage: depfinder [-h] [-y] [-V] [--no-remap] [-v] [-q] [-k KEY] [--conda]
+             [--pdb]
+             file_or_directory
 
 Tool for inspecting the dependencies of your python project.
 
@@ -166,11 +129,17 @@ optional arguments:
                      proper conda name
   -v, --verbose      Enable debug level logging info from depfinder
   -q, --quiet        Turn off all logging from depfinder
+  -k KEY, --key KEY  Select some or all of the output keys. Valid options are
+                     &#39;required&#39;, &#39;optional&#39;, &#39;builtin&#39;, &#39;relative&#39;, &#39;all&#39;.
+                     Defaults to &#39;all&#39;
+  --conda            Format output so it can be passed as an argument to conda
+                     install or conda create
+  --pdb              Enable PDB debugging on exception
 </pre></div>
 </div>
-<p>Ok, great. That&#8217;s the help output.  Not super helpful.  What does the output of
+<p>Ok, great. That’s the help output.  Not super helpful.  What does the output of
 depfinder look like when we run it on the source code for depfinder?</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ depfinder depfinder
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ depfinder depfinder
 {&#39;builtin&#39;: [&#39;__future__&#39;,
              &#39;argparse&#39;,
              &#39;ast&#39;,
@@ -193,107 +162,91 @@ the standard library.  <cite>required</cite> are modules that are not from the s
 library or from within the <cite>depfinder</cite> package and <cite>relative</cite> are modules that
 are imported from one module to another within the <cite>depfinder</cite> source code.</p>
 <p><a class="reference external" href="https://github.com/ericdill/depfinder/blob/master/depfinder_usage.ipynb">Also see this notebook</a></p>
-</div>
-<div class="section" id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Find all the unique imports in your library, automatically, because who likes
 do it by hand?  <a class="reference external" href="https://github.com/ericdill/depfinder">depfinder</a> uses the <a class="reference external" href="https://docs.python.org/2/library/ast.html">ast</a> (Abstract Syntax Tree) module
-(and <a class="reference external" href="https://greentreesnakes.readthedocs.org/en/latest/">more ast docs</a>) to find
-all <code class="xref py py-class docutils literal"><span class="pre">ast.Try</span></code> and <code class="xref py py-class docutils literal"><span class="pre">ast.ImportFrom</span></code> nodes.  These
-<code class="xref py py-class docutils literal"><span class="pre">ast.Import</span></code> and <code class="xref py py-class docutils literal"><span class="pre">ast.ImportFrom</span></code> nodes are then grouped
+(and <a class="reference external" href="https://greentreesnakes.readthedocs.io/en/latest/">more ast docs</a>) to find
+all <code class="xref py py-class docutils literal notranslate"><span class="pre">ast.Try</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">ast.ImportFrom</span></code> nodes.  These
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ast.Import</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">ast.ImportFrom</span></code> nodes are then grouped
 according to the following categories, in order of decreasing precedence:</p>
 <ul>
-<li><dl class="first docutils">
-<dt><strong>relative</strong></dt>
-<dd><p class="first last">The import is a relative import from within the same library</p>
+<li><dl class="simple">
+<dt><strong>relative</strong></dt><dd><p>The import is a relative import from within the same library</p>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>builtin</strong></dt>
-<dd><p class="first last">The import is built into the standard library, as determined by scraping the
+<li><dl class="simple">
+<dt><strong>builtin</strong></dt><dd><p>The import is built into the standard library, as determined by scraping the
 official python docs for the builtins with <a class="reference external" href="https://github.com/jackmaney/python-stdlib-list">stdlib-list</a></p>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>questionable</strong></dt>
-<dd><p class="first">The import occurs inside any combination of</p>
+<li><dl>
+<dt><strong>questionable</strong></dt><dd><p>The import occurs inside any combination of</p>
 <ul class="simple">
-<li><code class="xref py py-class docutils literal"><span class="pre">ast.Try</span></code> (<code class="xref py py-class docutils literal"><span class="pre">ast.TryExcept</span></code> on py27)</li>
-<li><code class="xref py py-class docutils literal"><span class="pre">ast.FunctionDef</span></code></li>
-<li><code class="xref py py-class docutils literal"><span class="pre">ast.ClassDef</span></code></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ast.Try</span></code> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ast.TryExcept</span></code> on py27)</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ast.FunctionDef</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ast.ClassDef</span></code></p></li>
 </ul>
-<p class="last">The module may be importable without these imports, but the it will likely
+<p>The module may be importable without these imports, but the it will likely
 not have full functionality.</p>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>required</strong></dt>
-<dd><p class="first last">The import occurs at the top level of the module and will get executed
+<li><dl class="simple">
+<dt><strong>required</strong></dt><dd><p>The import occurs at the top level of the module and will get executed
 when the module is imported. These imports must be accounted for in an
 environment, or the module will not be importable.</p>
 </dd>
 </dl>
 </li>
 </ul>
-</div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">depfinder</span></code> is on pypi. It is tested against Python 2.7, 3.3, 3.4 and 3.5.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">depfinder</span>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">¶</a></h2>
+<p>It has dependencies on, <a class="reference external" href="https://github.com/jackmaney/python-stdlib-list">stdlib-list</a> and <a class="reference external" href="https://pyyaml.org/wiki/PyYAML">pyyaml</a>. I use <code class="docutils literal notranslate"><span class="pre">stdlib-list</span></code> to get the list of
+libraries built in to the standard library. These requirements can be installed
+via pip</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
-<p>It is available via conda.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">ericdill</span> <span class="n">depfinder</span>
+<p>Also install the test-requiements</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">test</span><span class="o">-</span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
-<p>It is also via github.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">ericdill</span><span class="o">/</span><span class="n">depfinder</span>
-<span class="n">cd</span> <span class="n">depfinder</span>
-<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+<p>Then you can run the tests from the root of the git repository</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">coverage</span> <span class="n">run</span> <span class="n">run_tests</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
-<p>or</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ericdill</span><span class="o">/</span><span class="n">depfinder</span><span class="o">/</span><span class="n">zipball</span><span class="o">/</span><span class="n">master</span><span class="c1">#egg=depfinder</span>
-</pre></div>
-</div>
-<p>It has one dependency, <a class="reference external" href="https://github.com/jackmaney/python-stdlib-list">stdlib_list</a>, which is where I get the
-list of libraries built in to the standard library. <code class="docutils literal"><span class="pre">stdlib-list</span></code> can be
-installed via pip</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">stdlib</span><span class="o">-</span><span class="nb">list</span>
-</pre></div>
-</div>
-<p>or conda</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">ericdill</span> <span class="n">stdlib</span><span class="o">-</span><span class="nb">list</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="api">
-<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
-<dt id="depfinder.main.get_imported_libs">
-<code class="descclassname">depfinder.main.</code><code class="descname">get_imported_libs</code><span class="sig-paren">(</span><em>code</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/depfinder/main.html#get_imported_libs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#depfinder.main.get_imported_libs" title="Permalink to this definition">¶</a></dt>
+</section>
+</section>
+<section id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="depfinder.main.get_imported_libs">
+<span class="sig-prename descclassname"><span class="pre">depfinder.main.</span></span><span class="sig-name descname"><span class="pre">get_imported_libs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_namespaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/depfinder/inspection.html#get_imported_libs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#depfinder.main.get_imported_libs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a code snippet, return a list of the imported libraries</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; The code to parse and look for imports</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The ImportCatcher is the object in <cite>depfinder</cite> that contains all the
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>code</strong><span class="classifier">str</span></dt><dd><p>The code to parse and look for imports</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>ImportCatcher</dt><dd><p>The ImportCatcher is the object in <cite>depfinder</cite> that contains all the
 information regarding which imports were found where.  You will most
 likely be interested in calling the describe() function on this return
-value.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ImportCatcher</td>
-</tr>
-</tbody>
-</table>
+value.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">depfinder</span><span class="o">.</span><span class="n">get_imported_libs</span><span class="p">(</span><span class="s1">&#39;from foo import bar&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">depfinder</span><span class="o">.</span><span class="n">get_imported_libs</span><span class="p">(</span><span class="s1">&#39;from foo import bar&#39;</span><span class="p">)</span>
 <span class="go">{&#39;required&#39;: {&#39;foo&#39;}, &#39;questionable&#39;: set()}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;depfinder.py&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 <span class="go">        code = f.read()</span>
@@ -305,51 +258,57 @@ value.</td>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="depfinder.main.iterate_over_library">
-<code class="descclassname">depfinder.main.</code><code class="descname">iterate_over_library</code><span class="sig-paren">(</span><em>path_to_source_code</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/depfinder/main.html#iterate_over_library"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#depfinder.main.iterate_over_library" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="depfinder.main.iterate_over_library">
+<span class="sig-prename descclassname"><span class="pre">depfinder.main.</span></span><span class="sig-name descname"><span class="pre">iterate_over_library</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_to_source_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_namespaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/depfinder/inspection.html#iterate_over_library"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#depfinder.main.iterate_over_library" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to recurse into a library and find imports in .py files.</p>
 <p>This allows the user to apply filters on the user-side to exclude imports
 based on their file names.
 <a class="reference external" href="https://github.com/ericdill/conda-skeletor">conda-skeletor</a>
 makes heavy use of this function</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_to_source_code</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; </td>
-</tr>
-<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><strong>catchers</strong> (<em>tuple</em>) &#8211; Yields tuples of (module_name, full_path_to_module, ImportCatcher)</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path_to_source_code</strong><span class="classifier">str</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>catchers</strong><span class="classifier">tuple</span></dt><dd><p>Yields tuples of (module_name, full_path_to_module, ImportCatcher)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="depfinder.main.simple_import_search">
-<code class="descclassname">depfinder.main.</code><code class="descname">simple_import_search</code><span class="sig-paren">(</span><em>path_to_source_code</em>, <em>remap=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/depfinder/main.html#simple_import_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#depfinder.main.simple_import_search" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="depfinder.main.simple_import_search">
+<span class="sig-prename descclassname"><span class="pre">depfinder.main.</span></span><span class="sig-name descname"><span class="pre">simple_import_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_to_source_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_namespaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/depfinder/main.html#simple_import_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#depfinder.main.simple_import_search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all imported modules in all .py files in <cite>path_to_source_code</cite></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>path_to_source_code</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; </li>
-<li><strong>remap</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) &#8211; Normalize the import names to be synonymous with their conda/pip names</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The list of all imported modules, sorted according to the keys listed
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path_to_source_code</strong><span class="classifier">str</span></dt><dd></dd>
+<dt><strong>remap</strong><span class="classifier">bool, optional</span></dt><dd><p>Normalize the import names to be synonymous with their conda/pip names</p>
+</dd>
+<dt><strong>ignore</strong><span class="classifier">list, optional</span></dt><dd><p>String pattern which if matched causes the file to not be inspected</p>
+</dd>
+<dt><strong>custom_namespaces</strong><span class="classifier">list of str or None</span></dt><dd><p>If not None, then resulting package outputs will list everying under these
+namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar
+and foo.baz instead of foo if custom_namespaces=[“foo”]).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>dict</dt><dd><p>The list of all imported modules, sorted according to the keys listed
 in the docstring of depfinder.ImportCatcher.describe()</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)">dict</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">depfinder</span><span class="o">.</span><span class="n">simple_import_search</span><span class="p">(</span><span class="s1">&#39;/path/to/depfinder/source&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">depfinder</span><span class="o">.</span><span class="n">simple_import_search</span><span class="p">(</span><span class="s1">&#39;/path/to/depfinder/source&#39;</span><span class="p">)</span>
 <span class="go">{&#39;builtin&#39;: [&#39;__future__&#39;,</span>
 <span class="go">             &#39;ast&#39;,</span>
 <span class="go">             &#39;collections&#39;,</span>
@@ -369,105 +328,78 @@ in the docstring of depfinder.ImportCatcher.describe()</p>
 </div>
 </dd></dl>
 
-</div>
-<div class="section" id="ipython-jupyter-notebook-support">
-<h1>IPython/Jupyter Notebook support<a class="headerlink" href="#ipython-jupyter-notebook-support" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal"><span class="pre">depfinder</span></code> has support for v4 Jupyter notebooks.</p>
-<dl class="function">
-<dt id="depfinder.main.notebook_path_to_dependencies">
-<code class="descclassname">depfinder.main.</code><code class="descname">notebook_path_to_dependencies</code><span class="sig-paren">(</span><em>path_to_notebook</em>, <em>remap=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/depfinder/main.html#notebook_path_to_dependencies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#depfinder.main.notebook_path_to_dependencies" title="Permalink to this definition">¶</a></dt>
+</section>
+<section id="ipython-jupyter-notebook-support">
+<h1>IPython/Jupyter Notebook support<a class="headerlink" href="#ipython-jupyter-notebook-support" title="Permalink to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">depfinder</span></code> has support for v4 Jupyter notebooks.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="depfinder.main.notebook_path_to_dependencies">
+<span class="sig-prename descclassname"><span class="pre">depfinder.main.</span></span><span class="sig-name descname"><span class="pre">notebook_path_to_dependencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_to_notebook</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_namespaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/depfinder/main.html#notebook_path_to_dependencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#depfinder.main.notebook_path_to_dependencies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function that turns a jupyter notebook into a list of dependencies</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>path_to_notebook</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; </li>
-<li><strong>remap</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a><em>, </em><em>optional</em>) &#8211; Normalize the import names to be synonymous with their conda/pip names</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>Dict of dependencies keyed on</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path_to_notebook</strong><span class="classifier">str</span></dt><dd></dd>
+<dt><strong>remap</strong><span class="classifier">bool, optional</span></dt><dd><p>Normalize the import names to be synonymous with their conda/pip names</p>
+</dd>
+<dt><strong>custom_namespaces</strong><span class="classifier">list of str ot None, optional</span></dt><dd><p>If not None, then resulting package outputs will list everying under these
+namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar
+and foo.baz instead of foo if custom_namespaces=[“foo”]).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>dict</dt><dd><p>Dict of dependencies keyed on</p>
 <ul class="simple">
-<li>&#8216;builtin&#8217; - libraries built in to python</li>
-<li>&#8216;required&#8217; - libraries that are found at the top level of your modules</li>
-<li>&#8216;questionable&#8217; - libraries that are found inside try/except blocks</li>
-<li>&#8216;relative&#8217; - libraries that are relative imports</li>
+<li><p>‘builtin’ - libraries built in to python</p></li>
+<li><p>‘required’ - libraries that are found at the top level of your modules</p></li>
+<li><p>‘questionable’ - libraries that are found inside try/except blocks</p></li>
+<li><p>‘relative’ - libraries that are relative imports</p></li>
 </ul>
-</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)">dict</a></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">depfinder</span><span class="o">.</span><span class="n">notebook_path_to_dependencies</span><span class="p">(</span><span class="s1">&#39;depfinder_usage.ipynb&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">depfinder</span><span class="o">.</span><span class="n">notebook_path_to_dependencies</span><span class="p">(</span><span class="s1">&#39;depfinder_usage.ipynb&#39;</span><span class="p">)</span>
 <span class="go">{&#39;builtin&#39;: [&#39;os&#39;, &#39;pprint&#39;], &#39;required&#39;: [&#39;depfinder&#39;]}</span>
 </pre></div>
 </div>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
           </div>
+    <a href="https://github.com/ericdill/depfinder">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_red_aa0000.png?resize=149%2C149" alt="Fork me on GitHub">
+    </a>
+
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2015, Eric Dill.
-
-    </p>
+    <p>&#169; Copyright 2015, Eric Dill.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'v1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
