@@ -9,8 +9,8 @@
 depfinder
 =========
 
-.. image:: https://travis-ci.org/ericdill/depfinder.svg?branch=master
-   :target: https://travis-ci.org/ericdill/depfinder
+.. image:: https://github.com/ericdill/depfinder/actions/workflows/tests.yml/badge.svg
+   :target: https://github.com/ericdill/depfinder/actions/workflows/tests.yml
 .. image:: http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=master
    :target: http://codecov.io/github/ericdill/depfinder?branch=master
 
@@ -109,7 +109,7 @@ Description
 Find all the unique imports in your library, automatically, because who likes
 do it by hand?  `depfinder <https://github.com/ericdill/depfinder>`_ uses the `ast
 <https://docs.python.org/2/library/ast.html>`_ (Abstract Syntax Tree) module
-(and `more ast docs <https://greentreesnakes.readthedocs.org/en/latest/>`_) to find
+(and `more ast docs <https://greentreesnakes.readthedocs.io/en/latest/>`_) to find
 all :py:class:`ast.Try` and :py:class:`ast.ImportFrom` nodes.  These
 :py:class:`ast.Import` and :py:class:`ast.ImportFrom` nodes are then grouped
 according to the following categories, in order of decreasing precedence:
@@ -142,7 +142,7 @@ Testing
 
 It has dependencies on, `stdlib-list
 <https://github.com/jackmaney/python-stdlib-list>`_ and `pyyaml
-<http://pyyaml.org/wiki/PyYAML>`_. I use ``stdlib-list`` to get the list of
+<https://pyyaml.org/wiki/PyYAML>`_. I use ``stdlib-list`` to get the list of
 libraries built in to the standard library. These requirements can be installed
 via pip ::
 
