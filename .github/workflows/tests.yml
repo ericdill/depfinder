@@ -33,7 +33,6 @@ jobs:
           micromamba create --name TEST python=${{ matrix.python-version }} pip --file requirements-dev.txt --channel conda-forge
           micromamba activate TEST
           python -m pip install -e .
- 
       - name: test
         shell: bash -l {0}
         run: |
