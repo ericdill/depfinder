@@ -105,6 +105,9 @@ simple_imports = [
     # Hit the fake packages code block in main.sanitize_deps()
     {'targets': {'required': ['numpy']},
      'code': 'from numpy import warnings as npwarn'},
+    # Test for nested namespace resolution in stdlib builtins
+    {'targets': {'builtin': ['concurrent.futures']},
+     'code': 'import concurrent.futures'},
 ]
 
 relative_imports = [
