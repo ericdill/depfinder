@@ -58,10 +58,14 @@ Tool for inspecting the dependencies of your python project.
 """,
     )
     p.add_argument(
-        'file_or_directory',
-        help=("Valid options are a single python file, a single jupyter "
-              "(ipython) notebook or a directory of files that include "
-              "python files")
+        "file_or_directory",
+        help=(
+            "Valid options are a single python file, a single jupyter "
+            "(ipython) notebook or a directory of files that include "
+            "python files"
+        ),
+        # default=".",
+        nargs="?",
     )
     p.add_argument(
         '-y',
@@ -183,6 +187,10 @@ def cli():
         return 0
 
     file_or_dir = args.file_or_directory
+    logger.debug("file_or_dir: %s", file_or_dir)
+    if file_or_dir is None:
+        logger.warning("positional argument `file_or_directory` not provided.")
+        raise RuntimeError("positional argument `file_or_directory` is required")
     keys = args.key
     if keys == []:
         keys = None
