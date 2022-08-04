@@ -36,7 +36,7 @@ import sys
 from collections import defaultdict
 from typing import Union
 
-from stdlib_list import stdlib_list
+from .stdliblist import builtin_modules
 
 from .utils import (
     AST_QUESTIONABLE,
@@ -45,10 +45,6 @@ from .utils import (
 )
 
 logger = logging.getLogger('depfinder')
-
-pyver = '%s.%s' % (sys.version_info.major, sys.version_info.minor)
-builtin_modules = stdlib_list(pyver)
-del pyver
 
 
 PACKAGE_NAME = None
@@ -59,7 +55,7 @@ def get_top_level_import_name(name, custom_namespaces=None):
     num_dot = name.count(".")
     custom_namespaces = custom_namespaces or []
 
-    if name in namespace_packages or name in custom_namespaces or name in stdlib_list():
+    if name in namespace_packages or name in custom_namespaces or name in builtin_modules:
         return name
     elif any(
         ((num_dot - nsp.count(".")) == 1) and name.startswith(nsp + ".")

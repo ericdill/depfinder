@@ -7,13 +7,7 @@ import sys
 
 import requests
 import yaml
-from stdlib_list import stdlib_list
-
-logger = logging.getLogger('depfinder')
-
-pyver = '%s.%s' % (sys.version_info.major, sys.version_info.minor)
-builtin_modules = stdlib_list(pyver)
-del pyver
+from .stdliblist import builtin_modules
 
 
 SKETCHY_TYPES_TABLE = {}
