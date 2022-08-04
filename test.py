@@ -105,9 +105,6 @@ simple_imports = [
     # Hit the fake packages code block in main.sanitize_deps()
     {'targets': {'required': ['numpy']},
      'code': 'from numpy import warnings as npwarn'},
-    # Test for nested namespace resolution in stdlib builtins
-    {'targets': {'builtin': ['concurrent.futures']},
-     'code': 'import concurrent.futures'},
 ]
 
 relative_imports = [
@@ -118,6 +115,27 @@ relative_imports = [
     {'targets': {'relative': ['bar']},
      'code': 'from ..bar import baz'},
 ]
+
+@pytest.fixture(scope='module')
+def using_stdlib_list():
+    try:
+        import stdlib_list
+        return True
+    except ImportError:
+        return False
+
+def test_nested_namespace_builtins(using_stdlib_list):
+    if using_stdlib_list:
+        expected = {'builtin': ['concurrent.futures']}
+    else:
+        expected = {'builtin': ['concurrent']}
+    code = 'import concurrent.futures'
+
+
+
+    test_object = Initter({'targets': expected, 'code': code})
+    imports = main.get_imported_libs(test_object.code)
+    assert imports.describe() == test_object.targets
 
 
 class Initter(object):
