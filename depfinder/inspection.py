@@ -55,7 +55,7 @@ def get_top_level_import_name(name, custom_namespaces=None):
     num_dot = name.count(".")
     custom_namespaces = custom_namespaces or []
 
-    if name in namespace_packages or name in custom_namespaces or name in stdlib_list():
+    if name in namespace_packages or name in custom_namespaces or name in builtin_modules:
         return name
     elif any(
         ((num_dot - nsp.count(".")) == 1) and name.startswith(nsp + ".")
