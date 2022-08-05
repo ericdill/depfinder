@@ -354,7 +354,7 @@ def test_cli(path, req, capsys):
     if req is None:
         dependencies_file = join(dirname(dirname(depfinder.__file__)),
                                  'requirements.txt')
-        dependencies = set([dep for dep in open(dependencies_file, 'r').read().split('\n') if not dep.startswith("stdlib")])
+        dependencies = set([dep for dep in open(dependencies_file, 'r').read().split('\n') if dep and not dep.startswith("stdlib")])
     else:
         dependencies = req
     assert dependencies == set(eval(stdout).get('required', set()))
