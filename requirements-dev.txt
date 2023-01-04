@@ -5,3 +5,4 @@ numpydoc
 pytest
 six
 sphinx_rtd_theme
+setuptools_scm
