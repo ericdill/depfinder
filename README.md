@@ -104,42 +104,24 @@ docs](https://greentreesnakes.readthedocs.io/en/latest/)) to find all
 grouped according to the following categories, in order of decreasing
 precedence:
 
--
+- **relative**
+  : The import is a relative import from within the same library
+- **builtin**
+  : The import is built into the standard library, as determined by scraping the
+    official python docs for the builtins with [stdlib-list](https://github.com/jackmaney/python-stdlib-list)
+- **questionable**
+  : The import occurs inside any combination of
 
-    **relative**
+    - {py:class}`ast.Try` ({py:class}`ast.TryExcept` on py27)
+    - {py:class}`ast.FunctionDef`
+    - {py:class}`ast.ClassDef`
 
-    :   The import is a relative import from within the same library
-
--
-
-    **builtin**
-
-    :   The import is built into the standard library, as determined by
-        scraping the official python docs for the builtins with
-        [stdlib-list](https://github.com/jackmaney/python-stdlib-list)
-
--
-
-    **questionable**
-
-    :   The import occurs inside any combination of
-
-        -   :py`ast.Try`{.interpreted-text role="class"}
-            (:py`ast.TryExcept`{.interpreted-text role="class"} on py27)
-        -   :py`ast.FunctionDef`{.interpreted-text role="class"}
-        -   :py`ast.ClassDef`{.interpreted-text role="class"}
-
-        The module may be importable without these imports, but the it
-        will likely not have full functionality.
-
--
-
-    **required**
-
-    :   The import occurs at the top level of the module and will get
-        executed when the module is imported. These imports must be
-        accounted for in an environment, or the module will not be
-        importable.
+    The module may be importable without these imports, but the it will likely
+    not have full functionality.
+- **required**
+  : The import occurs at the top level of the module and will get executed
+    when the module is imported. These imports must be accounted for in an
+    environment, or the module will not be importable.
 
 ## Testing
 
@@ -170,26 +152,26 @@ manual:
 
 # API
 
-::: currentmodule
-depfinder.main
-:::
+```{eval-rst}
+.. currentmodule:: depfinder.main
+```
 
-::: autofunction
-get_imported_libs
-:::
+```{eval-rst}
+.. autofunction:: get_imported_libs
+```
 
-::: autofunction
-iterate_over_library
-:::
+```{eval-rst}
+.. autofunction:: iterate_over_library
+```
 
-::: autofunction
-simple_import_search
-:::
+```{eval-rst}
+.. autofunction:: simple_import_search
+```
 
 # IPython/Jupyter Notebook support
 
 `depfinder` has support for v4 Jupyter notebooks.
 
-::: autofunction
-notebook_path_to_dependencies
-:::
+```{eval-rst}
+.. autofunction:: notebook_path_to_dependencies
+```
