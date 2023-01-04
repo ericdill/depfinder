@@ -16,6 +16,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -48,8 +49,16 @@
 <li><a class="reference internal" href="#testing">Testing</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#api">API</a></li>
-<li><a class="reference internal" href="#ipython-jupyter-notebook-support">IPython/Jupyter Notebook support</a></li>
+<li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#depfinder.main.get_imported_libs"><code class="docutils literal notranslate"><span class="pre">get_imported_libs()</span></code></a></li>
+<li><a class="reference internal" href="#depfinder.main.iterate_over_library"><code class="docutils literal notranslate"><span class="pre">iterate_over_library()</span></code></a></li>
+<li><a class="reference internal" href="#depfinder.main.simple_import_search"><code class="docutils literal notranslate"><span class="pre">simple_import_search()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ipython-jupyter-notebook-support">IPython/Jupyter Notebook support</a><ul>
+<li><a class="reference internal" href="#depfinder.main.notebook_path_to_dependencies"><code class="docutils literal notranslate"><span class="pre">notebook_path_to_dependencies()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
         </div>
@@ -65,8 +74,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
-      <li>depfinder</li>
+      <li><a href="#" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">depfinder</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>

@@ -15,6 +15,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -53,9 +54,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>depfinder.inspection</li>
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">depfinder.inspection</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -143,7 +144,7 @@
 
 
 <span class="k">class</span> <span class="nc">ImportFinder</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">NodeVisitor</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Find all imports in an Abstract Syntax Tree (AST).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find all imports in an Abstract Syntax Tree (AST).</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -174,7 +175,7 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">ImportFinder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Recursively visit all ast nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recursively visit all ast nodes.</span>
 
 <span class="sd">        Look for Import and ImportFrom nodes. Classify them as being imports</span>
 <span class="sd">        that are built in, relative, required or questionable. Questionable</span>
@@ -195,7 +196,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sketchy_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">visit_Import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">Import</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Executes when an ast.Import node is encountered</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Executes when an ast.Import node is encountered</span>
 
 <span class="sd">        an ast.Import node is something like &#39;import bar&#39;</span>
 
@@ -215,7 +216,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_import_node</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">visit_ImportFrom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">ImportFrom</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Executes when an ast.ImportFrom node is encountered</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Executes when an ast.ImportFrom node is encountered</span>
 
 <span class="sd">        an ast.ImportFrom node is something like &#39;from foo import bar&#39;</span>
 
@@ -283,7 +284,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">required_modules</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the found imports</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the found imports</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -310,7 +311,7 @@
 
 
 <div class="viewcode-block" id="get_imported_libs"><a class="viewcode-back" href="../../index.html#depfinder.main.get_imported_libs">[docs]</a><span class="k">def</span> <span class="nf">get_imported_libs</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Given a code snippet, return a list of the imported libraries</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given a code snippet, return a list of the imported libraries</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -346,7 +347,7 @@
 
 
 <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="n">python_file</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse a single python file</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a single python file</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -383,7 +384,7 @@
 
 
 <div class="viewcode-block" id="iterate_over_library"><a class="viewcode-back" href="../../index.html#depfinder.main.iterate_over_library">[docs]</a><span class="k">def</span> <span class="nf">iterate_over_library</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Helper function to recurse into a library and find imports in .py files.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function to recurse into a library and find imports in .py files.</span>
 
 <span class="sd">    This allows the user to apply filters on the user-side to exclude imports</span>
 <span class="sd">    based on their file names.</span>

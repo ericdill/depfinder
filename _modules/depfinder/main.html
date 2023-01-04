@@ -15,6 +15,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -53,9 +54,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>depfinder.main</li>
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">depfinder.main</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -113,7 +114,7 @@
 
 
 <div class="viewcode-block" id="simple_import_search"><a class="viewcode-back" href="../../index.html#depfinder.main.simple_import_search">[docs]</a><span class="k">def</span> <span class="nf">simple_import_search</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return all imported modules in all .py files in `path_to_source_code`</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all imported modules in all .py files in `path_to_source_code`</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -168,7 +169,7 @@
 
 
 <div class="viewcode-block" id="notebook_path_to_dependencies"><a class="viewcode-back" href="../../index.html#depfinder.main.notebook_path_to_dependencies">[docs]</a><span class="k">def</span> <span class="nf">notebook_path_to_dependencies</span><span class="p">(</span><span class="n">path_to_notebook</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Helper function that turns a jupyter notebook into a list of dependencies</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function that turns a jupyter notebook into a list of dependencies</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -222,7 +223,7 @@
 
 
 <span class="k">def</span> <span class="nf">sanitize_deps</span><span class="p">(</span><span class="n">deps_dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function that takes the output of `notebook_path_to_dependencies`</span>
 <span class="sd">    or `simple_import_search` and turns normalizes the import names to be</span>
 <span class="sd">    synonymous with their conda/pip names</span>
@@ -267,7 +268,7 @@
 
 
 <span class="k">def</span> <span class="nf">simple_import_search_conda_forge_import_map</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">builtins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return all conda-forge packages used in all .py files in `path_to_source_code`</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all conda-forge packages used in all .py files in `path_to_source_code`</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -324,7 +325,7 @@
 
 
 <span class="k">def</span> <span class="nf">simple_import_to_pkg_map</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">builtins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Provide the map beteen all the imports and their possible packages</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Provide the map beteen all the imports and their possible packages</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
