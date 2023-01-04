@@ -32,7 +32,7 @@ jobs:
       run: |
         micromamba create --name TEST python=3 pip --file requirements-dev.txt --channel conda-forge
         micromamba activate TEST
-        python -m pip install -e . --no-deps --force-reinstall
+        python -m pip install -e . --force-reinstall
 
     - name: Build documentation
       run: |
