@@ -156,6 +156,15 @@ Then you can run the tests from the root of the git repository ::
 
     coverage run run_tests.py
 
+Releasing
+---------
+manual:
+1. create an annotated tag and push it to github. `git tag -a <tag>` and then `git push --tags`
+1. `git checkout <tag>`
+1. `python -m build --sdist --wheel . --outdir dist`
+1. `twine check dist/*`
+1. `twine upload dist/* --verbose`
+
 API
 ====
 .. currentmodule:: depfinder.main
