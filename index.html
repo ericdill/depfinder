@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>depfinder &mdash; depfinder 2.9.2.dev12+ge46d069 documentation</title>
+  <title>Welcome to depfinder documentation! &mdash; depfinder 2.9.2.dev20+g377f828 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="#" class="icon icon-home"> depfinder
           </a>
               <div class="version">
-                2.9.2.dev12+ge46d069
+                2.9.2.dev20+g377f828
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -42,11 +42,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <!-- Local TOC -->
               <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">depfinder</a><ul>
+<li><a class="reference internal" href="#">Welcome to depfinder documentation!</a><ul>
+<li><a class="reference internal" href="#depfinder">depfinder</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#using-depfinder">Using depfinder</a></li>
 <li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#testing">Testing</a></li>
+<li><a class="reference internal" href="#releasing">Releasing</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#api">API</a><ul>
@@ -57,6 +59,9 @@
 </li>
 <li><a class="reference internal" href="#ipython-jupyter-notebook-support">IPython/Jupyter Notebook support</a><ul>
 <li><a class="reference internal" href="#depfinder.main.notebook_path_to_dependencies"><code class="docutils literal notranslate"><span class="pre">notebook_path_to_dependencies()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
 </ul>
@@ -75,7 +80,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home"></a></li>
-      <li class="breadcrumb-item active">depfinder</li>
+      <li class="breadcrumb-item active">Welcome to depfinder documentation!</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -86,20 +91,22 @@
 
            <div itemprop="articleBody">
              
-  <section id="depfinder">
-<h1>depfinder<a class="headerlink" href="#depfinder" title="Permalink to this heading">¶</a></h1>
-<a class="reference external image-reference" href="https://github.com/ericdill/depfinder/actions/workflows/tests.yml"><img alt="https://github.com/ericdill/depfinder/actions/workflows/tests.yml/badge.svg" src="https://github.com/ericdill/depfinder/actions/workflows/tests.yml/badge.svg" /></a>
-<a class="reference external image-reference" href="http://codecov.io/github/ericdill/depfinder?branch=master"><img alt="http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=master" src="http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=master" /></a>
+  <section id="welcome-to-depfinder-documentation">
+<h1>Welcome to depfinder documentation!<a class="headerlink" href="#welcome-to-depfinder-documentation" title="Permalink to this heading">¶</a></h1>
+<section id="depfinder">
+<h2>depfinder<a class="headerlink" href="#depfinder" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ericdill/depfinder/actions/workflows/tests.yml"><img alt="image" src="https://github.com/ericdill/depfinder/actions/workflows/tests.yml/badge.svg" /></a></p>
+<p><a class="reference external" href="http://codecov.io/github/ericdill/depfinder?branch=main"><img alt="image" src="http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=main" /></a></p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://ericdill.github.io/depfinder">docs</a></p></li>
 <li><p><a class="reference external" href="https://github.com/ericdill/depfinder">github repo</a></p></li>
 </ul>
 <section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h2>
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">depfinder</span></code> is on pypi. It is tested against Python 2.7 and 3.6-3.8.</p>
-<blockquote>
-<div><p>pip install depfinder</p>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">depfinder</span>
+</pre></div>
+</div>
 <p>It is available via conda.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">depfinder</span>
 </pre></div>
@@ -110,90 +117,89 @@
 <span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
 </pre></div>
 </div>
-<p>or</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ericdill</span><span class="o">/</span><span class="n">depfinder</span><span class="o">/</span><span class="n">zipball</span><span class="o">/</span><span class="n">master</span><span class="c1">#egg=depfinder</span>
-</pre></div>
-</div>
 </section>
 <section id="using-depfinder">
-<h2>Using depfinder<a class="headerlink" href="#using-depfinder" title="Permalink to this heading">¶</a></h2>
+<h3>Using depfinder<a class="headerlink" href="#using-depfinder" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ depfinder -h
 usage: depfinder [-h] [-y] [-V] [--no-remap] [-v] [-q] [-k KEY] [--conda]
-             [--pdb]
-             file_or_directory
+                [--pdb]
+                file_or_directory
 
 Tool for inspecting the dependencies of your python project.
 
 positional arguments:
-  file_or_directory  Valid options are a single python file, a single jupyter
-                     (ipython) notebook or a directory of files that include
-                     python files
+    file_or_directory  Valid options are a single python file, a single jupyter
+                        (ipython) notebook or a directory of files that include
+                        python files
 
 optional arguments:
-  -h, --help         show this help message and exit
-  -y, --yaml         Output in syntactically valid yaml when true. Defaults to
-                     False
-  -V, --version      Print out the version of depfinder and exit
-  --no-remap         Do not remap the names of the imported libraries to their
-                     proper conda name
-  -v, --verbose      Enable debug level logging info from depfinder
-  -q, --quiet        Turn off all logging from depfinder
-  -k KEY, --key KEY  Select some or all of the output keys. Valid options are
-                     &#39;required&#39;, &#39;optional&#39;, &#39;builtin&#39;, &#39;relative&#39;, &#39;all&#39;.
-                     Defaults to &#39;all&#39;
-  --conda            Format output so it can be passed as an argument to conda
-                     install or conda create
-  --pdb              Enable PDB debugging on exception
+    -h, --help         show this help message and exit
+    -y, --yaml         Output in syntactically valid yaml when true. Defaults to
+                        False
+    -V, --version      Print out the version of depfinder and exit
+    --no-remap         Do not remap the names of the imported libraries to their
+                        proper conda name
+    -v, --verbose      Enable debug level logging info from depfinder
+    -q, --quiet        Turn off all logging from depfinder
+    -k KEY, --key KEY  Select some or all of the output keys. Valid options are
+                        &#39;required&#39;, &#39;optional&#39;, &#39;builtin&#39;, &#39;relative&#39;, &#39;all&#39;.
+                        Defaults to &#39;all&#39;
+    --conda            Format output so it can be passed as an argument to conda
+                        install or conda create
+    --pdb              Enable PDB debugging on exception
 </pre></div>
 </div>
-<p>Ok, great. That’s the help output.  Not super helpful.  What does the output of
-depfinder look like when we run it on the source code for depfinder?</p>
+<p>Ok, great. That’s the help output. Not super helpful. What does the
+output of depfinder look like when we run it on the source code for
+depfinder?</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ depfinder depfinder
 {&#39;builtin&#39;: [&#39;__future__&#39;,
-             &#39;argparse&#39;,
-             &#39;ast&#39;,
-             &#39;collections&#39;,
-             &#39;copy&#39;,
-             &#39;errno&#39;,
-             &#39;json&#39;,
-             &#39;logging&#39;,
-             &#39;os&#39;,
-             &#39;pprint&#39;,
-             &#39;re&#39;,
-             &#39;subprocess&#39;,
-             &#39;sys&#39;],
- &#39;relative&#39;: [&#39;_version&#39;, &#39;main&#39;],
- &#39;required&#39;: [&#39;pyyaml&#39;, &#39;stdlib-list&#39;]}
+                &#39;argparse&#39;,
+                &#39;ast&#39;,
+                &#39;collections&#39;,
+                &#39;copy&#39;,
+                &#39;errno&#39;,
+                &#39;json&#39;,
+                &#39;logging&#39;,
+                &#39;os&#39;,
+                &#39;pprint&#39;,
+                &#39;re&#39;,
+                &#39;subprocess&#39;,
+                &#39;sys&#39;],
+    &#39;relative&#39;: [&#39;_version&#39;, &#39;main&#39;],
+    &#39;required&#39;: [&#39;pyyaml&#39;, &#39;stdlib-list&#39;]}
 </pre></div>
 </div>
-<p>So, what do these things mean?  Well <cite>builtin</cite> are modules that are built in to
-the standard library.  <cite>required</cite> are modules that are not from the standard
-library or from within the <cite>depfinder</cite> package and <cite>relative</cite> are modules that
-are imported from one module to another within the <cite>depfinder</cite> source code.</p>
-<p><a class="reference external" href="https://github.com/ericdill/depfinder/blob/master/depfinder_usage.ipynb">Also see this notebook</a></p>
+<p>So, what do these things mean? Well <code class="docutils literal notranslate"><span class="pre">builtin</span></code> are modules
+that are built in to the standard library. <code class="docutils literal notranslate"><span class="pre">required</span></code> are
+modules that are not from the standard library or from within the
+<code class="docutils literal notranslate"><span class="pre">depfinder</span></code> package and <code class="docutils literal notranslate"><span class="pre">relative</span></code> are modules
+that are imported from one module to another within the
+<code class="docutils literal notranslate"><span class="pre">depfinder</span></code> source code.</p>
+<p>Also see <a class="reference external" href="https://github.com/ericdill/depfinder/blob/master/depfinder_usage.ipynb">this
+notebook</a></p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
-<p>Find all the unique imports in your library, automatically, because who likes
-do it by hand?  <a class="reference external" href="https://github.com/ericdill/depfinder">depfinder</a> uses the <a class="reference external" href="https://docs.python.org/2/library/ast.html">ast</a> (Abstract Syntax Tree) module
-(and <a class="reference external" href="https://greentreesnakes.readthedocs.io/en/latest/">more ast docs</a>) to find
-all <code class="xref py py-class docutils literal notranslate"><span class="pre">ast.Try</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">ast.ImportFrom</span></code> nodes.  These
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ast.Import</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">ast.ImportFrom</span></code> nodes are then grouped
-according to the following categories, in order of decreasing precedence:</p>
+<h3>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h3>
+<p>Find all the unique imports in your library, automatically, because who
+likes do it by hand? <a class="reference external" href="https://github.com/ericdill/depfinder">depfinder</a>
+uses the <a class="reference external" href="https://docs.python.org/2/library/ast.html">ast</a> (Abstract
+Syntax Tree) module (and <a class="reference external" href="https://greentreesnakes.readthedocs.io/en/latest/">more ast
+docs</a>) to find all
+:py<code class="docutils literal notranslate"><span class="pre">ast.Try</span></code>{.interpreted-text role=”class”} and
+:py<code class="docutils literal notranslate"><span class="pre">ast.ImportFrom</span></code>{.interpreted-text role=”class”} nodes. These
+:py<code class="docutils literal notranslate"><span class="pre">ast.Import</span></code>{.interpreted-text role=”class”} and
+:py<code class="docutils literal notranslate"><span class="pre">ast.ImportFrom</span></code>{.interpreted-text role=”class”} nodes are then
+grouped according to the following categories, in order of decreasing
+precedence:</p>
 <ul>
-<li><dl class="simple">
-<dt><strong>relative</strong></dt><dd><p>The import is a relative import from within the same library</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>builtin</strong></dt><dd><p>The import is built into the standard library, as determined by scraping the
-official python docs for the builtins with <a class="reference external" href="https://github.com/jackmaney/python-stdlib-list">stdlib-list</a></p>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt><strong>questionable</strong></dt><dd><p>The import occurs inside any combination of</p>
+<li><p><strong>relative</strong>
+: The import is a relative import from within the same library</p></li>
+<li><p><strong>builtin</strong>
+: The import is built into the standard library, as determined by scraping the
+official python docs for the builtins with <a class="reference external" href="https://github.com/jackmaney/python-stdlib-list">stdlib-list</a></p></li>
+<li><p><strong>questionable</strong>
+: The import occurs inside any combination of</p>
 <ul class="simple">
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ast.Try</span></code> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ast.TryExcept</span></code> on py27)</p></li>
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ast.FunctionDef</span></code></p></li>
@@ -201,38 +207,46 @@ official python docs for the builtins with <a class="reference external" href="h
 </ul>
 <p>The module may be importable without these imports, but the it will likely
 not have full functionality.</p>
-</dd>
-</dl>
 </li>
-<li><dl class="simple">
-<dt><strong>required</strong></dt><dd><p>The import occurs at the top level of the module and will get executed
+<li><p><strong>required</strong>
+: The import occurs at the top level of the module and will get executed
 when the module is imported. These imports must be accounted for in an
-environment, or the module will not be importable.</p>
-</dd>
-</dl>
-</li>
+environment, or the module will not be importable.</p></li>
 </ul>
 </section>
 <section id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">¶</a></h2>
-<p>It has dependencies on, <a class="reference external" href="https://github.com/jackmaney/python-stdlib-list">stdlib-list</a> and <a class="reference external" href="https://pyyaml.org/wiki/PyYAML">pyyaml</a>. I use <code class="docutils literal notranslate"><span class="pre">stdlib-list</span></code> to get the list of
-libraries built in to the standard library. These requirements can be installed
-via pip</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">¶</a></h3>
+<p>It has dependencies on,
+<a class="reference external" href="https://github.com/jackmaney/python-stdlib-list">stdlib-list</a> and
+<a class="reference external" href="https://pyyaml.org/wiki/PyYAML">pyyaml</a>. I use <code class="docutils literal notranslate"><span class="pre">stdlib-list</span></code> to get the
+list of libraries built in to the standard library. These requirements
+can be installed via pip :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt
 </pre></div>
 </div>
-<p>Also install the test-requiements</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">test</span><span class="o">-</span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+<p>Also install the test-requiements :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install -r test-requirements.txt
 </pre></div>
 </div>
-<p>Then you can run the tests from the root of the git repository</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">coverage</span> <span class="n">run</span> <span class="n">run_tests</span><span class="o">.</span><span class="n">py</span>
+<p>Then you can run the tests from the root of the git repository :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>coverage run run_tests.py
 </pre></div>
 </div>
+</section>
+<section id="releasing">
+<h3>Releasing<a class="headerlink" href="#releasing" title="Permalink to this heading">¶</a></h3>
+<p>manual:</p>
+<ol class="arabic simple">
+<li><p>create an annotated tag and push it to github. <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">-a</span> <span class="pre">TAG</span> <span class="pre">and</span> <span class="pre">then</span> </code>git push –tags`</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">TAG</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">build</span> <span class="pre">--sdist</span> <span class="pre">--wheel</span> <span class="pre">.</span> <span class="pre">--outdir</span> <span class="pre">dist</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">twine</span> <span class="pre">check</span> <span class="pre">dist/*</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">twine</span> <span class="pre">upload</span> <span class="pre">dist/*</span> <span class="pre">--verbose</span></code></p></li>
+</ol>
 </section>
 </section>
 <section id="api">
-<h1>API<a class="headerlink" href="#api" title="Permalink to this heading">¶</a></h1>
+<h2>API<a class="headerlink" href="#api" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="depfinder.main.get_imported_libs">
 <span class="sig-prename descclassname"><span class="pre">depfinder.main.</span></span><span class="sig-name descname"><span class="pre">get_imported_libs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_namespaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/depfinder/inspection.html#get_imported_libs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#depfinder.main.get_imported_libs" title="Permalink to this definition">¶</a></dt>
@@ -339,7 +353,7 @@ in the docstring of depfinder.ImportCatcher.describe()</p>
 
 </section>
 <section id="ipython-jupyter-notebook-support">
-<h1>IPython/Jupyter Notebook support<a class="headerlink" href="#ipython-jupyter-notebook-support" title="Permalink to this heading">¶</a></h1>
+<h2>IPython/Jupyter Notebook support<a class="headerlink" href="#ipython-jupyter-notebook-support" title="Permalink to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">depfinder</span></code> has support for v4 Jupyter notebooks.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="depfinder.main.notebook_path_to_dependencies">
@@ -377,6 +391,15 @@ and foo.baz instead of foo if custom_namespaces=[“foo”]).</p>
 </div>
 </dd></dl>
 
+</section>
+<section id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
 </section>
 
 
