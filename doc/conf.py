@@ -31,6 +31,7 @@ import sphinx_rtd_theme
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'myst_parser',
     'sphinx.ext.autosummary',
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
@@ -40,6 +41,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
 ]
+
+
 # map to the standard library
 intersphinx_mapping = {'python': ('https://docs.python.org/3.4', None)}
 numpydoc_show_class_members = False
@@ -48,8 +51,7 @@ templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = [".rst", ".md"]
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'

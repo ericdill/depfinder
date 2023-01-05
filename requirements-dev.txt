@@ -1,8 +1,9 @@
 codecov
 coverage
+myst-parser
 nbformat
 numpydoc
 pytest
+setuptools_scm
 six
 sphinx_rtd_theme
-setuptools_scm
