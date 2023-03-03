@@ -124,11 +124,15 @@ def extract_pkg_from_import(name):
 def recursively_search_for_name(name, module_names):
     while True:
         if name in module_names:
+            logger.debug("found name: %s in module_names var", name)
             return name
         else:
             if "." in name:
-                name = name.rsplit(".", 1)[0]
+                name2 = name.rsplit(".", 1)[0]
+                logger.debug('found "." in name, splitting %s to %s', name, name2)
+                name = name2
             else:
+                logger.debug("found nothing, returning False")
                 return False
 
 
@@ -197,4 +201,6 @@ def report_conda_forge_names_from_import_map(
             report[report_key].add(most_likely_pkg)
             import_to_pkg[report_key].update(_import_to_pkg)
             import_to_artifact[report_key].update(_import_to_artifact)
+
+    logger.debug("builtins: %s", sorted(builtin_modules))
     return report, import_to_artifact, import_to_pkg
