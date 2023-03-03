@@ -158,7 +158,16 @@ def report_conda_forge_names_from_import_map(
     logger.debug("ignore: %s", ignore)
     with ThreadPoolExecutor() as pool:
         for name, md in total_imports.items():
+
             logger.debug("checking for match against name: %s", name)
+            for filename, unclear in md:
+                logger.debug("filename: %s, unclear: %s", filename, unclear)
+                for ignore_element in ignore:
+                    logger.debug("  ignore_element: %s", ignore_element)
+                    if fnmatch(filename, ignore_element):
+                        logger.debug("******found ignore match for name: %s", filename)
+                        continue
+            # original if/elif stuff
             if all(
                 [
                     any(fnmatch(filename, ignore_element) for ignore_element in ignore)
@@ -167,6 +176,7 @@ def report_conda_forge_names_from_import_map(
             ):
                 logger.debug("found ignore match for name: %s", name)
                 continue
+
             elif recursively_search_for_name(name, builtin_modules):
                 logger.debug("found builtin module: %s", name)
                 report["builtin"].add(name)
