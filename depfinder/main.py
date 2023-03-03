@@ -35,6 +35,7 @@ import json
 import logging
 from collections import defaultdict
 from fnmatch import fnmatch
+from pprint import pformat
 
 from .inspection import iterate_over_library, get_imported_libs
 from .utils import pkg_data
@@ -311,10 +312,12 @@ def simple_import_to_pkg_map(
         path_to_source_code, custom_namespaces=custom_namespaces
     ):
         total_imports_list.append(c.total_imports)
+    logger.debug("total_imports_list: %s", pformat(total_imports_list))
     total_imports = defaultdict(dict)
     for total_import in total_imports_list:
         for name, md in total_import.items():
             total_imports[name].update(md)
+    logger.debug("total_imports: %s", pformat(total_imports))
     from .reports import report_conda_forge_names_from_import_map
 
     _, _, import_to_artifact = report_conda_forge_names_from_import_map(
