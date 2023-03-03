@@ -300,10 +300,10 @@ def simple_import_to_pkg_map(
 
     """
     # run depfinder on source code
-    logger.debug("path_to_source_code: %", path_to_source_code)
-    logger.debug("builtins: %", builtins)
-    logger.debug("ignore: %", ignore)
-    logger.debug("custom_namespaces: %", custom_namespaces)
+    logger.debug("path_to_source_code: %s", path_to_source_code)
+    logger.debug("builtins: %s", builtins)
+    logger.debug("ignore: %s", ignore)
+    logger.debug("custom_namespaces: %s", custom_namespaces)
     if ignore is None:
         ignore = []
     total_imports_list = []
