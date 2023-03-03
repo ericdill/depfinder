@@ -323,7 +323,14 @@ def parse_file(python_file, custom_namespaces=None):
             code, filename=python_file, custom_namespaces=custom_namespaces
         )
     catcher.total_imports = dict(catcher.total_imports)
+    # why is there a [:-3] here?
     mod_name = os.path.split(python_file)[:-3]
+    logger.debug(
+        "mod_name: %s, python_file: %s, catcher.total_imports: %s",
+        mod_name,
+        python_file,
+        catcher.total_imports,
+    )
     return mod_name, python_file, catcher
 
 
