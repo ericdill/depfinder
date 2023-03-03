@@ -24,10 +24,15 @@ except AttributeError:
 
 # this AST_QUESTIONABLE list comprises the various ways an import can be weird
 # 1. inside a try/except block
-# 2. inside a function
+# 2. inside a function (async or otherwise)
 # 3. part of an if/elif/else
-AST_QUESTIONABLE = tuple(AST_TRY + [ast.FunctionDef, ast.If])
+AST_QUESTIONABLE = tuple(AST_TRY + [
+    ast.FunctionDef,
+    ast.AsyncFunctionDef,
+    ast.If,
+])
 SKETCHY_TYPES_TABLE[ast.FunctionDef] = 'function'
+SKETCHY_TYPES_TABLE[ast.AsyncFunctionDef] = 'async-function'
 SKETCHY_TYPES_TABLE[ast.If] = 'if'
 del AST_TRY
 
