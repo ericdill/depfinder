@@ -155,6 +155,7 @@ def report_conda_forge_names_from_import_map(
     import_to_artifact = {k: {} for k in report_keys}
     futures = {}
 
+    logger.debug("ignore: %s", ignore)
     with ThreadPoolExecutor() as pool:
         for name, md in total_imports.items():
             logger.debug("checking for match against name: %s", name)
