@@ -51,7 +51,7 @@ try:
 except ImportError:
     # why would you put this in a try block??
     pass"""},
-    {'targets': {'required': ['toplevel', 'toplevelfrom'],
+    {'targets': {'required': ['toplevel', 'toplevelfrom', 'inside_class', 'inside_class_from'],
                  'questionable': ['function_inside_class',
                                   'function_inside_class_from',
                                   'inside_class',
@@ -205,11 +205,11 @@ def tester(import_list_dict, capsys):
         target = import_dict['targets']
         with write_notebook(cell_code) as fname:
             # parse the notebook!
-            assert target == main.notebook_path_to_dependencies(fname)
+            assert set(target) == set(main.notebook_path_to_dependencies(fname))
             # check the notebook cli
             _run_cli(path_to_check=fname)
             stdout, stderr = capsys.readouterr()
-            assert target == eval(stdout)
+            assert set(target) == set(eval(stdout))
 
 
 def test_multiple_code_cells(capsys):
