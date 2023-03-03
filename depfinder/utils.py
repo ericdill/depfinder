@@ -26,10 +26,14 @@ except AttributeError:
 # 1. inside a try/except block
 # 2. inside a function (async or otherwise)
 # 3. part of an if/elif/else
+# 4. inside a loop
 AST_QUESTIONABLE = tuple(AST_TRY + [
     ast.FunctionDef,
     ast.AsyncFunctionDef,
     ast.If,
+    ast.While,
+    ast.For,
+    ast.AsyncFor,
 ])
 SKETCHY_TYPES_TABLE[ast.FunctionDef] = 'function'
 SKETCHY_TYPES_TABLE[ast.AsyncFunctionDef] = 'async-function'
