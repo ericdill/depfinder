@@ -44,7 +44,7 @@ from .utils import (
     SKETCHY_TYPES_TABLE,
 )
 
-logger = logging.getLogger('depfinder')
+logger = logging.getLogger("depfinder")
 
 
 PACKAGE_NAME = None
@@ -55,7 +55,11 @@ def get_top_level_import_name(name, custom_namespaces=None):
     num_dot = name.count(".")
     custom_namespaces = custom_namespaces or []
 
-    if name in namespace_packages or name in custom_namespaces or name in builtin_modules:
+    if (
+        name in namespace_packages
+        or name in custom_namespaces
+        or name in builtin_modules
+    ):
         return name
     elif any(
         ((num_dot - nsp.count(".")) == 1) and name.startswith(nsp + ".")
@@ -65,12 +69,11 @@ def get_top_level_import_name(name, custom_namespaces=None):
         # foo.bar
         return name
     else:
-        if '.' not in name:
+        if "." not in name:
             return name
         else:
             return get_top_level_import_name(
-                name.rsplit('.', 1)[0],
-                custom_namespaces=custom_namespaces
+                name.rsplit(".", 1)[0], custom_namespaces=custom_namespaces
             )
 
 
@@ -92,7 +95,7 @@ class ImportFinder(ast.NodeVisitor):
 
     """
 
-    def __init__(self, filename='', custom_namespaces=None):
+    def __init__(self, filename="", custom_namespaces=None):
         self.filename = filename
         self.required_modules = set()
         self.sketchy_modules = set()
@@ -139,10 +142,14 @@ class ImportFinder(ast.NodeVisitor):
         self.imports.append(node)
         self._add_to_total_imports(node)
 
-        mods = set([
-            get_top_level_import_name(name.name, custom_namespaces=self.custom_namespaces)
-            for name in node.names
-        ])
+        mods = set(
+            [
+                get_top_level_import_name(
+                    name.name, custom_namespaces=self.custom_namespaces
+                )
+                for name in node.names
+            ]
+        )
         for mod in mods:
             self._add_import_node(mod)
 
@@ -179,25 +186,31 @@ class ImportFinder(ast.NodeVisitor):
     def _add_to_total_imports(self, node: Union[ast.Import, ast.ImportFrom]):
         import_metadata = {}
         try:
-            import_metadata.update({'exact_line': ast.unparse(node)})
+            import_metadata.update({"exact_line": ast.unparse(node)})
         except AttributeError:
             pass
 
         import_metadata.update({v: False for v in SKETCHY_TYPES_TABLE.values()})
-        import_metadata.update({SKETCHY_TYPES_TABLE[node.__class__]: True for node in self.sketchy_nodes})
+        import_metadata.update(
+            {SKETCHY_TYPES_TABLE[node.__class__]: True for node in self.sketchy_nodes}
+        )
         names = set()
         if isinstance(node, ast.Import):
             _names = set(name.name for name in node.names)
-            import_metadata['import'] = _names
+            import_metadata["import"] = _names
             names.update(_names)
         elif isinstance(node, ast.ImportFrom):
-            import_metadata['import_from'] = {node.module}
+            import_metadata["import_from"] = {node.module}
             names.add(node.module)
         else:
-            raise NotImplementedError(f"Expected ast.Import or ast.ImportFrom this is {type(node)}")
+            raise NotImplementedError(
+                f"Expected ast.Import or ast.ImportFrom this is {type(node)}"
+            )
 
         for name in names:
-            self.total_imports[name].update({(self.filename, node.lineno): import_metadata})
+            self.total_imports[name].update(
+                {(self.filename, node.lineno): import_metadata}
+            )
 
     def _add_import_node(self, node_name):
         # see if the module is a builtin
@@ -229,19 +242,19 @@ class ImportFinder(ast.NodeVisitor):
             'builtin' : The modules that are part of the standard library
         """
         desc = {
-            'required': self.required_modules,
-            'relative': self.relative_modules,
-            'questionable': self.sketchy_modules,
-            'builtin': self.builtin_modules
+            "required": self.required_modules,
+            "relative": self.relative_modules,
+            "questionable": self.sketchy_modules,
+            "builtin": self.builtin_modules,
         }
         desc = {k: v for k, v in desc.items() if v}
         return desc
 
     def __repr__(self):
-        return 'ImportCatcher: %s' % repr(self.describe())
+        return "ImportCatcher: %s" % repr(self.describe())
 
 
-def get_imported_libs(code, filename='', custom_namespaces=None):
+def get_imported_libs(code, filename="", custom_namespaces=None):
     """Given a code snippet, return a list of the imported libraries
 
     Parameters
@@ -269,8 +282,7 @@ def get_imported_libs(code, filename='', custom_namespaces=None):
      'required': {'stdlib_list'}}
     """
     # skip ipython notebook lines
-    code = '\n'.join([line for line in code.split('\n')
-                      if not line.startswith('%')])
+    code = "\n".join([line for line in code.split("\n") if not line.startswith("%")])
     tree = ast.parse(code)
     import_finder = ImportFinder(filename=filename, custom_namespaces=custom_namespaces)
     import_finder.visit(tree)
@@ -292,19 +304,20 @@ def parse_file(python_file, custom_namespaces=None):
     """
     global PACKAGE_NAME
     if PACKAGE_NAME is None:
-        PACKAGE_NAME = os.path.basename(python_file).split('.')[0]
-        logger.debug("Setting PACKAGE_NAME global variable to {}"
-                     "".format(PACKAGE_NAME))
+        PACKAGE_NAME = os.path.basename(python_file).split(".")[0]
+        logger.debug(
+            "Setting PACKAGE_NAME global variable to {}" "".format(PACKAGE_NAME)
+        )
     # Try except block added for adal package which has a BOM at the beginning,
     # requiring a different encoding to load properly
     try:
-        with open(python_file, 'r') as f:
+        with open(python_file, "r") as f:
             code = f.read()
         catcher = get_imported_libs(
             code, filename=python_file, custom_namespaces=custom_namespaces
         )
     except SyntaxError:
-        with open(python_file, 'r', encoding='utf-8-sig') as f:
+        with open(python_file, "r", encoding="utf-8-sig") as f:
             code = f.read()
         catcher = get_imported_libs(
             code, filename=python_file, custom_namespaces=custom_namespaces
@@ -334,18 +347,22 @@ def iterate_over_library(path_to_source_code, custom_namespaces=None):
     global PACKAGE_NAME
     global STRICT_CHECKING
     if PACKAGE_NAME is None:
-        PACKAGE_NAME = os.path.basename(path_to_source_code).split('.')[0]
-        logger.debug("Setting PACKAGE_NAME global variable to {}"
-                     "".format(PACKAGE_NAME))
+        PACKAGE_NAME = os.path.basename(path_to_source_code).split(".")[0]
+        logger.debug(
+            "Setting PACKAGE_NAME global variable to {}" "".format(PACKAGE_NAME)
+        )
     skipped_files = []
     all_files = []
     for parent, folders, files in os.walk(path_to_source_code):
         for f in files:
-            if f.endswith('.py'):
+            if f.endswith(".py"):
                 full_file_path = os.path.join(parent, f)
+                logger.debug("Parsing file: %s, %s", f, full_file_path)
                 all_files.append(full_file_path)
                 try:
-                    yield parse_file(full_file_path, custom_namespaces=custom_namespaces)
+                    yield parse_file(
+                        full_file_path, custom_namespaces=custom_namespaces
+                    )
                 except Exception:
                     logger.exception("Could not parse file: {}".format(full_file_path))
                     skipped_files.append(full_file_path)
@@ -355,4 +372,6 @@ def iterate_over_library(path_to_source_code, custom_namespaces=None):
             logger.warn("%s: %s" % (str(idx), f))
 
     if skipped_files and STRICT_CHECKING:
-        raise RuntimeError("Some files failed to parse. See logs for full stack traces.")
+        raise RuntimeError(
+            "Some files failed to parse. See logs for full stack traces."
+        )
