@@ -34,12 +34,15 @@ import logging
 import os
 import sys
 from collections import defaultdict
-from typing import Union
+from typing import Optional, Union
+
+from pydantic import BaseModel
 
 from .stdliblist import builtin_modules
 
 from .utils import (
     AST_QUESTIONABLE,
+    ImportType,
     namespace_packages,
     SKETCHY_TYPES_TABLE,
 )
@@ -51,7 +54,7 @@ PACKAGE_NAME = None
 STRICT_CHECKING = False
 
 
-def get_top_level_import_name(name, custom_namespaces=None):
+def get_top_level_import_name(name: str, custom_namespaces: list[str] = None) -> str:
     num_dot = name.count(".")
     custom_namespaces = custom_namespaces or []
 
@@ -75,6 +78,9 @@ def get_top_level_import_name(name, custom_namespaces=None):
             return get_top_level_import_name(
                 name.rsplit(".", 1)[0], custom_namespaces=custom_namespaces
             )
+
+
+from .utils import ImportMetadata
 
 
 class ImportFinder(ast.NodeVisitor):
@@ -101,14 +107,17 @@ class ImportFinder(ast.NodeVisitor):
         self.sketchy_modules: set[str] = set()
         self.builtin_modules: set[str] = set()
         self.relative_modules: set[str] = set()
-        self.imports = []
-        self.import_froms = []
-        self.total_imports = defaultdict(dict)
-        self.sketchy_nodes = {}
+        self.imports: list[ast.AST] = []
+        self.import_froms: list[ast.AST] = []
+        self.total_imports_new: set[ImportMetadata] = set()
+        self.total_imports: dict[
+            str, dict[tuple[str, int], ImportMetadata]
+        ] = defaultdict(dict)
+        self.sketchy_nodes: dict[ast.AST, ast.AST] = {}
         self.custom_namespaces: list[str] = custom_namespaces or []
         super(ImportFinder, self).__init__()
 
-    def visit(self, node):
+    def visit(self, node: ast.AST):
         """Recursively visit all ast nodes.
 
         Look for Import and ImportFrom nodes. Classify them as being imports
@@ -142,16 +151,15 @@ class ImportFinder(ast.NodeVisitor):
         self.imports.append(node)
         self._add_to_total_imports(node)
 
-        mods = set(
-            [
-                get_top_level_import_name(
-                    name.name, custom_namespaces=self.custom_namespaces
-                )
-                for name in node.names
-            ]
-        )
-        for mod in mods:
-            self._add_import_node(mod)
+        imports: set[str] = set()
+        for name in node.names:
+            import_name = get_top_level_import_name(
+                name.name, custom_namespaces=self.custom_namespaces
+            )
+            imports.add(import_name)
+
+        for import_name in imports:
+            self._add_import_node(import_name)
 
     def visit_ImportFrom(self, node: ast.ImportFrom):
         """Executes when an ast.ImportFrom node is encountered
@@ -184,35 +192,55 @@ class ImportFinder(ast.NodeVisitor):
         self._add_import_node(node_name)
 
     def _add_to_total_imports(self, node: Union[ast.Import, ast.ImportFrom]):
-        import_metadata = {}
+        if isinstance(node, ast.Import):
+            import_type: ImportType = ImportType.import_normal
+        elif isinstance(node, ast.ImportFrom):
+            import_type = ImportType.import_from
+        else:
+            # defensive coding. This will only be hit if a new
+            # `visit_*` method is added to this class
+            raise TypeError(f"Unexpected node type: {type(node)}")
+
+        import_metadata = ImportMetadata(import_type=import_type)
         try:
-            import_metadata.update({"exact_line": ast.unparse(node)})
+            import_metadata.exact_line = ast.unparse(node)
         except AttributeError:
+            # what are the circumstances where we hit this exception?
             pass
 
-        import_metadata.update({v: False for v in SKETCHY_TYPES_TABLE.values()})
-        import_metadata.update(
-            {SKETCHY_TYPES_TABLE[node.__class__]: True for node in self.sketchy_nodes}
-        )
-        names = set()
+        # import_metadata.update({v: False for v in SKETCHY_TYPES_TABLE.values()})
+        # For all of the sketchy nodes, update the import metadata to "True" for
+        # each of the node types that our import is found within. e.g., if the
+        # import is found within a try block and a function definition, then
+        # set import_metadata.try = True and import_metadata.function = True
+
+        for node in self.sketchy_nodes:
+            import_metadata.__setattr__(SKETCHY_TYPES_TABLE[node.__class__], True)
+            breakpoint()
+
         if isinstance(node, ast.Import):
-            _names = set(name.name for name in node.names)
-            import_metadata["import"] = _names
-            names.update(_names)
+            # import nodes can have multiple imports, e.g.
+            # import foo, bar, baz
+            names: set[str] = set()
+            for node_alias in node.names:
+                names.add(node_alias.name)
+            import_metadata.imported_modules = names
         elif isinstance(node, ast.ImportFrom):
-            import_metadata["import_from"] = {node.module}
-            names.add(node.module)
+            breakpoint()
+            import_metadata.imported_modules = {node.module}
         else:
             raise NotImplementedError(
                 f"Expected ast.Import or ast.ImportFrom this is {type(node)}"
             )
-
-        for name in names:
-            self.total_imports[name].update(
+        import_metadata.lineno = node.lineno
+        import_metadata.filename = self.filename
+        self.total_imports_new.add(import_metadata)
+        for import_name in import_metadata.imported_modules:
+            self.total_imports[import_name].update(
                 {(self.filename, node.lineno): import_metadata}
             )
 
-    def _add_import_node(self, node_name):
+    def _add_import_node(self, node_name: str):
         # see if the module is a builtin
         if node_name in builtin_modules:
             self.builtin_modules.add(node_name)

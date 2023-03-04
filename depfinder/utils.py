@@ -1,17 +1,24 @@
 from __future__ import print_function, division, absolute_import
 
 import ast
+from enum import Enum
 import logging
 import pkgutil
 import sys
+from typing import Any
+from pydantic import create_model
 
 import requests
 import yaml
 from .stdliblist import builtin_modules
 
 
-SKETCHY_TYPES_TABLE = {}
+SKETCHY_TYPES_TABLE: dict[type[ast.AST], str] = {}
 
+class ImportMetadata(BaseModel):
+    ast_try = False
+    ast_match_case = False
+    ast_function_def = False
 try:
     # python 3
     AST_TRY = [ast.Try]
@@ -25,11 +32,12 @@ except AttributeError:
 
 try:
     # python 3.10+
-    AST_MATCH = [ast.match_case]
+    AST_MATCH: list[type[ast.AST]] = [ast.match_case]
     SKETCHY_TYPES_TABLE[ast.match_case] = "match"
 except AttributeError:
     # match/case does not exist before 3.10
     AST_MATCH = []
+
 
 # this AST_QUESTIONABLE list comprises the various ways an import can be weird
 # 1. inside a try/except block
@@ -55,6 +63,27 @@ SKETCHY_TYPES_TABLE[ast.If] = "if"
 SKETCHY_TYPES_TABLE[ast.While] = "while"
 SKETCHY_TYPES_TABLE[ast.For] = "for"
 SKETCHY_TYPES_TABLE[ast.AsyncFor] = "async-for"
+
+pydantic_kwargs: dict[str, tuple[Any, Any]] = {}
+for node_type, shorthand in SKETCHY_TYPES_TABLE.items():
+    pydantic_kwargs[shorthand] = (bool, False)
+
+
+class ImportType(Enum):
+    import_normal = ast.Import
+    import_from = ast.ImportFrom
+
+
+ImportMetadata = create_model(
+    "ImportMetadata",
+    **pydantic_kwargs,
+    exact_line=(str, ""),
+    import_type=(ImportType, ...),
+    imported_modules=(set[str], []),
+    lineno=(int, -1),
+    filename=(str, ""),
+)
+
 del AST_TRY
 del AST_MATCH
 
