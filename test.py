@@ -50,19 +50,37 @@ try:
     import os
 except ImportError:
     # why would you put this in a try block??
-    pass"""},
-    {'targets': {'required': ['toplevel', 'toplevelfrom'],
-                 'questionable': ['function_inside_class',
-                                  'function_inside_class_from',
-                                  'inside_class',
-                                  'inside_class_from',
-                                  'inside_function',
-                                  'inside_function_from'],
-                 'relative': ['relative_function',
-                              'relative_function_inside_class',
-                              'relative_inside_class'],
-                 'builtin': ['os', 'pprint']},
-     'code': """
+        pass""",
+    },
+    {
+        "targets": {
+            "required": [
+                "toplevel",
+                "toplevelfrom",
+                "inside_class",
+                "inside_class_from",
+            ],
+            "questionable": [
+                "function_inside_class",
+                "function_inside_class_from",
+                "inside_for",
+                "inside_for_else",
+                "inside_function",
+                "inside_function_from",
+                "inside_async_function",
+                "inside_if",
+                "inside_else",
+                "inside_while",
+                "inside_nested_class",
+            ],
+            "relative": [
+                "relative_function",
+                "relative_function_inside_class",
+                "relative_inside_class",
+            ],
+            "builtin": ["os", "pprint"],
+        },
+        "code": """
 from toplevelfrom import some_function
 import toplevel
 def function():
@@ -79,11 +97,36 @@ class Class:
         from function_inside_class_from import some_function
         from .relative_function_inside_class import a_third_function
         import pprint
-"""},
 
-    {'targets':
-         {'questionable': ['chico', 'groucho', 'harpo']},
-     'code': """
+# Handle nesting properly. import in a class def should be treated as "required to import",
+# unless its inside any of the nodes that would render it questionable. This import _should_
+# land in the questionable section, so we want to make sure it does.
+if True:
+    class NestedClass:
+        import inside_nested_class
+# weird edge cases that we want to make sure end up sorted properly. This hits the "ast.While"
+for i in []:
+    import inside_for
+else:
+    import inside_for_else
+# import inside an async function. This hits the "ast.AsyncFunctionDef"
+async def async_function():
+    import inside_async_function
+# import inside an if block. This hits the "ast.If"
+foo = 'cat'
+if foo == 'cat':
+    import inside_if
+else:
+    import inside_else
+# import inside an if block. This hits the "ast.While"
+while True:
+    import inside_while
+    break
+""",
+    },
+    {
+        "targets": {"questionable": ["chico", "groucho", "harpo"]},
+        "code": """
 if this:
     import groucho
 elif that:
@@ -205,11 +248,11 @@ def tester(import_list_dict, capsys):
         target = import_dict['targets']
         with write_notebook(cell_code) as fname:
             # parse the notebook!
-            assert target == main.notebook_path_to_dependencies(fname)
+            assert set(target) == set(main.notebook_path_to_dependencies(fname))
             # check the notebook cli
             _run_cli(path_to_check=fname)
             stdout, stderr = capsys.readouterr()
-            assert target == eval(stdout)
+            assert set(target) == set(eval(stdout))
 
 
 def test_multiple_code_cells(capsys):

@@ -2,7 +2,7 @@
 
 [![image](https://github.com/ericdill/depfinder/actions/workflows/tests.yml/badge.svg)](https://github.com/ericdill/depfinder/actions/workflows/tests.yml)
 
-[![image](http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=main)](http://codecov.io/github/ericdill/depfinder?branch=main)
+[![image](http://codecov.io/github/ericdill/depfinder/coverage.svg?branch=main)](https://app.codecov.io/github/ericdill/depfinder?branch=main)
 
 -   [docs](https://ericdill.github.io/depfinder)
 -   [github repo](https://github.com/ericdill/depfinder)
