@@ -5,7 +5,7 @@ logger = logging.getLogger('depfinder')
 MAJOR, MINOR = sys.version_info.major, sys.version_info.minor
 
 if MAJOR == 3 and MINOR >= 10:
-    builtin_modules = list(set(list(sys.stdlib_module_names) + list(sys.builtin_module_names)))
+    builtin_modules: list[str] = list(set(list(sys.stdlib_module_names) + list(sys.builtin_module_names)))
 else:
     try:
         from stdlib_list import stdlib_list
