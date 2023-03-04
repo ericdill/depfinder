@@ -117,5 +117,3 @@ v2.4.0
 
 * Eric Dill
 * Christopher J. Wright
-
-
