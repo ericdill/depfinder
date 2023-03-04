@@ -113,8 +113,10 @@ precedence:
   : The import occurs inside any combination of
 
     - {py:class}`ast.Try` ({py:class}`ast.TryExcept` on py27)
-    - {py:class}`ast.FunctionDef`
-    - {py:class}`ast.ClassDef`
+    - {py:class}`ast.FunctionDef` or {py:class}`ast.AsyncFunctionDef`
+    - {py:class}`ast.If`, {py:class}`ast.While`, {py:class}`ast.For`, or
+      {py:class}`ast.AsyncFor`.
+    - {py:class}`ast.match_case`.
 
     The module may be importable without these imports, but the it will likely
     not have full functionality.
