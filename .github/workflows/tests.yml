@@ -47,4 +47,3 @@ jobs:
           micromamba activate TEST
           coverage report -m
           codecov
-
