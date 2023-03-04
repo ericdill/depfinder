@@ -15,10 +15,20 @@ from .stdliblist import builtin_modules
 
 SKETCHY_TYPES_TABLE: dict[type[ast.AST], str] = {}
 
+
 class ImportMetadata(BaseModel):
+    # this group of vars are set to true when an import occurs within
+    # one of their node types
     ast_try = False
     ast_match_case = False
     ast_function_def = False
+    ast_async_function_def = False
+    ast_if = False
+    ast_while = False
+    ast_for = False
+    ast_async_for = False
+
+
 try:
     # python 3
     AST_TRY = [ast.Try]
