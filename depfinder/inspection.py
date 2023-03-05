@@ -33,7 +33,7 @@ import ast
 import logging
 import os
 from collections import defaultdict
-from typing import Iterable
+from typing import Dict, Iterable, List, Set, Tuple
 
 from pydantic import BaseModel
 
@@ -56,13 +56,13 @@ STRICT_CHECKING = False
 
 
 class FoundModules(BaseModel):
-    required: set[str]
-    questionable: set[str]
-    builtin: set[str]
-    relative: set[str]
+    required: Set[str]
+    questionable: Set[str]
+    builtin: Set[str]
+    relative: Set[str]
 
 
-def get_top_level_import_name(name: str, custom_namespaces: list[str] = None) -> str:
+def get_top_level_import_name(name: str, custom_namespaces: List[str] = None) -> str:
     num_dot = name.count(".")
     custom_namespaces = custom_namespaces or []
 
@@ -106,20 +106,20 @@ class ImportFinder(ast.NodeVisitor):
 
     """
 
-    def __init__(self, filename: str = "", custom_namespaces: list[str] = None):
+    def __init__(self, filename: str = "", custom_namespaces: List[str] = None):
         self.filename = filename
-        self.required_modules: set[str] = set()
-        self.questionable_modules: set[str] = set()
-        self.builtin_modules: set[str] = set()
-        self.relative_modules: set[str] = set()
-        self.imports: list[ast.AST] = []
-        self.import_froms: list[ast.AST] = []
-        self.total_imports_new: list[ImportMetadata] = list()
-        self.total_imports: dict[
-            str, dict[tuple[str, int], ImportMetadata]
+        self.required_modules: Set[str] = set()
+        self.questionable_modules: Set[str] = set()
+        self.builtin_modules: Set[str] = set()
+        self.relative_modules: Set[str] = set()
+        self.imports: List[ast.AST] = []
+        self.import_froms: List[ast.AST] = []
+        self.total_imports_new: List[ImportMetadata] = list()
+        self.total_imports: Dict[
+            str, Dict[Tuple[str, int], ImportMetadata]
         ] = defaultdict(dict)
-        self.sketchy_nodes: dict[ast.AST, ast.AST] = {}
-        self.custom_namespaces: list[str] = custom_namespaces or []
+        self.sketchy_nodes: Dict[ast.AST, ast.AST] = {}
+        self.custom_namespaces: List[str] = custom_namespaces or []
         super(ImportFinder, self).__init__()
 
     def visit(self, node: ast.AST):
@@ -156,7 +156,7 @@ class ImportFinder(ast.NodeVisitor):
         self.imports.append(node)
         self._add_to_total_imports(node)
 
-        imports: set[str] = set()
+        imports: Set[str] = set()
         for name in node.names:
             import_name = get_top_level_import_name(
                 name.name, custom_namespaces=self.custom_namespaces
@@ -220,7 +220,7 @@ class ImportFinder(ast.NodeVisitor):
         if isinstance(node, ast.Import):
             # import nodes can have multiple imports, e.g.
             # import foo, bar, baz
-            names: set[str] = set()
+            names: Set[str] = set()
             for node_alias in node.names:
                 names.add(node_alias.name)
             import_metadata.imported_modules = names
@@ -280,7 +280,7 @@ class ImportFinder(ast.NodeVisitor):
         )
         return found_modules
 
-    def describe(self) -> dict[str, set[str]]:
+    def describe(self) -> Dict[str, Set[str]]:
         """Return the found imports
 
         Returns
@@ -309,7 +309,7 @@ class ImportFinder(ast.NodeVisitor):
 
 
 def get_imported_libs(
-    code: str, filename: str = "", custom_namespaces: list[str] = None
+    code: str, filename: str = "", custom_namespaces: List[str] = None
 ) -> ImportFinder:
     """Given a code snippet, return a list of the imported libraries
 
@@ -346,8 +346,8 @@ def get_imported_libs(
 
 
 def parse_file(
-    python_file: str, custom_namespaces: list[str] = None
-) -> tuple[str, str, ImportFinder]:
+    python_file: str, custom_namespaces: List[str] = None
+) -> Tuple[str, str, ImportFinder]:
     """Parse a single python file
 
     Parameters
@@ -386,8 +386,8 @@ def parse_file(
 
 
 def iterate_over_library(
-    path_to_source_code: str, custom_namespaces: list[str] = None
-) -> Iterable[tuple[str, str, ImportFinder]]:
+    path_to_source_code: str, custom_namespaces: List[str] = None
+) -> Iterable[Tuple[str, str, ImportFinder]]:
     """Helper function to recurse into a library and find imports in .py files.
 
     This allows the user to apply filters on the user-side to exclude imports
@@ -409,8 +409,8 @@ def iterate_over_library(
         logger.debug(
             "Setting PACKAGE_NAME global variable to {}" "".format(current_package_name)
         )
-    skipped_files: list[str] = []
-    all_files: list[str] = []
+    skipped_files: List[str] = []
+    all_files: List[str] = []
     for parent, _, files in os.walk(path_to_source_code):
         for f in files:
             if f.endswith(".py"):

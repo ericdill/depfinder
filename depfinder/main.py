@@ -35,7 +35,7 @@ import json
 import logging
 from collections import defaultdict
 from fnmatch import fnmatch
-from typing import Any, Dict
+from typing import Any, Dict, List, Set, Tuple
 
 from pydantic import BaseModel
 
@@ -50,9 +50,9 @@ STRICT_CHECKING = False
 def simple_import_search(
     path_to_source_code: str,
     remap: bool = True,
-    ignore: list[str] = None,
-    custom_namespaces: list[str] = None,
-) -> dict[str, set[str]]:
+    ignore: List[str] = None,
+    custom_namespaces: List[str] = None,
+) -> Dict[str, Set[str]]:
     """Return all imported modules in all .py files in `path_to_source_code`
 
     Parameters
@@ -92,7 +92,7 @@ def simple_import_search(
                   'stdlib_list',
                   'test_with_code']}
     """
-    all_deps: dict[str, set[str]] = defaultdict(set)
+    all_deps: Dict[str, Set[str]] = defaultdict(set)
     import_finders = iterate_over_library(
         path_to_source_code, custom_namespaces=custom_namespaces
     )
@@ -109,8 +109,8 @@ def simple_import_search(
 
 
 def notebook_path_to_dependencies(
-    path_to_notebook: str, remap: bool = True, custom_namespaces: list[str] = None
-) -> dict[str, set[str]]:
+    path_to_notebook: str, remap: bool = True, custom_namespaces: List[str] = None
+) -> Dict[str, Set[str]]:
     """Helper function that turns a jupyter notebook into a list of dependencies
 
     Parameters
@@ -153,10 +153,10 @@ def notebook_path_to_dependencies(
 
     # Could also do this with nbconvert, i think? But this basically achieves the same thing
     nb = json.load(io.open(path_to_notebook, encoding="utf8"))
-    codeblocks: list[str] = [
+    codeblocks: List[str] = [
         "".join(cell["source"]) for cell in nb["cells"] if cell["cell_type"] == "code"
     ]
-    all_deps: dict[str, set[str]] = defaultdict(set)
+    all_deps: Dict[str, Set[str]] = defaultdict(set)
 
     for codeblock in codeblocks:
         codeblock = transform(codeblock)
@@ -175,7 +175,7 @@ def notebook_path_to_dependencies(
     return all_deps
 
 
-def sanitize_deps(dependencies: dict[str, set[str]]) -> dict[str, set[str]]:
+def sanitize_deps(dependencies: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
     """
     Helper function that takes the output of `notebook_path_to_dependencies`
     or `simple_import_search` and turns normalizes the import names to be
@@ -193,7 +193,7 @@ def sanitize_deps(dependencies: dict[str, set[str]]) -> dict[str, set[str]]:
     """
     from .inspection import current_package_name
 
-    new_deps_dict: dict[str, set[str]] = {}
+    new_deps_dict: Dict[str, Set[str]] = {}
     list_of_possible_fakes = set(
         [v for val in pkg_data["_FAKE_PACKAGES"].values() for v in val]
     )
@@ -228,9 +228,9 @@ def sanitize_deps(dependencies: dict[str, set[str]]) -> dict[str, set[str]]:
 
 def simple_import_search_conda_forge_import_map(
     path_to_source_code: str,
-    builtins: list[str] = None,
-    ignore: list[str] = None,
-    custom_namespaces: list[str] = None,
+    builtins: List[str] = None,
+    ignore: List[str] = None,
+    custom_namespaces: List[str] = None,
 ):
     """Return all conda-forge packages used in all .py files in `path_to_source_code`
 
@@ -274,8 +274,8 @@ def simple_import_search_conda_forge_import_map(
     # run depfinder on source code
     if ignore is None:
         ignore = []
-    import_metadata_type = dict[str, dict[tuple[str, int], ImportMetadata]]
-    total_imports_list: list[import_metadata_type] = []
+    import_metadata_type = Dict[str, Dict[Tuple[str, int], ImportMetadata]]
+    total_imports_list: List[import_metadata_type] = []
     for _, _, import_finder in iterate_over_library(
         path_to_source_code, custom_namespaces=custom_namespaces
     ):

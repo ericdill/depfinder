@@ -35,7 +35,7 @@ from pprint import pprint
 import itertools
 import pdb
 import sys
-from typing import Iterable
+from typing import Dict, Iterable, Set
 
 import yaml
 
@@ -208,7 +208,7 @@ def cli():
     keys = args.key
     logger.debug("keys: %s", keys)
 
-    def dump_deps(deps: dict[str, set[str]], keys: Iterable[str]):
+    def dump_deps(deps: Dict[str, Set[str]], keys: Iterable[str]):
         """
         Helper function to print the dependencies to the console.
 

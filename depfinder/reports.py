@@ -35,6 +35,7 @@ from concurrent.futures._base import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
 from fnmatch import fnmatch
 from functools import lru_cache
+from typing import Dict, List, Set, Tuple
 from pydantic import BaseModel
 
 import requests
@@ -58,7 +59,7 @@ def _import_map_num_letters():
 
 
 @lru_cache()
-def _import_map_cache(import_first_letters) -> dict[str, set[str]]:
+def _import_map_cache(import_first_letters) -> Dict[str, Set[str]]:
     """Get the packages that supply the import provided"""
     req = requests.get(
         f"https://raw.githubusercontent.com/regro/libcfgraph"
@@ -93,8 +94,8 @@ hubs_auths = requests.get(
 class PackageExtraction(BaseModel):
     import_name: str
     inferred_import_name: str
-    supplying_artifacts: set[str]
-    supplying_pkgs: set[str]
+    supplying_artifacts: Set[str]
+    supplying_pkgs: Set[str]
     most_likely_pkg: str
 
 
@@ -170,9 +171,9 @@ def recursively_search_for_name(name, module_names):
 
 
 def report_conda_forge_names_from_import_map(
-    total_imports: dict[str, dict[tuple[str, int], ImportMetadata]],
-    builtin_modules: list[str] = None,
-    ignore: list[str] = None,
+    total_imports: Dict[str, Dict[Tuple[str, int], ImportMetadata]],
+    builtin_modules: List[str] = None,
+    ignore: List[str] = None,
 ):
     if ignore is None:
         ignore = []
@@ -185,7 +186,7 @@ def report_conda_forge_names_from_import_map(
         "questionable no match",
         "required no match",
     ]
-    report: dict[str, set[str]] = {k: set() for k in report_keys}
+    report: Dict[str, Set[str]] = {k: set() for k in report_keys}
     import_to_pkg = {k: {} for k in report_keys}
     import_to_artifact = {k: {} for k in report_keys}
     futures = {}

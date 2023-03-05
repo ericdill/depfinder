@@ -4,7 +4,7 @@ import ast
 from enum import Enum
 import enum
 import pkgutil
-from typing import Any, Set, Union
+from typing import Any, Dict, List, Set, Tuple, Type, Union
 from pydantic import BaseModel, create_model
 
 import requests
@@ -36,11 +36,11 @@ class ImportMetadata(BaseModel):
     filename = "unset"
 
 
-ast_type = type[ast.AST]
+ast_type = Type[ast.AST]
 ast_import_types = Union[ast.Import, ast.ImportFrom]
-ast_try: list[ast_type]
-ast_match: list[ast_type]
-ast_types_to_str: dict[ast_type, str] = {}
+ast_try: List[ast_type]
+ast_match: List[ast_type]
+ast_types_to_str: Dict[ast_type, str] = {}
 
 try:
     # python 3
@@ -69,7 +69,7 @@ except AttributeError:
 # 3. part of an if/elif/else
 # 4. inside a loop
 # 5. (for Python 3.10+) inside a match/case
-AST_QUESTIONABLE: tuple[ast_type] = tuple(
+AST_QUESTIONABLE: Tuple[ast_type] = tuple(
     ast_try
     + ast_match
     + [
