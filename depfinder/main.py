@@ -42,14 +42,17 @@ from pydantic import BaseModel
 from .inspection import iterate_over_library, get_imported_libs
 from .utils import pkg_data
 
-logger = logging.getLogger("depfinder")
+logger = logging.getLogger("depfinder.main")
 
 STRICT_CHECKING = False
 
 
 def simple_import_search(
-    path_to_source_code, remap=True, ignore=None, custom_namespaces=None
-):
+    path_to_source_code: str,
+    remap: bool = True,
+    ignore: list[str] = None,
+    custom_namespaces: list[str] = None,
+) -> dict[str, set[str]]:
     """Return all imported modules in all .py files in `path_to_source_code`
 
     Parameters
@@ -89,24 +92,25 @@ def simple_import_search(
                   'stdlib_list',
                   'test_with_code']}
     """
-    all_deps = defaultdict(set)
-    catchers = iterate_over_library(
+    all_deps: dict[str, set[str]] = defaultdict(set)
+    import_finders = iterate_over_library(
         path_to_source_code, custom_namespaces=custom_namespaces
     )
-    for mod, path, catcher in catchers:
+    for _, path, catcher in import_finders:
         # if ignore provided skip things which match the ignore pattern
         if ignore and any(fnmatch(path, i) for i in ignore):
             continue
         for k, v in catcher.describe().items():
             all_deps[k].update(v)
 
-    all_deps = {k: sorted(list(v)) for k, v in all_deps.items() if v}
     if remap:
         return sanitize_deps(all_deps)
     return all_deps
 
 
-def notebook_path_to_dependencies(path_to_notebook, remap=True, custom_namespaces=None):
+def notebook_path_to_dependencies(
+    path_to_notebook: str, remap: bool = True, custom_namespaces: list[str] = None
+) -> dict[str, set[str]]:
     """Helper function that turns a jupyter notebook into a list of dependencies
 
     Parameters
