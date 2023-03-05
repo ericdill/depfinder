@@ -44,10 +44,12 @@ from .utils import (
     AST_QUESTIONABLE,
     ImportType,
     namespace_packages,
-    SKETCHY_TYPES_TABLE,
+    ast_types_to_str,
+    ast_import_types,
+    ImportMetadata,
 )
 
-logger = logging.getLogger("depfinder")
+logger = logging.getLogger("depfinder.inspection")
 
 
 PACKAGE_NAME = None
@@ -80,9 +82,6 @@ def get_top_level_import_name(name: str, custom_namespaces: list[str] = None) ->
             )
 
 
-from .utils import ImportMetadata
-
-
 class ImportFinder(ast.NodeVisitor):
     """Find all imports in an Abstract Syntax Tree (AST).
 
@@ -109,7 +108,7 @@ class ImportFinder(ast.NodeVisitor):
         self.relative_modules: set[str] = set()
         self.imports: list[ast.AST] = []
         self.import_froms: list[ast.AST] = []
-        self.total_imports_new: set[ImportMetadata] = set()
+        self.total_imports_new: list[ImportMetadata] = list()
         self.total_imports: dict[
             str, dict[tuple[str, int], ImportMetadata]
         ] = defaultdict(dict)
@@ -171,6 +170,7 @@ class ImportFinder(ast.NodeVisitor):
         attribute. Otherwise the module will be added to the `required_modules`
         instance attribute
         """
+        logger.debug(f"{node=}, {node.lineno=}")
         self.import_froms.append(node)
         if node.module is None:
             # this is a relative import like 'from . import bar'
@@ -191,7 +191,8 @@ class ImportFinder(ast.NodeVisitor):
         )
         self._add_import_node(node_name)
 
-    def _add_to_total_imports(self, node: Union[ast.Import, ast.ImportFrom]):
+    def _add_to_total_imports(self, node: ast_import_types):
+        logger.debug(f"_add_to_total_imports {node=}, {node.lineno=}")
         if isinstance(node, ast.Import):
             import_type: ImportType = ImportType.import_normal
         elif isinstance(node, ast.ImportFrom):
@@ -214,9 +215,9 @@ class ImportFinder(ast.NodeVisitor):
         # import is found within a try block and a function definition, then
         # set import_metadata.try = True and import_metadata.function = True
 
-        for node in self.sketchy_nodes:
-            import_metadata.__setattr__(SKETCHY_TYPES_TABLE[node.__class__], True)
-            breakpoint()
+        for sketchy_node in self.sketchy_nodes:
+            logger.debug(f"{sketchy_node=}")
+            import_metadata.__setattr__(ast_types_to_str[sketchy_node.__class__], True)
 
         if isinstance(node, ast.Import):
             # import nodes can have multiple imports, e.g.
@@ -226,15 +227,17 @@ class ImportFinder(ast.NodeVisitor):
                 names.add(node_alias.name)
             import_metadata.imported_modules = names
         elif isinstance(node, ast.ImportFrom):
-            breakpoint()
-            import_metadata.imported_modules = {node.module}
+            # breakpoint()
+            if node.module is not None:
+                import_metadata.imported_modules = {node.module}
         else:
+            breakpoint()
             raise NotImplementedError(
                 f"Expected ast.Import or ast.ImportFrom this is {type(node)}"
             )
         import_metadata.lineno = node.lineno
         import_metadata.filename = self.filename
-        self.total_imports_new.add(import_metadata)
+        self.total_imports_new.append(import_metadata)
         for import_name in import_metadata.imported_modules:
             self.total_imports[import_name].update(
                 {(self.filename, node.lineno): import_metadata}
@@ -282,7 +285,9 @@ class ImportFinder(ast.NodeVisitor):
         return "ImportCatcher: %s" % repr(self.describe())
 
 
-def get_imported_libs(code, filename="", custom_namespaces=None):
+def get_imported_libs(
+    code: str, filename: str = "", custom_namespaces: list[str] = None
+) -> ImportFinder:
     """Given a code snippet, return a list of the imported libraries
 
     Parameters
@@ -317,7 +322,9 @@ def get_imported_libs(code, filename="", custom_namespaces=None):
     return import_finder
 
 
-def parse_file(python_file: str, custom_namespaces: list[str] = None):
+def parse_file(
+    python_file: str, custom_namespaces: list[str] = None
+) -> tuple[str, str, ImportFinder]:
     """Parse a single python file
 
     Parameters

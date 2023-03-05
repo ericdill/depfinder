@@ -2,18 +2,20 @@ from __future__ import print_function, division, absolute_import
 
 import ast
 from enum import Enum
-import logging
+import enum
 import pkgutil
-import sys
-from typing import Any
-from pydantic import create_model
+from typing import Any, Union
+from pydantic import BaseModel, create_model
 
 import requests
 import yaml
 from .stdliblist import builtin_modules
 
 
-SKETCHY_TYPES_TABLE: dict[type[ast.AST], str] = {}
+class ImportType(Enum):
+    import_normal = ast.Import
+    import_from = ast.ImportFrom
+    unset = enum.auto()
 
 
 class ImportMetadata(BaseModel):
@@ -27,26 +29,38 @@ class ImportMetadata(BaseModel):
     ast_while = False
     ast_for = False
     ast_async_for = False
+    exact_line = ""
+    import_type = ImportType.unset
+    imported_modules: set[str] = set()
+    lineno = -1
+    filename = "unset"
 
+
+ast_type = type[ast.AST]
+ast_import_types = Union[ast.Import, ast.ImportFrom]
+ast_try: list[ast_type]
+ast_match: list[ast_type]
+ast_types_to_str: dict[ast_type, str] = {}
 
 try:
     # python 3
-    AST_TRY = [ast.Try]
-    SKETCHY_TYPES_TABLE[ast.Try] = "try"
+    ast_try = [ast.Try]
+    ast_types_to_str[ast.Try] = "ast_try"
 except AttributeError:
     # python 2.7
-    AST_TRY = [ast.TryExcept, ast.TryFinally]
-    SKETCHY_TYPES_TABLE[ast.TryExcept] = "try"
-    SKETCHY_TYPES_TABLE[ast.TryFinally] = "try"
+    # honestly could probably drop this section soon
+    ast_try = [ast.TryExcept, ast.TryFinally]  # type: ignore
+    ast_types_to_str[ast.TryExcept] = "ast_try"  # type: ignore
+    ast_types_to_str[ast.TryFinally] = "ast_try"  # type: ignore
 
 
 try:
     # python 3.10+
-    AST_MATCH: list[type[ast.AST]] = [ast.match_case]
-    SKETCHY_TYPES_TABLE[ast.match_case] = "match"
+    ast_match = [ast.match_case]  # type: ignore
+    ast_types_to_str[ast.match_case] = "ast_match"  # type: ignore
 except AttributeError:
     # match/case does not exist before 3.10
-    AST_MATCH = []
+    ast_match = []
 
 
 # this AST_QUESTIONABLE list comprises the various ways an import can be weird
@@ -55,9 +69,9 @@ except AttributeError:
 # 3. part of an if/elif/else
 # 4. inside a loop
 # 5. (for Python 3.10+) inside a match/case
-AST_QUESTIONABLE: tuple[type[ast.AST]] = tuple(
-    AST_TRY
-    + AST_MATCH
+AST_QUESTIONABLE: tuple[ast_type] = tuple(
+    ast_try
+    + ast_match
     + [
         ast.FunctionDef,
         ast.AsyncFunctionDef,
@@ -67,35 +81,20 @@ AST_QUESTIONABLE: tuple[type[ast.AST]] = tuple(
         ast.AsyncFor,
     ]
 )
-SKETCHY_TYPES_TABLE[ast.FunctionDef] = "function"
-SKETCHY_TYPES_TABLE[ast.AsyncFunctionDef] = "async-function"
-SKETCHY_TYPES_TABLE[ast.If] = "if"
-SKETCHY_TYPES_TABLE[ast.While] = "while"
-SKETCHY_TYPES_TABLE[ast.For] = "for"
-SKETCHY_TYPES_TABLE[ast.AsyncFor] = "async-for"
-
-pydantic_kwargs: dict[str, tuple[Any, Any]] = {}
-for node_type, shorthand in SKETCHY_TYPES_TABLE.items():
-    pydantic_kwargs[shorthand] = (bool, False)
-
-
-class ImportType(Enum):
-    import_normal = ast.Import
-    import_from = ast.ImportFrom
-
-
-ImportMetadata = create_model(
-    "ImportMetadata",
-    **pydantic_kwargs,
-    exact_line=(str, ""),
-    import_type=(ImportType, ...),
-    imported_modules=(set[str], []),
-    lineno=(int, -1),
-    filename=(str, ""),
+ast_types_to_str.update(
+    {
+        ast.FunctionDef: "ast_function_def",
+        ast.AsyncFunctionDef: "ast_async_function_def",
+        ast.If: "ast_if",
+        ast.While: "ast_while",
+        ast.For: "ast_for",
+        ast.AsyncFor: "ast_async_for",
+    }
 )
 
-del AST_TRY
-del AST_MATCH
+
+del ast_try
+del ast_match
 
 try:
     # Try and use the C extensions because they're faster
@@ -111,10 +110,10 @@ pkg_data = yaml.load(
 )
 
 req = requests.get(
-    "https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/mappings/pypi/name_mapping.yaml"
+    "https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/mappings/pypi/name_mapping.json"
 )
 if req.status_code == 200:
-    mapping_list = yaml.load(req.text, Loader=yaml_loader)
+    mapping_list = req.json()
 else:
     mapping_list = yaml.load(
         pkgutil.get_data(__name__, "pkg_data/name_mapping.yml").decode(),
