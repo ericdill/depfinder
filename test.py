@@ -238,8 +238,9 @@ def test_notebook_remapping():
     code = "import mpl_toolkits"
     with write_notebook([code]) as fname:
         deps = main.notebook_path_to_dependencies(fname, remap=False)
-        assert {"required": ["mpl_toolkits"]} == deps
-        assert {} == main.notebook_path_to_dependencies(fname)
+        assert deps == {"required": {"mpl_toolkits"}}
+        deps_remap = main.notebook_path_to_dependencies(fname, remap=True)
+        assert deps_remap == {}
 
 
 @pytest.mark.parametrize(
@@ -270,11 +271,13 @@ def test_multiple_code_cells(capsys):
         for k, v in target.items():
             targets[k].update(set(v))
 
-    # turn targets into a dict of sorted lists
-    targets = {k: sorted(list(v)) for k, v in targets.items()}
     with write_notebook(code_for_cells) as fname:
         # parse the notebook!
-        assert targets == main.notebook_path_to_dependencies(fname)
+        deps = main.notebook_path_to_dependencies(fname)
+        assert targets["required"] == deps["required"]
+        assert targets["questionable"] == deps["questionable"]
+        assert targets["builtin"] == deps["builtin"]
+        assert targets["relative"] == deps["relative"]
         # check the notebook cli
         _run_cli(path_to_check=fname)
         stdout, stderr = capsys.readouterr()

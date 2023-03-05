@@ -139,32 +139,34 @@ def notebook_path_to_dependencies(path_to_notebook, remap=True, custom_namespace
 
         transform = IPythonInputSplitter(line_input_checker=False).transform_cell
     except:
+        # why would we hit this block? I wonder if this was what was causing
+        # the issue here https://github.com/ericdill/depfinder/issues/67
         transform = lambda code: code
 
     nb = json.load(io.open(path_to_notebook, encoding="utf8"))
-    codeblocks = [
+    codeblocks: list[str] = [
         "".join(cell["source"]) for cell in nb["cells"] if cell["cell_type"] == "code"
     ]
-    all_deps = defaultdict(set)
+    all_deps: dict[str, set[str]] = defaultdict(set)
 
     for codeblock in codeblocks:
         codeblock = transform(codeblock)
         # TODO this may fail on py2/py3 syntax when running in the other runtime.
         # May want to consider updating some error handling around that case.
         # Will wait until that use case surfaces before modifying
-        deps_dict = get_imported_libs(
+        import_finder = get_imported_libs(
             codeblock, custom_namespaces=custom_namespaces
-        ).describe()
+        )
+        deps_dict = import_finder.describe()
         for k, v in deps_dict.items():
             all_deps[k].update(v)
 
-    all_deps = {k: sorted(list(v)) for k, v in all_deps.items()}
     if remap:
-        return sanitize_deps(all_deps)
+        all_deps = sanitize_deps(all_deps)
     return all_deps
 
 
-def sanitize_deps(deps_dict):
+def sanitize_deps(dependencies: dict[str, set[str]]) -> dict[str, set[str]]:
     """
     Helper function that takes the output of `notebook_path_to_dependencies`
     or `simple_import_search` and turns normalizes the import names to be
@@ -180,14 +182,13 @@ def sanitize_deps(deps_dict):
         If remap is True: Sanitized `deps_dict`
         If remap is False: `deps_dict`
     """
-    from .inspection import PACKAGE_NAME
+    from .inspection import current_package_name
 
-    new_deps_dict = {}
+    new_deps_dict: dict[str, set[str]] = {}
     list_of_possible_fakes = set(
         [v for val in pkg_data["_FAKE_PACKAGES"].values() for v in val]
     )
-    for k, packages_list in deps_dict.items():
-
+    for k, packages_list in dependencies.items():
         pkgs = copy.copy(packages_list)
         new_deps_dict[k] = set()
         for pkg in pkgs:
@@ -200,7 +201,7 @@ def sanitize_deps(deps_dict):
                     "this".format(pkg)
                 )
                 continue
-            if pkg == PACKAGE_NAME:
+            if pkg == current_package_name:
                 logger.debug(
                     "Ignoring {} from the list of imports. It is "
                     "the name of the package that we are trying to "
@@ -212,7 +213,7 @@ def sanitize_deps(deps_dict):
             if pkg != pkg_to_add:
                 logger.debug("Renaming {} to {}".format(pkg, pkg_to_add))
             new_deps_dict[k].add(pkg_to_add)
-    new_deps_dict = {k: sorted(list(v)) for k, v in new_deps_dict.items() if v}
+    new_deps_dict = {k: v for k, v in new_deps_dict.items() if v}
     return new_deps_dict
 
 
@@ -286,7 +287,7 @@ class TotalImports(BaseModel):
 def simple_import_to_pkg_map(
     path_to_source_code, builtins=None, ignore=None, custom_namespaces=None
 ):
-    """Provide the map beteen all the imports and their possible packages
+    """Provide the map between all the imports and their possible packages
 
     Parameters
     ----------
