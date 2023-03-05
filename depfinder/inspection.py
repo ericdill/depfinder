@@ -176,7 +176,7 @@ class ImportFinder(ast.NodeVisitor):
         attribute. Otherwise the module will be added to the `required_modules`
         instance attribute
         """
-        logger.debug(f"{node=}, {node.lineno=}")
+        logger.debug(f"node={node}, node.lineno={node.lineno}")
         self.import_froms.append(node)
         if node.module is None:
             # this is a relative import like 'from . import bar'
@@ -198,7 +198,7 @@ class ImportFinder(ast.NodeVisitor):
         self._add_import_node(node_name)
 
     def _add_to_total_imports(self, node: ast_import_types):
-        logger.debug(f"_add_to_total_imports {node=}, {node.lineno=}")
+        logger.debug(f"_add_to_total_imports node={node}, node.lineno={node.lineno}")
         if isinstance(node, ast.Import):
             import_type: ImportType = ImportType.import_normal
         elif isinstance(node, ast.ImportFrom):
@@ -222,7 +222,7 @@ class ImportFinder(ast.NodeVisitor):
         # set import_metadata.try = True and import_metadata.function = True
 
         for sketchy_node in self.sketchy_nodes:
-            logger.debug(f"{sketchy_node=}")
+            logger.debug(f"sketchy_node={sketchy_node}")
             import_metadata.__setattr__(ast_types_to_str[sketchy_node.__class__], True)
 
         if isinstance(node, ast.Import):
