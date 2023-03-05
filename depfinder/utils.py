@@ -4,7 +4,7 @@ import ast
 from enum import Enum
 import enum
 import pkgutil
-from typing import Any, Union
+from typing import Any, Set, Union
 from pydantic import BaseModel, create_model
 
 import requests
@@ -31,7 +31,7 @@ class ImportMetadata(BaseModel):
     ast_async_for = False
     exact_line = ""
     import_type = ImportType.unset
-    imported_modules: set[str] = set()
+    imported_modules: Set[str] = set()
     lineno = -1
     filename = "unset"
 
@@ -57,7 +57,7 @@ except AttributeError:
 try:
     # python 3.10+
     ast_match = [ast.match_case]  # type: ignore
-    ast_types_to_str[ast.match_case] = "ast_match"  # type: ignore
+    ast_types_to_str[ast.match_case] = "ast_match_case"  # type: ignore
 except AttributeError:
     # match/case does not exist before 3.10
     ast_match = []
