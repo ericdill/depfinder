@@ -30,7 +30,7 @@ jobs:
 
       - name: Build environment
         run: |
-          micromamba create --name TEST python=3 pip pydantic --file requirements-dev.txt  --channel conda-forge
+          micromamba create --name TEST python=3 pip --file requirements-dev.txt  --channel conda-forge
           micromamba activate TEST
           python -m pip install -e . --force-reinstall
 
