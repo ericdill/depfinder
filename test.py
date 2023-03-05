@@ -501,9 +501,11 @@ def test_simple_import_search_conda_forge_import_map():
         ("refnanny.hi", "refnanny.hi"),
     ],
 )
-def test_extract_pkg_from_import_for_complex_imports(import_name, expected_result):
-    result, _, _ = extract_pkg_from_import(import_name)
-    assert result == expected_result
+def test_extract_pkg_from_import_for_complex_imports(
+    import_name: str, expected_result: str
+):
+    extraction = extract_pkg_from_import(import_name)
+    assert extraction.most_likely_pkg == expected_result
 
 
 @pytest.mark.parametrize(

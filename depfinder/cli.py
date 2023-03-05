@@ -29,7 +29,6 @@
 
 from __future__ import absolute_import, division, print_function
 from argparse import ArgumentParser
-from collections import defaultdict
 import logging
 import os
 from pprint import pprint
@@ -170,8 +169,8 @@ def cli():
 
     if args.pdb:
         # set the pdb_hook as the except hook for all exceptions
-        def pdb_hook(exctype, value, traceback):
-            pdb.post_mortem(traceback)
+        def pdb_hook(exctype, value, traceback):  # type: ignore
+            pdb.post_mortem(traceback)  # type: ignore
 
         sys.excepthook = pdb_hook
 
@@ -207,8 +206,6 @@ def cli():
         logger.warning("positional argument `file_or_directory` not provided.")
         raise RuntimeError("positional argument `file_or_directory` is required")
     keys = args.key
-    if keys == []:
-        keys = None
     logger.debug("keys: %s", keys)
 
     def dump_deps(deps: dict[str, set[str]], keys: Iterable[str]):
@@ -228,7 +225,9 @@ def cli():
         elif args.conda:
             list_of_deps = [
                 item
-                for sublist in itertools.chain(deps.get("required", set()), deps["questionable"])
+                for sublist in itertools.chain(
+                    deps.get("required", set()), deps["questionable"]
+                )
                 for item in sublist
             ]
             print(" ".join(list_of_deps))

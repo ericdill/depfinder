@@ -199,16 +199,8 @@ class ImportFinder(ast.NodeVisitor):
 
     def _add_to_total_imports(self, node: ast_import_types):
         logger.debug(f"_add_to_total_imports node={node}, node.lineno={node.lineno}")
-        if isinstance(node, ast.Import):
-            import_type: ImportType = ImportType.import_normal
-        elif isinstance(node, ast.ImportFrom):
-            import_type = ImportType.import_from
-        else:
-            # defensive coding. This will only be hit if a new
-            # `visit_*` method is added to this class
-            raise TypeError(f"Unexpected node type: {type(node)}")
 
-        import_metadata = ImportMetadata(import_type=import_type)
+        import_metadata = ImportMetadata()
         try:
             import_metadata.exact_line = ast.unparse(node)
         except AttributeError:
@@ -232,12 +224,14 @@ class ImportFinder(ast.NodeVisitor):
             for node_alias in node.names:
                 names.add(node_alias.name)
             import_metadata.imported_modules = names
+            import_metadata.import_type = ImportType.import_normal
         elif isinstance(node, ast.ImportFrom):
-            # breakpoint()
+            import_metadata.import_type = ImportType.import_from
             if node.module is not None:
                 import_metadata.imported_modules = {node.module}
         else:
-            breakpoint()
+            # defensive coding. This will only be hit if a new
+            # `visit_*` method is added to this class
             raise NotImplementedError(
                 f"Expected ast.Import or ast.ImportFrom this is {type(node)}"
             )

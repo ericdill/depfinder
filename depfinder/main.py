@@ -40,7 +40,7 @@ from typing import Any, Dict
 from pydantic import BaseModel
 
 from .inspection import iterate_over_library, get_imported_libs
-from .utils import pkg_data
+from .utils import ImportMetadata, pkg_data
 
 logger = logging.getLogger("depfinder.main")
 
@@ -71,7 +71,7 @@ def simple_import_search(
     -------
     dict
         The list of all imported modules, sorted according to the keys listed
-        in the docstring of depfinder.ImportCatcher.describe()
+        in the docstring of depfinder.ImportFinder.describe()
 
     Examples
     --------
@@ -96,11 +96,11 @@ def simple_import_search(
     import_finders = iterate_over_library(
         path_to_source_code, custom_namespaces=custom_namespaces
     )
-    for _, path, catcher in import_finders:
+    for _, path, import_finder in import_finders:
         # if ignore provided skip things which match the ignore pattern
         if ignore and any(fnmatch(path, i) for i in ignore):
             continue
-        for k, v in catcher.describe().items():
+        for k, v in import_finder.describe().items():
             all_deps[k].update(v)
 
     if remap:
@@ -143,10 +143,15 @@ def notebook_path_to_dependencies(
 
         transform = IPythonInputSplitter(line_input_checker=False).transform_cell
     except:
-        # why would we hit this block? I wonder if this was what was causing
-        # the issue here https://github.com/ericdill/depfinder/issues/67
-        transform = lambda code: code
+        logger.warning(
+            "Could not import IPython. Jupyter notebook parsing will work better with IPython installed"
+        )
 
+        def transform(code: str) -> str:
+            # no-op, just return the code. match the transform_cell function from IPython
+            return code
+
+    # Could also do this with nbconvert, i think? But this basically achieves the same thing
     nb = json.load(io.open(path_to_notebook, encoding="utf8"))
     codeblocks: list[str] = [
         "".join(cell["source"]) for cell in nb["cells"] if cell["cell_type"] == "code"
@@ -222,7 +227,10 @@ def sanitize_deps(dependencies: dict[str, set[str]]) -> dict[str, set[str]]:
 
 
 def simple_import_search_conda_forge_import_map(
-    path_to_source_code, builtins=None, ignore=None, custom_namespaces=None
+    path_to_source_code: str,
+    builtins: list[str] = None,
+    ignore: list[str] = None,
+    custom_namespaces: list[str] = None,
 ):
     """Return all conda-forge packages used in all .py files in `path_to_source_code`
 
@@ -234,7 +242,7 @@ def simple_import_search_conda_forge_import_map(
     ignore : list, optional
         String pattern which if matched causes the file to not be inspected
     custom_namespaces : list of str or None
-        If not None, then resulting package outputs will list everying under these
+        If not None, then resulting package outputs will list everything under these
         namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar
         and foo.baz instead of foo if custom_namespaces=["foo"]).
 
@@ -242,7 +250,7 @@ def simple_import_search_conda_forge_import_map(
     -------
     dict
         The list of all imported modules, sorted according to the keys listed
-        in the docstring of depfinder.ImportCatcher.describe()
+        in the docstring of depfinder.ImportFinder.describe()
 
     Examples
     --------
@@ -266,15 +274,18 @@ def simple_import_search_conda_forge_import_map(
     # run depfinder on source code
     if ignore is None:
         ignore = []
-    total_imports_list = []
-    for _, _, c in iterate_over_library(
+    import_metadata_type = dict[str, dict[tuple[str, int], ImportMetadata]]
+    total_imports_list: list[import_metadata_type] = []
+    for _, _, import_finder in iterate_over_library(
         path_to_source_code, custom_namespaces=custom_namespaces
     ):
-        total_imports_list.append(c.total_imports)
-    total_imports = defaultdict(dict)
+        total_imports_list.append(import_finder.total_imports)
+
+    total_imports: import_metadata_type = defaultdict(dict)
+
     for total_import in total_imports_list:
-        for name, md in total_import.items():
-            total_imports[name].update(md)
+        for import_name, md in total_import.items():
+            total_imports[import_name].update(md)
     from .reports import report_conda_forge_names_from_import_map
 
     imports, _, _ = report_conda_forge_names_from_import_map(
