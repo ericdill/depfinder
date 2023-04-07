@@ -408,7 +408,7 @@ def test_cli(path, req, capsys):
             [
                 dep
                 for dep in open(dependencies_file, "r").read().split("\n")
-                if not dep.startswith("stdlib")
+                if dep and not dep.startswith("stdlib")
             ]
         )
     else:
