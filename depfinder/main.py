@@ -35,16 +35,24 @@ import json
 import logging
 from collections import defaultdict
 from fnmatch import fnmatch
+from typing import Any, Dict, Iterable, List, Set, Tuple
+
+from pydantic import BaseModel
 
 from .inspection import iterate_over_library, get_imported_libs
-from .utils import pkg_data
+from .utils import ImportMetadata, pkg_data
 
-logger = logging.getLogger('depfinder')
+logger = logging.getLogger("depfinder.main")
 
 STRICT_CHECKING = False
 
 
-def simple_import_search(path_to_source_code, remap=True, ignore=None, custom_namespaces=None):
+def simple_import_search(
+    path_to_source_code: str,
+    remap: bool = True,
+    ignore: Iterable[str] = (),
+    custom_namespaces: Iterable[str] = (),
+) -> Dict[str, Set[str]]:
     """Return all imported modules in all .py files in `path_to_source_code`
 
     Parameters
@@ -63,7 +71,7 @@ def simple_import_search(path_to_source_code, remap=True, ignore=None, custom_na
     -------
     dict
         The list of all imported modules, sorted according to the keys listed
-        in the docstring of depfinder.ImportCatcher.describe()
+        in the docstring of depfinder.ImportFinder.describe()
 
     Examples
     --------
@@ -84,22 +92,27 @@ def simple_import_search(path_to_source_code, remap=True, ignore=None, custom_na
                   'stdlib_list',
                   'test_with_code']}
     """
-    all_deps = defaultdict(set)
-    catchers = iterate_over_library(path_to_source_code, custom_namespaces=custom_namespaces)
-    for mod, path, catcher in catchers:
+    all_deps: Dict[str, Set[str]] = defaultdict(set)
+    import_finders = iterate_over_library(
+        path_to_source_code, custom_namespaces=custom_namespaces
+    )
+    for _, path, import_finder in import_finders:
         # if ignore provided skip things which match the ignore pattern
         if ignore and any(fnmatch(path, i) for i in ignore):
             continue
-        for k, v in catcher.describe().items():
+        for k, v in import_finder.describe().items():
             all_deps[k].update(v)
 
-    all_deps = {k: sorted(list(v)) for k, v in all_deps.items() if v}
     if remap:
         return sanitize_deps(all_deps)
     return all_deps
 
 
-def notebook_path_to_dependencies(path_to_notebook, remap=True, custom_namespaces=None):
+def notebook_path_to_dependencies(
+    path_to_notebook: str,
+    remap: bool = True,
+    custom_namespaces: Iterable[str] = (),
+) -> Dict[str, Set[str]]:
     """Helper function that turns a jupyter notebook into a list of dependencies
 
     Parameters
@@ -129,31 +142,42 @@ def notebook_path_to_dependencies(path_to_notebook, remap=True, custom_namespace
     """
     try:
         from IPython.core.inputsplitter import IPythonInputSplitter
+
         transform = IPythonInputSplitter(line_input_checker=False).transform_cell
     except:
-        transform = lambda code: code
+        logger.warning(
+            "Could not import IPython. Jupyter notebook parsing will work better with IPython installed"
+        )
 
-    nb = json.load(io.open(path_to_notebook, encoding='utf8'))
-    codeblocks = [''.join(cell['source']) for cell in nb['cells']
-                  if cell['cell_type'] == 'code']
-    all_deps = defaultdict(set)
+        def transform(code: str) -> str:
+            # no-op, just return the code. match the transform_cell function from IPython
+            return code
+
+    # Could also do this with nbconvert, i think? But this basically achieves the same thing
+    nb = json.load(io.open(path_to_notebook, encoding="utf8"))
+    codeblocks: List[str] = [
+        "".join(cell["source"]) for cell in nb["cells"] if cell["cell_type"] == "code"
+    ]
+    all_deps: Dict[str, Set[str]] = defaultdict(set)
 
     for codeblock in codeblocks:
         codeblock = transform(codeblock)
         # TODO this may fail on py2/py3 syntax when running in the other runtime.
         # May want to consider updating some error handling around that case.
         # Will wait until that use case surfaces before modifying
-        deps_dict = get_imported_libs(codeblock, custom_namespaces=custom_namespaces).describe()
+        import_finder = get_imported_libs(
+            codeblock, custom_namespaces=custom_namespaces
+        )
+        deps_dict = import_finder.describe()
         for k, v in deps_dict.items():
             all_deps[k].update(v)
 
-    all_deps = {k: sorted(list(v)) for k, v in all_deps.items()}
     if remap:
-        return sanitize_deps(all_deps)
+        all_deps = sanitize_deps(all_deps)
     return all_deps
 
 
-def sanitize_deps(deps_dict):
+def sanitize_deps(dependencies: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
     """
     Helper function that takes the output of `notebook_path_to_dependencies`
     or `simple_import_search` and turns normalizes the import names to be
@@ -169,36 +193,47 @@ def sanitize_deps(deps_dict):
         If remap is True: Sanitized `deps_dict`
         If remap is False: `deps_dict`
     """
-    from .inspection import PACKAGE_NAME
-    new_deps_dict = {}
-    list_of_possible_fakes = set([v for val in pkg_data['_FAKE_PACKAGES'].values() for v in val])
-    for k, packages_list in deps_dict.items():
+    from .inspection import current_package_name
 
+    new_deps_dict: Dict[str, Set[str]] = {}
+    list_of_possible_fakes = set(
+        [v for val in pkg_data["_FAKE_PACKAGES"].values() for v in val]
+    )
+    for k, packages_list in dependencies.items():
         pkgs = copy.copy(packages_list)
         new_deps_dict[k] = set()
         for pkg in pkgs:
             # drop fake packages
             if pkg in list_of_possible_fakes:
-                logger.debug("Ignoring {} from the list of imports. It is "
-                             "installed as part of another package. Set the "
-                             "`--no-remap` cli flag if you want to disable "
-                             "this".format(pkg))
+                logger.debug(
+                    "Ignoring {} from the list of imports. It is "
+                    "installed as part of another package. Set the "
+                    "`--no-remap` cli flag if you want to disable "
+                    "this".format(pkg)
+                )
                 continue
-            if pkg == PACKAGE_NAME:
-                logger.debug("Ignoring {} from the list of imports. It is "
-                             "the name of the package that we are trying to "
-                             "find the dependencies for. Set the `--no-remap` "
-                             "cli flag if you want to disable this.".format(pkg))
+            if pkg == current_package_name:
+                logger.debug(
+                    "Ignoring {} from the list of imports. It is "
+                    "the name of the package that we are trying to "
+                    "find the dependencies for. Set the `--no-remap` "
+                    "cli flag if you want to disable this.".format(pkg)
+                )
                 continue
-            pkg_to_add = pkg_data['_PACKAGE_MAPPING'].get(pkg, pkg)
+            pkg_to_add = pkg_data["_PACKAGE_MAPPING"].get(pkg, pkg)
             if pkg != pkg_to_add:
                 logger.debug("Renaming {} to {}".format(pkg, pkg_to_add))
             new_deps_dict[k].add(pkg_to_add)
-    new_deps_dict = {k: sorted(list(v)) for k, v in new_deps_dict.items() if v}
+    new_deps_dict = {k: v for k, v in new_deps_dict.items() if v}
     return new_deps_dict
 
 
-def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=None, ignore=None, custom_namespaces=None):
+def simple_import_search_conda_forge_import_map(
+    path_to_source_code: str,
+    builtins: Iterable[str] = (),
+    ignore: Iterable[str] = (),
+    custom_namespaces: Iterable[str] = (),
+):
     """Return all conda-forge packages used in all .py files in `path_to_source_code`
 
     Parameters
@@ -209,7 +244,7 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
     ignore : list, optional
         String pattern which if matched causes the file to not be inspected
     custom_namespaces : list of str or None
-        If not None, then resulting package outputs will list everying under these
+        If not None, then resulting package outputs will list everything under these
         namespaces (e.g., for packages foo.bar and foo.baz, the outputs are foo.bar
         and foo.baz instead of foo if custom_namespaces=["foo"]).
 
@@ -217,7 +252,7 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
     -------
     dict
         The list of all imported modules, sorted according to the keys listed
-        in the docstring of depfinder.ImportCatcher.describe()
+        in the docstring of depfinder.ImportFinder.describe()
 
     Examples
     --------
@@ -239,24 +274,35 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
                   'test_with_code']}
     """
     # run depfinder on source code
-    if ignore is None:
-        ignore = []
-    total_imports_list = []
-    for _, _, c in iterate_over_library(path_to_source_code, custom_namespaces=custom_namespaces):
-        total_imports_list.append(c.total_imports)
-    total_imports = defaultdict(dict)
+    import_metadata_type = Dict[str, Dict[Tuple[str, int], ImportMetadata]]
+    total_imports_list: List[import_metadata_type] = []
+    for _, _, import_finder in iterate_over_library(
+        path_to_source_code, custom_namespaces=custom_namespaces
+    ):
+        total_imports_list.append(import_finder.total_imports)
+
+    total_imports: import_metadata_type = defaultdict(dict)
+
     for total_import in total_imports_list:
-        for name, md in total_import.items():
-            total_imports[name].update(md)
+        for import_name, md in total_import.items():
+            total_imports[import_name].update(md)
     from .reports import report_conda_forge_names_from_import_map
+
     imports, _, _ = report_conda_forge_names_from_import_map(
         total_imports, builtin_modules=builtins, ignore=ignore
     )
     return {k: sorted(list(v)) for k, v in imports.items()}
 
 
-def simple_import_to_pkg_map(path_to_source_code, builtins=None, ignore=None, custom_namespaces=None):
-    """Provide the map beteen all the imports and their possible packages
+class TotalImports(BaseModel):
+    import_name: str
+    metadata: Dict[str, Any]
+
+
+def simple_import_to_pkg_map(
+    path_to_source_code, builtins=None, ignore=None, custom_namespaces=None
+):
+    """Provide the map between all the imports and their possible packages
 
     Parameters
     ----------
@@ -281,13 +327,16 @@ def simple_import_to_pkg_map(path_to_source_code, builtins=None, ignore=None, cu
     if ignore is None:
         ignore = []
     total_imports_list = []
-    for _, _, c in iterate_over_library(path_to_source_code, custom_namespaces=custom_namespaces):
+    for _, _, c in iterate_over_library(
+        path_to_source_code, custom_namespaces=custom_namespaces
+    ):
         total_imports_list.append(c.total_imports)
     total_imports = defaultdict(dict)
     for total_import in total_imports_list:
         for name, md in total_import.items():
             total_imports[name].update(md)
     from .reports import report_conda_forge_names_from_import_map
+
     _, _, import_to_artifact = report_conda_forge_names_from_import_map(
         total_imports, builtin_modules=builtins, ignore=ignore
     )

@@ -1,3 +1,4 @@
 pyyaml
 stdlib-list; python_version < "3.10"
 requests
+pydantic

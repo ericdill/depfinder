@@ -18,33 +18,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Setup Mamba
-      uses: mamba-org/provision-with-micromamba@v15
-      with:
-        environment-file: false
+      - name: Setup Mamba
+        uses: mamba-org/provision-with-micromamba@v15
+        with:
+          environment-file: false
 
-    - name: Build environment
-      run: |
-        micromamba create --name TEST python=3 pip --file requirements-dev.txt --channel conda-forge
-        micromamba activate TEST
-        python -m pip install -e . --force-reinstall
+      - name: Build environment
+        run: |
+          micromamba create --name TEST python=3 pip --file requirements-dev.txt  --channel conda-forge
+          micromamba activate TEST
+          python -m pip install -e . --force-reinstall
 
-    - name: Build documentation
-      run: |
-        set -e
-        micromamba activate TEST
-        pushd doc
-        make clean html linkcheck
-        popd
+      - name: Build documentation
+        run: |
+          set -e
+          micromamba activate TEST
+          pushd doc
+          make clean html linkcheck
+          popd
 
-    - name: Deploy
-      if: github.event_name == 'release' || github.event_name == 'push'
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: doc/_build/html
+      - name: Deploy
+        if: github.event_name == 'release' || github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: doc/_build/html

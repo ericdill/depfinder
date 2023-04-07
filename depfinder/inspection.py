@@ -32,30 +32,45 @@ from __future__ import print_function, division, absolute_import
 import ast
 import logging
 import os
-import sys
 from collections import defaultdict
-from typing import Union
+from typing import Dict, Iterable, List, Set, Tuple
+
+from pydantic import BaseModel
 
 from .stdliblist import builtin_modules
 
 from .utils import (
     AST_QUESTIONABLE,
+    ImportType,
     namespace_packages,
-    SKETCHY_TYPES_TABLE,
+    ast_types_to_str,
+    ast_import_types,
+    ImportMetadata,
 )
 
-logger = logging.getLogger('depfinder')
+logger = logging.getLogger("depfinder.inspection")
 
 
-PACKAGE_NAME = None
+current_package_name: str = ""
 STRICT_CHECKING = False
 
 
-def get_top_level_import_name(name, custom_namespaces=None):
+class FoundModules(BaseModel):
+    required: Set[str]
+    questionable: Set[str]
+    builtin: Set[str]
+    relative: Set[str]
+
+
+def get_top_level_import_name(name: str, custom_namespaces: Iterable[str] = ()) -> str:
     num_dot = name.count(".")
     custom_namespaces = custom_namespaces or []
 
-    if name in namespace_packages or name in custom_namespaces or name in builtin_modules:
+    if (
+        name in namespace_packages
+        or name in custom_namespaces
+        or name in builtin_modules
+    ):
         return name
     elif any(
         ((num_dot - nsp.count(".")) == 1) and name.startswith(nsp + ".")
@@ -65,12 +80,11 @@ def get_top_level_import_name(name, custom_namespaces=None):
         # foo.bar
         return name
     else:
-        if '.' not in name:
+        if "." not in name:
             return name
         else:
             return get_top_level_import_name(
-                name.rsplit('.', 1)[0],
-                custom_namespaces=custom_namespaces
+                name.rsplit(".", 1)[0], custom_namespaces=custom_namespaces
             )
 
 
@@ -92,20 +106,23 @@ class ImportFinder(ast.NodeVisitor):
 
     """
 
-    def __init__(self, filename='', custom_namespaces=None):
+    def __init__(self, filename: str = "", custom_namespaces: Iterable[str] = ()):
         self.filename = filename
-        self.required_modules = set()
-        self.sketchy_modules = set()
-        self.builtin_modules = set()
-        self.relative_modules = set()
-        self.imports = []
-        self.import_froms = []
-        self.total_imports = defaultdict(dict)
-        self.sketchy_nodes = {}
-        self.custom_namespaces = custom_namespaces or []
+        self.required_modules: Set[str] = set()
+        self.questionable_modules: Set[str] = set()
+        self.builtin_modules: Set[str] = set()
+        self.relative_modules: Set[str] = set()
+        self.imports: List[ast.AST] = []
+        self.import_froms: List[ast.AST] = []
+        self.total_imports_new: List[ImportMetadata] = list()
+        self.total_imports: Dict[
+            str, Dict[Tuple[str, int], ImportMetadata]
+        ] = defaultdict(dict)
+        self.sketchy_nodes: Dict[ast.AST, ast.AST] = {}
+        self.custom_namespaces: Iterable[str] = custom_namespaces or ()
         super(ImportFinder, self).__init__()
 
-    def visit(self, node):
+    def visit(self, node: ast.AST):
         """Recursively visit all ast nodes.
 
         Look for Import and ImportFrom nodes. Classify them as being imports
@@ -131,7 +148,7 @@ class ImportFinder(ast.NodeVisitor):
 
         an ast.Import node is something like 'import bar'
 
-        If ImportCatcher is inside of a try block then the import that has just
+        If ImportFinder is inside of a try block then the import that has just
         been encountered will be added to the `sketchy_modules` instance
         attribute. Otherwise the module will be added to the `required_modules`
         instance attribute
@@ -139,23 +156,27 @@ class ImportFinder(ast.NodeVisitor):
         self.imports.append(node)
         self._add_to_total_imports(node)
 
-        mods = set([
-            get_top_level_import_name(name.name, custom_namespaces=self.custom_namespaces)
-            for name in node.names
-        ])
-        for mod in mods:
-            self._add_import_node(mod)
+        imports: Set[str] = set()
+        for name in node.names:
+            import_name = get_top_level_import_name(
+                name.name, custom_namespaces=self.custom_namespaces
+            )
+            imports.add(import_name)
+
+        for import_name in imports:
+            self._add_import_node(import_name)
 
     def visit_ImportFrom(self, node: ast.ImportFrom):
         """Executes when an ast.ImportFrom node is encountered
 
         an ast.ImportFrom node is something like 'from foo import bar'
 
-        If ImportCatcher is inside of a try block then the import that has just
+        If ImportFinder is inside of a try block then the import that has just
         been encountered will be added to the `sketchy_modules` instance
         attribute. Otherwise the module will be added to the `required_modules`
         instance attribute
         """
+        logger.debug(f"node={node}, node.lineno={node.lineno}")
         self.import_froms.append(node)
         if node.module is None:
             # this is a relative import like 'from . import bar'
@@ -176,30 +197,53 @@ class ImportFinder(ast.NodeVisitor):
         )
         self._add_import_node(node_name)
 
-    def _add_to_total_imports(self, node: Union[ast.Import, ast.ImportFrom]):
-        import_metadata = {}
+    def _add_to_total_imports(self, node: ast_import_types):
+        logger.debug(f"_add_to_total_imports node={node}, node.lineno={node.lineno}")
+
+        import_metadata = ImportMetadata()
         try:
-            import_metadata.update({'exact_line': ast.unparse(node)})
+            import_metadata.exact_line = ast.unparse(node)
         except AttributeError:
+            # what are the circumstances where we hit this exception?
             pass
 
-        import_metadata.update({v: False for v in SKETCHY_TYPES_TABLE.values()})
-        import_metadata.update({SKETCHY_TYPES_TABLE[node.__class__]: True for node in self.sketchy_nodes})
-        names = set()
+        # import_metadata.update({v: False for v in SKETCHY_TYPES_TABLE.values()})
+        # For all of the sketchy nodes, update the import metadata to "True" for
+        # each of the node types that our import is found within. e.g., if the
+        # import is found within a try block and a function definition, then
+        # set import_metadata.try = True and import_metadata.function = True
+
+        for sketchy_node in self.sketchy_nodes:
+            logger.debug(f"sketchy_node={sketchy_node}")
+            import_metadata.__setattr__(ast_types_to_str[sketchy_node.__class__], True)
+
         if isinstance(node, ast.Import):
-            _names = set(name.name for name in node.names)
-            import_metadata['import'] = _names
-            names.update(_names)
+            # import nodes can have multiple imports, e.g.
+            # import foo, bar, baz
+            names: Set[str] = set()
+            for node_alias in node.names:
+                names.add(node_alias.name)
+            import_metadata.imported_modules = names
+            import_metadata.import_type = ImportType.import_normal
         elif isinstance(node, ast.ImportFrom):
-            import_metadata['import_from'] = {node.module}
-            names.add(node.module)
+            import_metadata.import_type = ImportType.import_from
+            if node.module is not None:
+                import_metadata.imported_modules = {node.module}
         else:
-            raise NotImplementedError(f"Expected ast.Import or ast.ImportFrom this is {type(node)}")
+            # defensive coding. This will only be hit if a new
+            # `visit_*` method is added to this class
+            raise NotImplementedError(
+                f"Expected ast.Import or ast.ImportFrom this is {type(node)}"
+            )
+        import_metadata.lineno = node.lineno
+        import_metadata.filename = self.filename
+        self.total_imports_new.append(import_metadata)
+        for import_name in import_metadata.imported_modules:
+            self.total_imports[import_name].update(
+                {(self.filename, node.lineno): import_metadata}
+            )
 
-        for name in names:
-            self.total_imports[name].update({(self.filename, node.lineno): import_metadata})
-
-    def _add_import_node(self, node_name):
+    def _add_import_node(self, node_name: str):
         # see if the module is a builtin
         if node_name in builtin_modules:
             self.builtin_modules.add(node_name)
@@ -207,19 +251,19 @@ class ImportFinder(ast.NodeVisitor):
 
         # see if we are in a try block
         if self.sketchy_nodes:
-            self.sketchy_modules.add(node_name)
+            self.questionable_modules.add(node_name)
             return
 
         # if none of the above cases are true, it is likely that this
         # ImportFrom node occurs at the top level of the module
         self.required_modules.add(node_name)
 
-    def describe(self):
+    def describe_pydantic(self) -> FoundModules:
         """Return the found imports
 
         Returns
         -------
-        dict :
+        FoundModules :
             'required': The modules that were encountered outside of a
                         try/except block
             'questionable': The modules that were encountered inside of a
@@ -228,20 +272,45 @@ class ImportFinder(ast.NodeVisitor):
                         syntax
             'builtin' : The modules that are part of the standard library
         """
-        desc = {
-            'required': self.required_modules,
-            'relative': self.relative_modules,
-            'questionable': self.sketchy_modules,
-            'builtin': self.builtin_modules
+        found_modules = FoundModules(
+            required=self.required_modules,
+            relative=self.relative_modules,
+            questionable=self.questionable_modules,
+            builtin=self.builtin_modules,
+        )
+        return found_modules
+
+    def describe(self) -> Dict[str, Set[str]]:
+        """Return the found imports
+
+        Returns
+        -------
+        FoundModules :
+            'required': The modules that were encountered outside of a
+                        try/except block
+            'questionable': The modules that were encountered inside of a
+                            try/except block
+            'relative': The modules that were imported via relative import
+                        syntax
+            'builtin' : The modules that are part of the standard library
+        """
+        deps = {
+            "required": self.required_modules,
+            "relative": self.relative_modules,
+            "questionable": self.questionable_modules,
+            "builtin": self.builtin_modules,
         }
-        desc = {k: v for k, v in desc.items() if v}
-        return desc
+
+        deps = {k: v for k, v in deps.items() if v}
+        return deps
 
     def __repr__(self):
-        return 'ImportCatcher: %s' % repr(self.describe())
+        return "ImportFinder: %s" % repr(self.describe())
 
 
-def get_imported_libs(code, filename='', custom_namespaces=None):
+def get_imported_libs(
+    code: str, filename: str = "", custom_namespaces: Iterable[str] = ()
+) -> ImportFinder:
     """Given a code snippet, return a list of the imported libraries
 
     Parameters
@@ -251,8 +320,8 @@ def get_imported_libs(code, filename='', custom_namespaces=None):
 
     Returns
     -------
-    ImportCatcher
-        The ImportCatcher is the object in `depfinder` that contains all the
+    ImportFinder
+        The ImportFinder is the object in `depfinder` that contains all the
         information regarding which imports were found where.  You will most
         likely be interested in calling the describe() function on this return
         value.
@@ -269,15 +338,16 @@ def get_imported_libs(code, filename='', custom_namespaces=None):
      'required': {'stdlib_list'}}
     """
     # skip ipython notebook lines
-    code = '\n'.join([line for line in code.split('\n')
-                      if not line.startswith('%')])
+    code = "\n".join([line for line in code.split("\n") if not line.startswith("%")])
     tree = ast.parse(code)
     import_finder = ImportFinder(filename=filename, custom_namespaces=custom_namespaces)
     import_finder.visit(tree)
     return import_finder
 
 
-def parse_file(python_file, custom_namespaces=None):
+def parse_file(
+    python_file: str, custom_namespaces: Iterable[str] = ()
+) -> Tuple[str, str, ImportFinder]:
     """Parse a single python file
 
     Parameters
@@ -287,40 +357,41 @@ def parse_file(python_file, custom_namespaces=None):
 
     Returns
     -------
-    catchers : tuple
-        Yields tuples of (module_name, full_path_to_module, ImportCatcher)
+    tuple
+        Yields tuples of (module_name, full_path_to_module, ImportFinder)
     """
-    global PACKAGE_NAME
-    if PACKAGE_NAME is None:
-        PACKAGE_NAME = os.path.basename(python_file).split('.')[0]
-        logger.debug("Setting PACKAGE_NAME global variable to {}"
-                     "".format(PACKAGE_NAME))
+    global current_package_name
+    if not current_package_name:
+        # this might have a potential bug if the filename has more than one "."
+        current_package_name = os.path.basename(python_file).split(".")[0]
+        logger.debug(
+            "Setting PACKAGE_NAME global variable to {}" "".format(current_package_name)
+        )
     # Try except block added for adal package which has a BOM at the beginning,
     # requiring a different encoding to load properly
     try:
-        with open(python_file, 'r') as f:
+        with open(python_file, "r") as f:
             code = f.read()
-        catcher = get_imported_libs(
+        import_finder = get_imported_libs(
             code, filename=python_file, custom_namespaces=custom_namespaces
         )
     except SyntaxError:
-        with open(python_file, 'r', encoding='utf-8-sig') as f:
+        with open(python_file, "r", encoding="utf-8-sig") as f:
             code = f.read()
-        catcher = get_imported_libs(
+        import_finder = get_imported_libs(
             code, filename=python_file, custom_namespaces=custom_namespaces
         )
-    catcher.total_imports = dict(catcher.total_imports)
-    mod_name = os.path.split(python_file)[:-3]
-    return mod_name, python_file, catcher
+    import_finder.total_imports = dict(import_finder.total_imports)
+    return current_package_name, python_file, import_finder
 
 
-def iterate_over_library(path_to_source_code, custom_namespaces=None):
+def iterate_over_library(
+    path_to_source_code: str, custom_namespaces: Iterable[str] = ()
+) -> Iterable[Tuple[str, str, ImportFinder]]:
     """Helper function to recurse into a library and find imports in .py files.
 
     This allows the user to apply filters on the user-side to exclude imports
     based on their file names.
-    `conda-skeletor <https://github.com/ericdill/conda-skeletor>`_
-    makes heavy use of this function
 
     Parameters
     ----------
@@ -328,24 +399,27 @@ def iterate_over_library(path_to_source_code, custom_namespaces=None):
 
     Yields
     -------
-    catchers : tuple
-        Yields tuples of (module_name, full_path_to_module, ImportCatcher)
+    tuple
+        Yields tuples of (module_name, full_path_to_module, ImportFinder)
     """
-    global PACKAGE_NAME
+    global current_package_name
     global STRICT_CHECKING
-    if PACKAGE_NAME is None:
-        PACKAGE_NAME = os.path.basename(path_to_source_code).split('.')[0]
-        logger.debug("Setting PACKAGE_NAME global variable to {}"
-                     "".format(PACKAGE_NAME))
-    skipped_files = []
-    all_files = []
-    for parent, folders, files in os.walk(path_to_source_code):
+    if not current_package_name:
+        current_package_name = os.path.basename(path_to_source_code).split(".")[0]
+        logger.debug(
+            "Setting PACKAGE_NAME global variable to {}" "".format(current_package_name)
+        )
+    skipped_files: List[str] = []
+    all_files: List[str] = []
+    for parent, _, files in os.walk(path_to_source_code):
         for f in files:
-            if f.endswith('.py'):
+            if f.endswith(".py"):
                 full_file_path = os.path.join(parent, f)
                 all_files.append(full_file_path)
                 try:
-                    yield parse_file(full_file_path, custom_namespaces=custom_namespaces)
+                    yield parse_file(
+                        full_file_path, custom_namespaces=custom_namespaces
+                    )
                 except Exception:
                     logger.exception("Could not parse file: {}".format(full_file_path))
                     skipped_files.append(full_file_path)
@@ -355,4 +429,6 @@ def iterate_over_library(path_to_source_code, custom_namespaces=None):
             logger.warn("%s: %s" % (str(idx), f))
 
     if skipped_files and STRICT_CHECKING:
-        raise RuntimeError("Some files failed to parse. See logs for full stack traces.")
+        raise RuntimeError(
+            "Some files failed to parse. See logs for full stack traces."
+        )
