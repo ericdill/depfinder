@@ -37,6 +37,7 @@ from fnmatch import fnmatch
 from functools import lru_cache
 from typing import Dict, Iterable, List, Set, Tuple
 from pydantic import BaseModel
+import pydantic
 
 import requests
 
@@ -70,21 +71,33 @@ def _import_map_cache(import_first_letters) -> Dict[str, Set[str]]:
         return {}
     return {k: set(v["elements"]) for k, v in req.json().items()}
 
+class FileListingMeta(BaseModel):
+    n_files: int
 
-# This is downloading a 100ish mb file... ~1.2 million lines as of 2023-03-05.
-# Each row looks something like:
-#   "artifacts/cryptography/conda-forge/osx-64/cryptography-39.0.0-py38ha6c3189_0.json",
-# ARTIFACT_TO_PKG ultimately results in something like
-# cryptography-39.0.0-py38ha6c3189_0: cryptography
-FILE_LISTING = requests.get(
-    "https://raw.githubusercontent.com/regro/libcfgraph/master/.file_listing.json"
-).json()
-# TODO: upstream this to libcfgraph so we just request it, so we reduce bandwidth requirements
-ARTIFACT_TO_PKG = {
-    v.split("/")[-1].rsplit(".", 1)[0]: v.split("/")[1]
-    for v in FILE_LISTING
-    if "artifacts" in v
-}
+@lru_cache()
+def _artifact_to_pkg_cache() -> Dict[str,str]:
+    file_listing_meta_raw = requests.get(
+        "https://raw.githubusercontent.com/regro/libcfgraph/master/.file_listing_meta.json"
+    ).text
+    file_listing_meta = FileListingMeta.parse_raw(file_listing_meta_raw)
+    files_from_libcfgraph = (f'.file_listing_{i}.json' for i in range(file_listing_meta.n_files))
+    artifact_to_pkg_name: Dict[str, str] = {}
+    for filename in files_from_libcfgraph:
+        file_listing: List[str] = requests.get(
+            f"https://raw.githubusercontent.com/regro/libcfgraph/master/{filename}"
+        ).json()
+        # Each row looks something like:
+        #   "artifacts/cryptography/conda-forge/osx-64/cryptography-39.0.0-py38ha6c3189_0.json",
+        # ARTIFACT_TO_PKG ultimately results in something like
+        # cryptography-39.0.0-py38ha6c3189_0: cryptography
+        for entry in file_listing:
+            artifacts, pkg_name, channel, platform, build_string = entry.split("/")
+            build_string, suffix = build_string.rsplit('.', maxsplit=1)
+            # TODO: upstream this to libcfgraph so we just request it, so we reduce bandwidth requirements
+            artifact_to_pkg_name[build_string] = pkg_name
+
+    return artifact_to_pkg_name
+
 # hubs_auth is a ranked list of the conda-forge packages that are the
 hubs_auths = requests.get(
     "https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/ranked_hubs_authorities.json"
@@ -138,7 +151,8 @@ def extract_pkg_from_import(
     # import_to_artifact = {name: supplying_artifacts}
     # TODO: launder supplying_pkgs through centrality scoring so we have one thing
     #  but keep the rest for the more detailed reports
-    supplying_pkgs = {ARTIFACT_TO_PKG[k] for k in supplying_artifacts}
+    artifact_to_pkg = _artifact_to_pkg_cache()
+    supplying_pkgs = {artifact_to_pkg[k] for k in supplying_artifacts}
     # import_to_pkg = {name: supplying_pkgs}
     # get the "most authoritative" provider of the import from the sorted hubs_auth list from conda-forge
     ret = next(iter(k for k in hubs_auths if k in supplying_pkgs), original_name)
