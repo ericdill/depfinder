@@ -35,7 +35,8 @@ except ImportError:
 
 from .inspection import parse_file
 
-from .main import (iterate_over_library, notebook_path_to_dependencies)
+from .main import iterate_over_library, notebook_path_to_dependencies
 
 import logging
-logger = logging.getLogger('depfinder')
+
+logger = logging.getLogger("depfinder")
