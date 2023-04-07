@@ -35,7 +35,7 @@ from concurrent.futures._base import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
 from fnmatch import fnmatch
 from functools import lru_cache
-from typing import Dict, List, Set, Tuple
+from typing import Dict, Iterable, List, Set, Tuple
 from pydantic import BaseModel
 
 import requests
@@ -172,13 +172,9 @@ def recursively_search_for_name(name, module_names):
 
 def report_conda_forge_names_from_import_map(
     total_imports: Dict[str, Dict[Tuple[str, int], ImportMetadata]],
-    builtin_modules: List[str] = None,
-    ignore: List[str] = None,
+    builtin_modules: Iterable[str] = (),
+    ignore: Iterable[str] = _builtin_modules,
 ):
-    if ignore is None:
-        ignore = []
-    if builtin_modules is None:
-        builtin_modules = _builtin_modules
     report_keys = [
         "required",
         "questionable",

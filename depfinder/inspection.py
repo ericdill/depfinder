@@ -62,7 +62,7 @@ class FoundModules(BaseModel):
     relative: Set[str]
 
 
-def get_top_level_import_name(name: str, custom_namespaces: List[str] = None) -> str:
+def get_top_level_import_name(name: str, custom_namespaces: Iterable[str] = ()) -> str:
     num_dot = name.count(".")
     custom_namespaces = custom_namespaces or []
 
@@ -106,7 +106,7 @@ class ImportFinder(ast.NodeVisitor):
 
     """
 
-    def __init__(self, filename: str = "", custom_namespaces: List[str] = None):
+    def __init__(self, filename: str = "", custom_namespaces: Iterable[str] = ()):
         self.filename = filename
         self.required_modules: Set[str] = set()
         self.questionable_modules: Set[str] = set()
@@ -119,7 +119,7 @@ class ImportFinder(ast.NodeVisitor):
             str, Dict[Tuple[str, int], ImportMetadata]
         ] = defaultdict(dict)
         self.sketchy_nodes: Dict[ast.AST, ast.AST] = {}
-        self.custom_namespaces: List[str] = custom_namespaces or []
+        self.custom_namespaces: Iterable[str] = custom_namespaces or ()
         super(ImportFinder, self).__init__()
 
     def visit(self, node: ast.AST):
@@ -309,7 +309,7 @@ class ImportFinder(ast.NodeVisitor):
 
 
 def get_imported_libs(
-    code: str, filename: str = "", custom_namespaces: List[str] = None
+    code: str, filename: str = "", custom_namespaces: Iterable[str] = ()
 ) -> ImportFinder:
     """Given a code snippet, return a list of the imported libraries
 
@@ -346,7 +346,7 @@ def get_imported_libs(
 
 
 def parse_file(
-    python_file: str, custom_namespaces: List[str] = None
+    python_file: str, custom_namespaces: Iterable[str] = ()
 ) -> Tuple[str, str, ImportFinder]:
     """Parse a single python file
 
@@ -386,7 +386,7 @@ def parse_file(
 
 
 def iterate_over_library(
-    path_to_source_code: str, custom_namespaces: List[str] = None
+    path_to_source_code: str, custom_namespaces: Iterable[str] = ()
 ) -> Iterable[Tuple[str, str, ImportFinder]]:
     """Helper function to recurse into a library and find imports in .py files.
 

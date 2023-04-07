@@ -35,7 +35,7 @@ import json
 import logging
 from collections import defaultdict
 from fnmatch import fnmatch
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any, Dict, Iterable, List, Set, Tuple
 
 from pydantic import BaseModel
 
@@ -50,8 +50,8 @@ STRICT_CHECKING = False
 def simple_import_search(
     path_to_source_code: str,
     remap: bool = True,
-    ignore: List[str] = None,
-    custom_namespaces: List[str] = None,
+    ignore: Iterable[str] = (),
+    custom_namespaces: Iterable[str] = (),
 ) -> Dict[str, Set[str]]:
     """Return all imported modules in all .py files in `path_to_source_code`
 
@@ -109,7 +109,9 @@ def simple_import_search(
 
 
 def notebook_path_to_dependencies(
-    path_to_notebook: str, remap: bool = True, custom_namespaces: List[str] = None
+    path_to_notebook: str,
+    remap: bool = True,
+    custom_namespaces: Iterable[str] = (),
 ) -> Dict[str, Set[str]]:
     """Helper function that turns a jupyter notebook into a list of dependencies
 
@@ -228,9 +230,9 @@ def sanitize_deps(dependencies: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
 
 def simple_import_search_conda_forge_import_map(
     path_to_source_code: str,
-    builtins: List[str] = None,
-    ignore: List[str] = None,
-    custom_namespaces: List[str] = None,
+    builtins: Iterable[str] = (),
+    ignore: Iterable[str] = (),
+    custom_namespaces: Iterable[str] = (),
 ):
     """Return all conda-forge packages used in all .py files in `path_to_source_code`
 
@@ -272,8 +274,6 @@ def simple_import_search_conda_forge_import_map(
                   'test_with_code']}
     """
     # run depfinder on source code
-    if ignore is None:
-        ignore = []
     import_metadata_type = Dict[str, Dict[Tuple[str, int], ImportMetadata]]
     total_imports_list: List[import_metadata_type] = []
     for _, _, import_finder in iterate_over_library(
