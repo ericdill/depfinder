@@ -36,7 +36,7 @@ jobs:
           micromamba create --name TEST python=${{ matrix.python-version }} pip --file requirements-dev.txt --channel conda-forge
           micromamba activate TEST
           pip install -e . --force-reinstall
-          micromamba install --yes conda_forge_metadata
+          micromamba install --yes conda-forge-metadata
 
       - name: test
         run: |
