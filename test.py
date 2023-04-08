@@ -451,14 +451,16 @@ def test_get_top_level_import():
 
 def test_report_conda_forge_names_from_import_map():
     m, f, c = parse_file(join(dirname(depfinder.__file__), 'utils.py'))
-    report, import_to_artifact, import_to_pkg = report_conda_forge_names_from_import_map(c.total_imports)
+    report, import_to_pkg = report_conda_forge_names_from_import_map(c.total_imports)
     assert report['required'] == {'pyyaml', 'requests'}
 
 
 def test_report_conda_forge_names_from_import_map_ignore():
     m, f, c = parse_file(join(dirname(depfinder.__file__), 'inspection.py'))
-    report, import_to_artifact, import_to_pkg = report_conda_forge_names_from_import_map(c.total_imports,
-                                                                                         ignore=['*insp*'])
+    report, import_to_pkg = report_conda_forge_names_from_import_map(
+        c.total_imports,
+        ignore=['*insp*'],
+    )
     assert report['required'] == set()
 
 

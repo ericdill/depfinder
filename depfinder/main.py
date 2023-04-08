@@ -249,7 +249,7 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
         for name, md in total_import.items():
             total_imports[name].update(md)
     from .reports import report_conda_forge_names_from_import_map
-    imports, _, _ = report_conda_forge_names_from_import_map(
+    imports, _ = report_conda_forge_names_from_import_map(
         total_imports, builtin_modules=builtins, ignore=ignore
     )
     return {k: sorted(list(v)) for k, v in imports.items()}
@@ -288,7 +288,7 @@ def simple_import_to_pkg_map(path_to_source_code, builtins=None, ignore=None, cu
         for name, md in total_import.items():
             total_imports[name].update(md)
     from .reports import report_conda_forge_names_from_import_map
-    _, _, import_to_artifact = report_conda_forge_names_from_import_map(
+    _, import_to_pkg = report_conda_forge_names_from_import_map(
         total_imports, builtin_modules=builtins, ignore=ignore
     )
-    return import_to_artifact
+    return import_to_pkg
