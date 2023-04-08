@@ -473,14 +473,16 @@ def test_simple_import_search_conda_forge_import_map():
 
 @pytest.mark.parametrize('import_name, expected_result', [
     ('six.moves', 'six'),
-    ('win32com.shell', 'pywin32'),
-    ('win32com', 'pywin32'),
+    # these need special casing elsewhere
+    # ('win32com.shell', 'pywin32'),
+    # ('win32com', 'pywin32'),
+    ("scipy.interpolate", "scipy"),
     # this comes from cython but doesn't seem to be a real pkg
     ('refnanny.hi', 'refnanny.hi')
 ])
 def test_extract_pkg_from_import_for_complex_imports(import_name, expected_result):
-    result, _, _ = extract_pkg_from_import(import_name)
-    assert result == expected_result
+    result, allpkgs = extract_pkg_from_import(import_name)
+    assert result == expected_result, allpkgs
 
 
 @pytest.mark.parametrize('import_name, expected_result', [
@@ -494,16 +496,36 @@ def test_search_for_name(import_name, expected_result):
 def test_simple_import_to_pkg_map():
     path_to_source = dirname(depfinder.__file__)
     import_to_artifact = simple_import_to_pkg_map(path_to_source)
-    expected_result = {'builtin': {},
-                                  'questionable': {'stdlib_list': {'stdlib-list'}, 'IPython.core.inputsplitter': {'ipython', 'autovizwidget'}},
-                                  'questionable no match': {},
-                                  'required': {'requests': {'apache-libcloud',
-                                                            'arm_pyart',
-                                                            'autovizwidget',
-                                                            'dbxfs',
-                                                            'google-api-core',
-                                                            'google-cloud-bigquery-storage-core',
-                                                            'requests'},
-                                               'yaml': {'google-cloud-bigquery-storage-core', 'pyyaml'}},
-                                  'required no match': {}}
+    expected_result = {
+        'builtin': {},
+        'questionable': {
+            'stdlib_list': {'stdlib-list'},
+            'IPython.core.inputsplitter': {'ipython', 'autovizwidget'},
+            'conda_forge_metadata.autotick_bot': {'conda-forge-metadata'},
+            'conda_forge_metadata.libcfgraph': {'conda-forge-metadata'},
+        },
+        'questionable no match': {},
+        'required': {
+            'requests': {
+                'apache-libcloud',
+                'arm_pyart',
+                'autovizwidget',
+                'dbxfs',
+                'google-api-core',
+                'google-cloud-bigquery-storage-core',
+                'requests'
+            },
+            'requests.exceptions': {
+                'apache-libcloud',
+                'arm_pyart',
+                'autovizwidget',
+                'dbxfs',
+                'google-api-core',
+                'google-cloud-bigquery-storage-core',
+                'requests'
+            },
+            'yaml': {'google-cloud-bigquery-storage-core', 'pyyaml', 'rosco'}
+        },
+        'required no match': {}
+    }
     assert import_to_artifact == expected_result

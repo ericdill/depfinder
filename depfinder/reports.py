@@ -33,12 +33,11 @@ import logging
 from concurrent.futures._base import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
 from fnmatch import fnmatch
+import requests.exceptions
 
 from .stdliblist import builtin_modules as _builtin_modules
 from .utils import SKETCHY_TYPES_TABLE
 
-from conda_forge_metadata.autotick_bot import map_import_to_package
-from conda_forge_metadata.libcfgraph import get_libcfgraph_pkgs_for_import
 
 logger = logging.getLogger('depfinder')
 
@@ -59,9 +58,16 @@ def extract_pkg_from_import(name):
     import_to_pkg : dict mapping str to sets
         A dict mapping the import name to a set of possible packages that supply that import.
     """
-    supplying_pkgs, _ = get_libcfgraph_pkgs_for_import(name)
+    from conda_forge_metadata.autotick_bot import map_import_to_package
+    from conda_forge_metadata.libcfgraph import get_libcfgraph_pkgs_for_import
+    try:
+        supplying_pkgs, _ = get_libcfgraph_pkgs_for_import(name)
+        best_import = map_import_to_package(name)
+    except requests.exceptions.HTTPError:
+        supplying_pkgs = set()
+        best_import = name
     import_to_pkg = {name: supplying_pkgs or set()}
-    return map_import_to_package(name), import_to_pkg
+    return best_import, import_to_pkg
 
 
 def recursively_search_for_name(name, module_names):
