@@ -104,9 +104,9 @@ def report_conda_forge_names_from_import_map(total_imports, builtin_modules=None
             # but is questionable for a regular file
             if any(fnmatch(filename, ignore_element) for ignore_element in ignore):
                 continue
+            _name = list(_import_to_pkg.keys())[0]
             if any(import_metadata.get(v, False) for v in SKETCHY_TYPES_TABLE.values()):
                 # if we couldn't find any artifacts to represent this then it doesn't exist in our maps
-                _name = list(_import_to_pkg.keys())[0]
                 if not _import_to_pkg[_name]:
                     report_key = 'questionable no match'
                 else:
