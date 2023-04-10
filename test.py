@@ -21,6 +21,12 @@ from depfinder.main import simple_import_search_conda_forge_import_map, simple_i
 from depfinder.reports import report_conda_forge_names_from_import_map, extract_pkg_from_import, \
     recursively_search_for_name, _builtin_modules
 
+try:
+    import conda_forge_metadata  # noqa
+    HAS_CF_METADATA = True
+except ImportError:
+    HAS_CF_METADATA = False
+
 random.seed(12345)
 
 # Testing spec:
@@ -449,12 +455,20 @@ def test_get_top_level_import():
     assert top_level_name == 'google.cloud.storage'
 
 
+@pytest.mark.skipif(
+    not HAS_CF_METADATA,
+    reason="test of optional conda-forge-metadata integration",
+)
 def test_report_conda_forge_names_from_import_map():
     m, f, c = parse_file(join(dirname(depfinder.__file__), 'utils.py'))
     report, import_to_pkg = report_conda_forge_names_from_import_map(c.total_imports)
     assert report['required'] == {'pyyaml', 'requests'}
 
 
+@pytest.mark.skipif(
+    not HAS_CF_METADATA,
+    reason="test of optional conda-forge-metadata integration",
+)
 def test_report_conda_forge_names_from_import_map_ignore():
     m, f, c = parse_file(join(dirname(depfinder.__file__), 'inspection.py'))
     report, import_to_pkg = report_conda_forge_names_from_import_map(
@@ -464,6 +478,10 @@ def test_report_conda_forge_names_from_import_map_ignore():
     assert report['required'] == set()
 
 
+@pytest.mark.skipif(
+    not HAS_CF_METADATA,
+    reason="test of optional conda-forge-metadata integration",
+)
 def test_simple_import_search_conda_forge_import_map():
     path_to_source = dirname(depfinder.__file__)
     expected_result = sorted(list({"pyyaml", "requests"}))
@@ -471,6 +489,10 @@ def test_simple_import_search_conda_forge_import_map():
     assert report['required'] == expected_result
 
 
+@pytest.mark.skipif(
+    not HAS_CF_METADATA,
+    reason="test of optional conda-forge-metadata integration",
+)
 @pytest.mark.parametrize('import_name, expected_result', [
     ('six.moves', 'six'),
     # these need special casing elsewhere
@@ -493,6 +515,10 @@ def test_search_for_name(import_name, expected_result):
     assert builtin_name_maybe == expected_result
 
 
+@pytest.mark.skipif(
+    not HAS_CF_METADATA,
+    reason="test of optional conda-forge-metadata integration",
+)
 def test_simple_import_to_pkg_map():
     path_to_source = dirname(depfinder.__file__)
     import_to_artifact = simple_import_to_pkg_map(path_to_source)
