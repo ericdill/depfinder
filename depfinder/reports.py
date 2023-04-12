@@ -33,7 +33,6 @@ import logging
 from concurrent.futures._base import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
 from fnmatch import fnmatch
-import requests.exceptions
 
 from .stdliblist import builtin_modules as _builtin_modules
 from .utils import SKETCHY_TYPES_TABLE
@@ -63,7 +62,11 @@ def extract_pkg_from_import(name):
     try:
         supplying_pkgs, _ = get_libcfgraph_pkgs_for_import(name)
         best_import = map_import_to_package(name)
-    except requests.exceptions.HTTPError:
+    except Exception:
+        logger.exception(
+            "could not get package name from conda-forge metadata "
+            f"for import {name} due to an error"
+        )
         supplying_pkgs = set()
         best_import = name
     import_to_pkg = {name: supplying_pkgs or set()}

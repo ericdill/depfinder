@@ -39,6 +39,7 @@ jobs:
       - name: test w/o conda-forge-metadata
         run: |
           micromamba activate TEST
+          depfinder --help
           pip install -e . --force-reinstall
           coverage run -m pytest -vrsx test.py
 
