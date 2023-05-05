@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to depfinder documentation! &mdash; depfinder 2.9.2 documentation</title>
+  <title>Welcome to depfinder documentation! &mdash; depfinder 2.9.3.dev14+gd7dce34 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -34,7 +34,7 @@
             depfinder
           </a>
               <div class="version">
-                2.9.2
+                2.9.3.dev14+gd7dce34
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -206,8 +206,10 @@ official python docs for the builtins with <a class="reference external" href="h
 : The import occurs inside any combination of</p>
 <ul class="simple">
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ast.Try</span></code> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ast.TryExcept</span></code> on py27)</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ast.FunctionDef</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ast.ClassDef</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ast.FunctionDef</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">ast.AsyncFunctionDef</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ast.If</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ast.While</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ast.For</span></code>, or
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ast.AsyncFor</span></code>.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ast.match_case</span></code>.</p></li>
 </ul>
 <p>The module may be importable without these imports, but the it will likely
 not have full functionality.</p>
