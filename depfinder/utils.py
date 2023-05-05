@@ -6,9 +6,11 @@ import pkgutil
 import sys
 
 import requests
+import requests.exceptions
 import yaml
 from .stdliblist import builtin_modules
 
+logger = logging.getLogger("depfinder")
 
 SKETCHY_TYPES_TABLE = {}
 
@@ -68,10 +70,14 @@ pkg_data = yaml.load(
     Loader=yaml_loader,
 )
 
-req = requests.get('https://raw.githubusercontent.com/regro/cf-graph-countyfair/master/mappings/pypi/name_mapping.yaml')
-if req.status_code == 200:
-    mapping_list = yaml.load(req.text, Loader=yaml_loader)
-else:
+try:
+    import conda_forge_metadata.autotick_bot
+    mapping_list = conda_forge_metadata.autotick_bot.get_pypi_name_mapping()
+except (ImportError, AttributeError, requests.exceptions.HTTPError):
+    logger.exception(
+        "could not get the conda-forge metadata pypi-to-conda name mapping "
+        "due to error. defaulting to an internal one which may be out of date."
+    )
     mapping_list = yaml.load(
         pkgutil.get_data(__name__, 'pkg_data/name_mapping.yml').decode(),
         Loader=yaml_loader,

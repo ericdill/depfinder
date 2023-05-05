@@ -30,16 +30,23 @@ jobs:
         uses: mamba-org/provision-with-micromamba@v15
         with:
          environment-file: false
- 
+
       - name: Python ${{ matrix.python-version }}
         run: |
           micromamba create --name TEST python=${{ matrix.python-version }} pip --file requirements-dev.txt --channel conda-forge
           micromamba activate TEST
-          pip install -e . --force-reinstall
 
-      - name: test
+      - name: test w/o conda-forge-metadata
         run: |
           micromamba activate TEST
+          depfinder --help
+          pip install -e . --force-reinstall
+          coverage run -m pytest -vrsx test.py
+
+      - name: test w/ conda-forge-metadata
+        run: |
+          micromamba activate TEST
+          pip install -e .[conda-forge] --force-reinstall
           coverage run -m pytest -vrsx test.py
 
       - name: coverage
@@ -47,4 +54,4 @@ jobs:
           micromamba activate TEST
           coverage report -m
           codecov
-  
+
