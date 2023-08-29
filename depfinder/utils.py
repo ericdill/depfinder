@@ -1,5 +1,3 @@
-from __future__ import print_function, division, absolute_import
-
 import ast
 import logging
 import pkgutil
@@ -73,7 +71,7 @@ pkg_data = yaml.load(
 try:
     import conda_forge_metadata.autotick_bot
     mapping_list = conda_forge_metadata.autotick_bot.get_pypi_name_mapping()
-except (ImportError, AttributeError, requests.exceptions.HTTPError):
+except (ModuleNotFoundError, ImportError, AttributeError, requests.exceptions.HTTPError):
     logger.exception(
         "could not get the conda-forge metadata pypi-to-conda name mapping "
         "due to error. defaulting to an internal one which may be out of date."
