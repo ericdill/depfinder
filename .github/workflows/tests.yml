@@ -26,35 +26,29 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Setup Micromamba Python ${{ matrix.python-version }}
-        uses: mamba-org/setup-micromamba@v1
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          environment-name: TEST
-          init-shell: bash
-          create-args: >-
-            python=${{ matrix.python-version }} --file requirements.txt --file requirements-dev.txt --channel conda-forge
+          python-version: "${{ matrix.python-version }}"
 
       - name: Install depfinder
-        shell: bash -l {0}
-        run: |
-          python -m pip install -e . --no-deps --force-reinstall
+        run: >
+          python -m pip install -e .
+          && pip install -r requirements-dev.txt
 
       - name: test w/o conda-forge-metadata
-        run: |
-          micromamba activate TEST
+        run: >
           depfinder --help
-          pip install -e . --force-reinstall
-          coverage run -m pytest -vrsx test.py
+          && python -m pip install -e . --force-reinstall
+          && coverage run -m pytest -vrsx test.py
 
       - name: test w/ conda-forge-metadata
-        run: |
-          micromamba activate TEST
-          pip install -e .[conda-forge] --force-reinstall
-          coverage run -m pytest -vrsx test.py
+        run: >
+          python -m pip install -e .[conda-forge] --force-reinstall
+          && coverage run -m pytest -vrsx test.py
 
       - name: coverage
-        run: |
-          micromamba activate TEST
+        run: >
           coverage report -m
-          codecov
+          && codecov
 
