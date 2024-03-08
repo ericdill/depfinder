@@ -1,21 +1,20 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>depfinder.main &mdash; depfinder 2.10.1.dev2+g5205b30 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>depfinder.main &mdash; depfinder 2.10.1.dev4+gc82844b documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/documentation_options.js?v=862faf73"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -33,7 +32,7 @@
             depfinder
           </a>
               <div class="version">
-                2.10.1.dev2+g5205b30
+                2.10.1.dev4+gc82844b
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -117,7 +116,9 @@
 <span class="n">STRICT_CHECKING</span> <span class="o">=</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="simple_import_search"><a class="viewcode-back" href="../../index.html#depfinder.main.simple_import_search">[docs]</a><span class="k">def</span> <span class="nf">simple_import_search</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="simple_import_search">
+<a class="viewcode-back" href="../../index.html#depfinder.main.simple_import_search">[docs]</a>
+<span class="k">def</span> <span class="nf">simple_import_search</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all imported modules in all .py files in `path_to_source_code`</span>
 
 <span class="sd">    Parameters</span>
@@ -172,7 +173,10 @@
     <span class="k">return</span> <span class="n">all_deps</span></div>
 
 
-<div class="viewcode-block" id="notebook_path_to_dependencies"><a class="viewcode-back" href="../../index.html#depfinder.main.notebook_path_to_dependencies">[docs]</a><span class="k">def</span> <span class="nf">notebook_path_to_dependencies</span><span class="p">(</span><span class="n">path_to_notebook</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="notebook_path_to_dependencies">
+<a class="viewcode-back" href="../../index.html#depfinder.main.notebook_path_to_dependencies">[docs]</a>
+<span class="k">def</span> <span class="nf">notebook_path_to_dependencies</span><span class="p">(</span><span class="n">path_to_notebook</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function that turns a jupyter notebook into a list of dependencies</span>
 
 <span class="sd">    Parameters</span>
@@ -224,6 +228,7 @@
     <span class="k">if</span> <span class="n">remap</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">sanitize_deps</span><span class="p">(</span><span class="n">all_deps</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">all_deps</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">sanitize_deps</span><span class="p">(</span><span class="n">deps_dict</span><span class="p">):</span>
