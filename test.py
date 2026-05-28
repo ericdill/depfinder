@@ -459,9 +459,9 @@ def test_get_top_level_import():
         assert top_level_name == ns
 
     ns = ["my_custom_ns.ns"]
-    name = ns[0] + '.something'
+    name = ns[0] + '.blah.something'
     top_level_name = inspection.get_top_level_import_name(name, custom_namespaces=ns)
-    assert top_level_name == ns[0]
+    assert top_level_name == ns[0] + ".blah"
 
 
 @pytest.mark.skipif(
