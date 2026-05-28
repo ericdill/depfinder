@@ -90,6 +90,6 @@ except (ModuleNotFoundError, ImportError, AttributeError, requests.exceptions.HT
     mapping_list = yaml.load(
         pkgutil.get_data(__name__, 'pkg_data/name_mapping.yml').decode(),
         Loader=yaml_loader,
-)
+    )
 
 namespace_packages = {pkg['import_name'] for pkg in mapping_list if '.' in pkg['import_name']}
