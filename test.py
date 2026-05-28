@@ -554,4 +554,9 @@ def test_simple_import_to_pkg_map():
         },
         'required no match': {}
     }
+    try:
+        import conda_forge_metadata.autotick_bot  # noqa: F401
+    except ImportError:
+        expected_result["questionable"]['conda_forge_metadata.conda_forge_bot'] = expected_result["questionable"]['conda_forge_metadata.autotick_bot']
+        del expected_result["questionable"]['conda_forge_metadata.autotick_bot']
     assert import_to_artifact == expected_result

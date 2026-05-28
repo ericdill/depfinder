@@ -71,8 +71,19 @@ pkg_data = yaml.load(
 )
 
 try:
-    import conda_forge_metadata.autotick_bot
-    mapping_list = conda_forge_metadata.autotick_bot.get_pypi_name_mapping()
+    import conda_forge_metadata.autotick_bot as conda_forge_bot
+except ImportError:
+    try:
+        import conda_forge_metadata.conda_forge_bot as conda_forge_bot
+    except ImportError:
+        conda_forge_bot = None
+
+
+try:
+    if conda_forge_bot is not None:
+        mapping_list = conda_forge_bot.get_pypi_name_mapping()
+    else:
+        raise ImportError("Could not import conda_forge_bot from conda_forge_metadata.")
 except (ImportError, AttributeError, requests.exceptions.HTTPError):
     logger.exception(
         "could not get the conda-forge metadata pypi-to-conda name mapping "
@@ -81,6 +92,6 @@ except (ImportError, AttributeError, requests.exceptions.HTTPError):
     mapping_list = yaml.load(
         pkgutil.get_data(__name__, 'pkg_data/name_mapping.yml').decode(),
         Loader=yaml_loader,
-    )
+)
 
 namespace_packages = {pkg['import_name'] for pkg in mapping_list if '.' in pkg['import_name']}
