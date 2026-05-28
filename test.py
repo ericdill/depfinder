@@ -447,9 +447,18 @@ def test_get_top_level_import():
     top_level_name = inspection.get_top_level_import_name(name)
     assert top_level_name == 'this'
 
-    name = 'google.cloud.storage.something'
-    top_level_name = inspection.get_top_level_import_name(name)
-    assert top_level_name == 'google.cloud.storage'
+    from depfinder.utils import namespace_packages
+
+    if len(namespace_packages) > 0:
+        ns = sorted(namespace_packages)[0]
+        name = ns + '.something'
+        top_level_name = inspection.get_top_level_import_name(name)
+        assert top_level_name == ns
+
+    ns = ["my_custom_ns.ns"]
+    name = ns[0] + '.blah.something'
+    top_level_name = inspection.get_top_level_import_name(name, custom_namespaces=ns)
+    assert top_level_name == ns[0] + ".blah"
 
 
 @pytest.mark.skipif(
@@ -523,28 +532,22 @@ def test_simple_import_to_pkg_map():
         'builtin': {},
         'questionable': {
             'stdlib_list': {'stdlib-list'},
-            'IPython.core.inputsplitter': {'ipython', 'autovizwidget'},
+            'IPython.core.inputsplitter': {'ipython', 'jupyter-sphinx'},
             'conda_forge_metadata.autotick_bot': {'conda-forge-metadata'},
-            'conda_forge_metadata.libcfgraph': {'conda-forge-metadata'},
+            'conda_forge_metadata.conda_forge_bot': {'conda-forge-metadata'},
         },
         'questionable no match': {},
         'required': {
             'requests': {
-                'apache-libcloud',
                 'arm_pyart',
-                'autovizwidget',
-                'dbxfs',
-                'google-api-core',
                 'google-cloud-bigquery-storage-core',
+                'jupyter-sphinx',
                 'requests'
             },
             'requests.exceptions': {
-                'apache-libcloud',
                 'arm_pyart',
-                'autovizwidget',
-                'dbxfs',
-                'google-api-core',
                 'google-cloud-bigquery-storage-core',
+                'jupyter-sphinx',
                 'requests'
             },
             'yaml': {'google-cloud-bigquery-storage-core', 'pyyaml', 'rosco'}

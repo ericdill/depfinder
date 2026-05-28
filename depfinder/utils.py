@@ -69,8 +69,19 @@ pkg_data = yaml.load(
 )
 
 try:
-    import conda_forge_metadata.autotick_bot
-    mapping_list = conda_forge_metadata.autotick_bot.get_pypi_name_mapping()
+    import conda_forge_metadata.autotick_bot as conda_forge_bot
+except (ModuleNotFoundError, ImportError):
+    try:
+        import conda_forge_metadata.conda_forge_bot as conda_forge_bot
+    except (ModuleNotFoundError, ImportError):
+        conda_forge_bot = None
+
+
+try:
+    if conda_forge_bot is not None:
+        mapping_list = conda_forge_bot.get_pypi_name_mapping()
+    else:
+        raise ImportError("Could not import conda_forge_bot from conda_forge_metadata.")
 except (ModuleNotFoundError, ImportError, AttributeError, requests.exceptions.HTTPError):
     logger.exception(
         "could not get the conda-forge metadata pypi-to-conda name mapping "

@@ -55,8 +55,13 @@ def extract_pkg_from_import(name):
     import_to_pkg : dict mapping str to sets
         A dict mapping the import name to a set of possible packages that supply that import.
     """
-    from conda_forge_metadata.autotick_bot import map_import_to_package
-    from conda_forge_metadata.autotick_bot import get_pkgs_for_import
+    try:
+        from conda_forge_metadata.autotick_bot import map_import_to_package
+        from conda_forge_metadata.autotick_bot import get_pkgs_for_import
+    except ImportError:
+        from conda_forge_metadata.conda_forge_bot import map_import_to_package
+        from conda_forge_metadata.conda_forge_bot import get_pkgs_for_import
+
     try:
         supplying_pkgs, _ = get_pkgs_for_import(name)
         best_import = map_import_to_package(name)
