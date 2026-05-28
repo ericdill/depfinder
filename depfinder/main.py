@@ -27,8 +27,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import print_function, division, absolute_import
-
 import copy
 import io
 import json
@@ -68,8 +66,7 @@ def simple_import_search(path_to_source_code, remap=True, ignore=None, custom_na
     Examples
     --------
     >>> depfinder.simple_import_search('/path/to/depfinder/source')
-    {'builtin': ['__future__',
-                 'ast',
+    {'builtin': ['ast',
                  'collections',
                  'json',
                  'os',
@@ -222,8 +219,7 @@ def simple_import_search_conda_forge_import_map(path_to_source_code, builtins=No
     Examples
     --------
     >>> depfinder.simple_import_search_conda_forge_import_map('/path/to/depfinder/source')
-    {'builtin': ['__future__',
-                 'ast',
+    {'builtin': ['ast',
                  'collections',
                  'json',
                  'os',

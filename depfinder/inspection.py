@@ -27,8 +27,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import print_function, division, absolute_import
-
 import ast
 import logging
 import os
@@ -265,7 +263,7 @@ def get_imported_libs(code, filename='', custom_namespaces=None):
             code = f.read()
             imports = depfinder.get_imported_libs(code)
             print(imports.describe())
-    {'builtin': {'__future__', 'json', 'ast', 'os', 'sys', 'collections'},
+    {'builtin': {'json', 'ast', 'os', 'sys', 'collections'},
      'required': {'stdlib_list'}}
     """
     # skip ipython notebook lines
