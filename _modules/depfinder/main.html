@@ -1,20 +1,18 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>depfinder.main &mdash; depfinder 2.10.1.dev4+gc82844b documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+  <title>depfinder.main &mdash; depfinder 2.10.1.dev11+g7ac4f2c8c documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/documentation_options.js?v=862faf73"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/documentation_options.js?v=74a51d79"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -31,9 +29,6 @@
           <a href="../../index.html" class="icon icon-home">
             depfinder
           </a>
-              <div class="version">
-                2.10.1.dev4+gc82844b
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -99,17 +94,15 @@
 <span class="c1"># ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
 <span class="c1"># POSSIBILITY OF SUCH DAMAGE.</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">absolute_import</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fnmatch</span><span class="w"> </span><span class="kn">import</span> <span class="n">fnmatch</span>
 
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">fnmatch</span> <span class="kn">import</span> <span class="n">fnmatch</span>
-
-<span class="kn">from</span> <span class="nn">.inspection</span> <span class="kn">import</span> <span class="n">iterate_over_library</span><span class="p">,</span> <span class="n">get_imported_libs</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">pkg_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.inspection</span><span class="w"> </span><span class="kn">import</span> <span class="n">iterate_over_library</span><span class="p">,</span> <span class="n">get_imported_libs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">pkg_data</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;depfinder&#39;</span><span class="p">)</span>
 
@@ -118,7 +111,7 @@
 
 <div class="viewcode-block" id="simple_import_search">
 <a class="viewcode-back" href="../../index.html#depfinder.main.simple_import_search">[docs]</a>
-<span class="k">def</span> <span class="nf">simple_import_search</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">simple_import_search</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all imported modules in all .py files in `path_to_source_code`</span>
 
 <span class="sd">    Parameters</span>
@@ -142,8 +135,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; depfinder.simple_import_search(&#39;/path/to/depfinder/source&#39;)</span>
-<span class="sd">    {&#39;builtin&#39;: [&#39;__future__&#39;,</span>
-<span class="sd">                 &#39;ast&#39;,</span>
+<span class="sd">    {&#39;builtin&#39;: [&#39;ast&#39;,</span>
 <span class="sd">                 &#39;collections&#39;,</span>
 <span class="sd">                 &#39;json&#39;,</span>
 <span class="sd">                 &#39;os&#39;,</span>
@@ -176,7 +168,7 @@
 
 <div class="viewcode-block" id="notebook_path_to_dependencies">
 <a class="viewcode-back" href="../../index.html#depfinder.main.notebook_path_to_dependencies">[docs]</a>
-<span class="k">def</span> <span class="nf">notebook_path_to_dependencies</span><span class="p">(</span><span class="n">path_to_notebook</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">notebook_path_to_dependencies</span><span class="p">(</span><span class="n">path_to_notebook</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function that turns a jupyter notebook into a list of dependencies</span>
 
 <span class="sd">    Parameters</span>
@@ -205,7 +197,7 @@
 <span class="sd">    {&#39;builtin&#39;: [&#39;os&#39;, &#39;pprint&#39;], &#39;required&#39;: [&#39;depfinder&#39;]}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">IPython.core.inputsplitter</span> <span class="kn">import</span> <span class="n">IPythonInputSplitter</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.core.inputsplitter</span><span class="w"> </span><span class="kn">import</span> <span class="n">IPythonInputSplitter</span>
         <span class="n">transform</span> <span class="o">=</span> <span class="n">IPythonInputSplitter</span><span class="p">(</span><span class="n">line_input_checker</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">transform_cell</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="n">transform</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">code</span><span class="p">:</span> <span class="n">code</span>
@@ -231,7 +223,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">sanitize_deps</span><span class="p">(</span><span class="n">deps_dict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sanitize_deps</span><span class="p">(</span><span class="n">deps_dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function that takes the output of `notebook_path_to_dependencies`</span>
 <span class="sd">    or `simple_import_search` and turns normalizes the import names to be</span>
@@ -247,7 +239,7 @@
 <span class="sd">        If remap is True: Sanitized `deps_dict`</span>
 <span class="sd">        If remap is False: `deps_dict`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">.inspection</span> <span class="kn">import</span> <span class="n">PACKAGE_NAME</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.inspection</span><span class="w"> </span><span class="kn">import</span> <span class="n">PACKAGE_NAME</span>
     <span class="n">new_deps_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">list_of_possible_fakes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">pkg_data</span><span class="p">[</span><span class="s1">&#39;_FAKE_PACKAGES&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">packages_list</span> <span class="ow">in</span> <span class="n">deps_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -276,7 +268,7 @@
     <span class="k">return</span> <span class="n">new_deps_dict</span>
 
 
-<span class="k">def</span> <span class="nf">simple_import_search_conda_forge_import_map</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">builtins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">simple_import_search_conda_forge_import_map</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">builtins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all conda-forge packages used in all .py files in `path_to_source_code`</span>
 
 <span class="sd">    Parameters</span>
@@ -300,8 +292,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; depfinder.simple_import_search_conda_forge_import_map(&#39;/path/to/depfinder/source&#39;)</span>
-<span class="sd">    {&#39;builtin&#39;: [&#39;__future__&#39;,</span>
-<span class="sd">                 &#39;ast&#39;,</span>
+<span class="sd">    {&#39;builtin&#39;: [&#39;ast&#39;,</span>
 <span class="sd">                 &#39;collections&#39;,</span>
 <span class="sd">                 &#39;json&#39;,</span>
 <span class="sd">                 &#39;os&#39;,</span>
@@ -326,14 +317,14 @@
     <span class="k">for</span> <span class="n">total_import</span> <span class="ow">in</span> <span class="n">total_imports_list</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">md</span> <span class="ow">in</span> <span class="n">total_import</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">total_imports</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">.reports</span> <span class="kn">import</span> <span class="n">report_conda_forge_names_from_import_map</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.reports</span><span class="w"> </span><span class="kn">import</span> <span class="n">report_conda_forge_names_from_import_map</span>
     <span class="n">imports</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">report_conda_forge_names_from_import_map</span><span class="p">(</span>
         <span class="n">total_imports</span><span class="p">,</span> <span class="n">builtin_modules</span><span class="o">=</span><span class="n">builtins</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="n">ignore</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">imports</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
 
-<span class="k">def</span> <span class="nf">simple_import_to_pkg_map</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">builtins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">simple_import_to_pkg_map</span><span class="p">(</span><span class="n">path_to_source_code</span><span class="p">,</span> <span class="n">builtins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">custom_namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Provide the map beteen all the imports and their possible packages</span>
 
 <span class="sd">    Parameters</span>
@@ -365,7 +356,7 @@
     <span class="k">for</span> <span class="n">total_import</span> <span class="ow">in</span> <span class="n">total_imports_list</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">md</span> <span class="ow">in</span> <span class="n">total_import</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">total_imports</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">.reports</span> <span class="kn">import</span> <span class="n">report_conda_forge_names_from_import_map</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.reports</span><span class="w"> </span><span class="kn">import</span> <span class="n">report_conda_forge_names_from_import_map</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">import_to_pkg</span> <span class="o">=</span> <span class="n">report_conda_forge_names_from_import_map</span><span class="p">(</span>
         <span class="n">total_imports</span><span class="p">,</span> <span class="n">builtin_modules</span><span class="o">=</span><span class="n">builtins</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="n">ignore</span>
     <span class="p">)</span>
