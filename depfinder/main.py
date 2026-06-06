@@ -42,6 +42,8 @@ from pydantic import BaseModel
 from .inspection import iterate_over_library, get_imported_libs
 from .utils import ImportMetadata, pkg_data
 
+from .stdliblist import builtin_modules as _builtin_modules
+
 logger = logging.getLogger("depfinder.main")
 
 STRICT_CHECKING = False
@@ -230,7 +232,7 @@ def sanitize_deps(dependencies: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
 
 def simple_import_search_conda_forge_import_map(
     path_to_source_code: str,
-    builtins: Iterable[str] = (),
+    builtins: Iterable[str] = _builtin_modules,
     ignore: Iterable[str] = (),
     custom_namespaces: Iterable[str] = (),
 ):
@@ -274,7 +276,9 @@ def simple_import_search_conda_forge_import_map(
                   'test_with_code']}
     """
     # run depfinder on source code
-    import_metadata_type = Dict[str, Dict[Tuple[str, int], ImportMetadata]]
+    class FoundImports(BaseModel):
+        
+    import_metadata_type = Dict[str, Set[ImportMetadata]]
     total_imports_list: List[import_metadata_type] = []
     for _, _, import_finder in iterate_over_library(
         path_to_source_code, custom_namespaces=custom_namespaces
@@ -300,7 +304,10 @@ class TotalImports(BaseModel):
 
 
 def simple_import_to_pkg_map(
-    path_to_source_code, builtins=None, ignore=None, custom_namespaces=None
+    path_to_source_code,
+    builtins=_builtin_modules,
+    ignore=None,
+    custom_namespaces=None
 ):
     """Provide the map between all the imports and their possible packages
 

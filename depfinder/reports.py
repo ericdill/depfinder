@@ -39,6 +39,7 @@ from typing import Dict, Iterable, List, Set, Tuple
 from pydantic import BaseModel
 import pydantic
 
+from conda_forge_metadata.autotick_bot.import_to_pkg import map_import_to_package
 import requests
 
 from .stdliblist import builtin_modules as _builtin_modules
@@ -183,11 +184,18 @@ def recursively_search_for_name(name, module_names):
             else:
                 return False
 
+class Report(BaseModel):
+    required: Set[str] = set()
+    questionable: Set[str] = set()
+    builtin: Set[str] = set()
+    questionable_no_match: Set[str] = set()
+    required_no_match: Set[str] = set()
+
 
 def report_conda_forge_names_from_import_map(
     total_imports: Dict[str, Dict[Tuple[str, int], ImportMetadata]],
-    builtin_modules: Iterable[str] = (),
-    ignore: Iterable[str] = _builtin_modules,
+    builtin_modules: Iterable[str] = _builtin_modules,
+    ignore: Iterable[str] = (),
 ):
     report_keys = [
         "required",
@@ -200,6 +208,8 @@ def report_conda_forge_names_from_import_map(
     import_to_pkg = {k: {} for k in report_keys}
     import_to_artifact = {k: {} for k in report_keys}
     futures = {}
+    logger.debug(f'{builtin_modules=}')
+
 
     with ThreadPoolExecutor() as pool:
         for name, md in total_imports.items():
@@ -212,8 +222,11 @@ def report_conda_forge_names_from_import_map(
                 continue
             elif recursively_search_for_name(name, builtin_modules):
                 report["builtin"].add(name)
+                logger.debug(f"{name} is builtin")
                 continue
-            future = pool.submit(extract_pkg_from_import, name)
+
+            logger.debug(f"Mapping {name} to `map_import_to_package`")
+            future = pool.submit(map_import_to_package, name)
             futures[future] = md
     for future in as_completed(futures):
         md = futures[future]
